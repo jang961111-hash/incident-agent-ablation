@@ -1,0 +1,17 @@
+name: rag_judge
+description: RAG + Validator를 LLM-as-a-Judge 4지표로 교체.
+runbook_selection: rag
+validator: judge
+cost:
+  model_tiering: false
+  cache: false
+models:
+  default: gpt-4o-mini
+  judge: gpt-4o-mini
+rag:
+  top_k: 3
+  embedding: text-embedding-3-small
+judge:
+  threshold: 0.8
+  max_retries: 2
+  max_seconds: 120

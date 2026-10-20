@@ -1,0 +1,12 @@
+name: rag
+description: 런북 선택만 RAG로 교체. 검색 품질 변화를 단독으로 본다.
+runbook_selection: rag
+validator: rule
+cost:
+  model_tiering: false
+  cache: false
+models:
+  default: gpt-4o-mini
+rag:
+  top_k: 3
+  embedding: text-embedding-3-small

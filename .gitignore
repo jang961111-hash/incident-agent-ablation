@@ -1,0 +1,15 @@
+.env
+.env.local
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# 실행 결과는 보고서 근거이므로 커밋한다. 대용량 원시 트레이스만 제외.
+results/raw/

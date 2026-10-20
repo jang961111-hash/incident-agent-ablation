@@ -1,0 +1,9 @@
+name: base
+description: 교수님 제공 베이스 그대로. Before 기준선.
+runbook_selection: keyword      # keyword | rag
+validator: rule                 # rule | judge
+cost:
+  model_tiering: false
+  cache: false
+models:
+  default: gpt-4o-mini

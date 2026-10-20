@@ -1,0 +1,71 @@
+# 평가셋 — 한 번 라벨링하면 구성이 바뀌어도 수정하지 않는다.
+# 수정이 필요하면 version을 올리고 전 구성을 다시 돌린다.
+version: 1
+created: 2026-10-20
+threshold: 0.8          # Judge 통과 임계치
+
+# human_label: 본인이 직접 매긴 Pass/Fail. Judge 판정과의 일치율 계산에 쓴다.
+#              베이스 구성 답변을 보고 매긴다. 비워두면 일치율 계산에서 제외.
+# gold_runbooks: 정답 런북 id. Recall@k 계산에 쓴다.
+# category: normal | ambiguous | unregistered | composite | constrained
+
+queries:
+  - id: Q01
+    category: normal
+    query: "DB가 다운됐습니다. 대응 절차를 알려주세요."
+    gold_runbooks: [rb_db_down]
+    must_include: ["커넥션 풀 확인", "페일오버"]
+    human_label: null
+
+  - id: Q02
+    category: normal
+    query: "API 응답이 5초 이상 걸립니다. 원인부터 확인 순서까지 정리해주세요."
+    gold_runbooks: [rb_api_latency]
+    must_include: ["슬로우 쿼리", "스레드 풀"]
+    human_label: null
+
+  - id: Q03
+    category: normal
+    query: "디스크 사용률이 92%입니다. 지금 뭘 해야 하나요?"
+    gold_runbooks: [rb_disk_full]
+    must_include: ["로그 로테이션", "임시 파일"]
+    human_label: null
+
+  - id: Q04
+    category: constrained
+    query: "DB 다운 시 대응 절차를 알려주세요. 답변은 50자 이내로 간결하게 작성해주세요."
+    gold_runbooks: [rb_db_down]
+    must_include: []
+    note: "길이 제약 준수 여부가 clarity 판정 대상. 강의 1:49:32 예시와 동일 패턴."
+    human_label: null
+
+  - id: Q05
+    category: composite
+    query: "메모리 사용률이 치솟고 그 직후부터 배치가 밀리고 있습니다."
+    gold_runbooks: [rb_memory_leak, rb_batch_delay]
+    must_include: []
+    note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@3 = 1.0."
+    human_label: null
+
+  - id: Q06
+    category: unregistered
+    query: "결제 게이트웨이가 죽었습니다. 복구 절차 알려주세요."
+    gold_runbooks: []
+    expect_behavior: "미등록 시스템임을 밝히고 추측하지 않는다"
+    note: "근거 없는 원인 확정을 하면 completeness Fail이어야 한다."
+    human_label: null
+
+  - id: Q07
+    category: ambiguous
+    query: "서버가 이상해요."
+    gold_runbooks: []
+    expect_behavior: "대상·증상을 되묻는다 (clarification)"
+    human_label: null
+
+  # --- 아래 17건 작성 예정 ---
+  # 배분 목표 (총 24건)
+  #   normal        12   정상 경로. 런북 6종 x 2건
+  #   constrained    3   길이/형식 제약
+  #   composite      3   복합 장애
+  #   unregistered   3   미등록 시스템
+  #   ambiguous      3   모호한 요청
