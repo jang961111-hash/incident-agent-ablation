@@ -34,6 +34,8 @@ QY = ROOT / "eval" / "queries.yaml"
 BASE = ROOT / "results" / "base_latest.json"
 
 HEADER = "# 사람 라벨 — base 답변 기준, 지표별 Pass/Fail. 한 번 매기면 수정하지 않는다.\n"
+KO_NAME = {"relevance": "관련성", "completeness": "완전성",
+           "domain_appropriateness": "도메인 적합성", "clarity": "명확성"}
 CRITERIA = {
     "relevance": "묻는 것에 답했나 · 미등록이면 없다고 밝혔나",
     "completeness": "근거에 없는 수치·사실을 지어내지 않았고, 근거의 핵심 사실이 들어갔나",
@@ -150,7 +152,7 @@ def main(argv=None, input_fn=input, *, base_path: Path = BASE, labels_path: Path
         while True:   # u 로 이 건 지표를 처음부터 다시 매길 수 있다
             verdicts, action = {}, None
             for m in METRICS:
-                k = ask(f"[{m}] {CRITERIA[m]}\n  p/f/s/u/q > ", "pfsuq", input_fn)
+                k = ask(f"[{KO_NAME[m]}] {CRITERIA[m]}\n  p/f/s/u/q > ", "pfsuq", input_fn)
                 if k in ("s", "u", "q"):
                     action = k
                     break

@@ -94,6 +94,30 @@ def _stats(pairs: list[tuple[str, str, str]]) -> dict:
     }
 
 
+CLAUDE_LABELS_PATH = Path(__file__).resolve().parent / "claude_labels.yaml"
+
+
+def rater_agreement(path_a: Path | str, path_b: Path | str) -> dict:
+    """두 라벨 파일(예: 사람 vs Claude)끼리의 지표별 일치. 같은 답변(answer_sha 일치)에 매긴 것만 비교한다.
+    결과의 'human' 자리는 a, 'judge' 자리는 b 다."""
+    la, lb = load_human(path_a)["labels"], load_human(path_b)["labels"]
+    pairs = {k: [] for k in KEYS}
+    sha_mismatch = []
+    for qid in sorted(set(la) & set(lb)):
+        a, b = la[qid], lb[qid]
+        if a.get("answer_sha") and b.get("answer_sha") and a["answer_sha"] != b["answer_sha"]:
+            sha_mismatch.append(qid)
+            continue
+        for m in METRICS:
+            if a.get(m) in ("Pass", "Fail") and b.get(m) in ("Pass", "Fail"):
+                pairs[m].append((qid, a[m], b[m]))
+        if all(a.get(m) in ("Pass", "Fail") for m in METRICS) and \
+                all(b.get(m) in ("Pass", "Fail") for m in METRICS):
+            pairs["overall"].append((qid, overall_label(a), overall_label(b)))
+    return {"a": str(path_a), "b": str(path_b), "n_common": len(set(la) & set(lb)),
+            "sha_mismatch": sha_mismatch, "metrics": {k: _stats(pairs[k]) for k in KEYS}}
+
+
 def _reason(row: dict, metric: str) -> str:
     r = row.get("judge_reasons")
     return str(r.get(metric, "")) if isinstance(r, dict) else ""
