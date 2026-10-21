@@ -286,7 +286,7 @@ T(s, [
   { text: "Judge를 붙이면 비용과 지연이 오르지만, 품질 지표는 신뢰구간 안에서 움직이지 않았다.", options: { bullet: true, breakLine: true } },
   { text: `캐스케이드는 장애 1건당 비용을 크게 줄이는 대신 런북 어구 포함이 내려갔다 (${pp(pair("rag_judge", "rag_judge_cost").must.diff)}, 유의하지 않음). 이 대가를 받아들일지는 운영 정책의 선택이다.`, options: { bullet: true } },
 ], { x: 0.6, y: 5.45, w: 12.1, h: 1.15, fontSize: 13.5, paraSpaceAfter: 4, valign: "top" });
-src(s, "holdout 36건, 3회 평균. 비용은 OpenAI 공개 단가 x 실측 토큰 추정치 (평가 Judge 제외). 지연은 7구성 동시 실행 부하에서 측정", 6.68);
+src(s, "holdout 36건, 3회 평균. 비용은 OpenAI 공개 단가 x 실측 토큰 추정치 (평가 Judge 제외). 지연: 5구성은 7프로세스 동시 부하, +비용·final은 캐시 버그 수정 뒤 2프로세스로 재측정 → 두 구성의 지연 차이엔 부하 차이가 섞였을 수 있음", 6.68);
 
 // ── 11. v2 보완 ──────────────────────────────────────────────────────
 s = slide("CONTENT", "Before/After");
@@ -339,7 +339,7 @@ if (D.cache) {
     { text: `route·plan·임베딩만 캐시 (final 비용의 ${pct(D.cacheable_share_final)}). 2회차 비용 ${usd(c1.cost_usd)} → ${usd(c2.cost_usd)}. 모니터링·답변은 캐시하지 않음.`, options: { fontSize: 12 } },
   ], { x: 7.4, y: 4.0, w: 5.1, h: 1.7, fontSize: 14, valign: "top" });
 }
-src(s, "동시성·장애 주입은 API 지출 한도 소진 뒤 API 없이 측정 (results/concurrency_bench_simulated_latest.json · fault_bench_fake_latest.json). 캐시는 실제 API (cache_bench_latest.json)", 6.1);
+src(s, (D.concurrency && D.concurrency.backend === "fake_slow" ? "동시성·장애 주입은 API 없이 측정 (results/*_simulated·_fake_latest.json)" : "동시성·장애 주입·캐시 모두 실제 API (results/concurrency_bench_latest.json · fault_bench_latest.json · cache_bench_latest.json). 동시성은 N마다 1회 측정"), 6.1);
 s.addNotes("원본은 노드가 async여도 LLM 호출이 동기라 동시 요청이 줄을 섭니다. 도구 하나가 죽으면 질의 전체가 실패합니다. 둘 다 고쳤습니다.");
 
 // ── 13. 평가자 검증 ──────────────────────────────────────────────────
