@@ -13,3 +13,8 @@ venv/
 
 # 실행 결과는 보고서 근거이므로 커밋한다. 대용량 원시 트레이스만 제외.
 results/raw/
+
+# 로컬 상태
+.omc/
+.cache/
+src/session.db
