@@ -1,0 +1,123 @@
+"""구성 간 차이의 유의성 — 질의 단위 paired bootstrap.
+
+같은 질의끼리 짝지어 (구성 B - 구성 A) 차이를 구하고, 질의를 복원 추출로 2,000번 다시 뽑아
+차이 평균의 95% 신뢰구간을 낸다. 질의별 값은 3회 반복의 평균이다.
+구간이 0을 포함하지 않으면 '유의' 로 표시한다. 반복 간 CI(report.py)는 실행 변동만 보고,
+이 구간은 '다른 질의였다면' 의 변동까지 본다.
+
+    python -m eval.stats                 # holdout (기본)
+    python -m eval.stats --split all
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import random
+import statistics
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
+
+PAIRS = [   # (A, B, 이 비교가 보여주는 것)
+    ("base", "rag", "RAG 단독"),
+    ("base", "judge", "Judge 단독"),
+    ("rag", "rag_judge", "RAG 위에 Judge"),
+    ("rag_judge", "rag_judge_cost", "캐스케이드+캐시"),
+    ("rag_judge", "rag_judge_v2", "v2 보완"),
+    ("rag_judge_v2", "final", "v2 위에 비용·런타임"),
+    ("base", "final", "전체 (Before→After)"),
+]
+
+
+def _per_query(rows: list[dict]) -> dict:
+    """질의별 지표 (반복 평균)."""
+    by = {}
+    for r in rows:
+        if "error" in r:
+            continue
+        by.setdefault(r["id"], []).append(r)
+    out = {}
+    for qid, rs in by.items():
+        def avg(f):
+            vals = [v for v in (f(r) for r in rs) if v is not None]
+            return statistics.fmean(vals) if vals else None
+        gold = rs[0]["gold"]
+        out[qid] = {
+            "pass": avg(lambda r: None if r["judge_passed"] is None else float(r["judge_passed"])),
+            "must": avg(lambda r: r["must_hit"] / r["must_total"] if r["must_total"] else None),
+            "hit1": avg(lambda r: float(bool(r["retrieved"]) and r["retrieved"][0] in gold) if gold else None),
+            "miss": avg(lambda r: float(not set(r["fed_runbooks"]) & set(gold))
+                        if gold and r["route"] == "incident" else None),
+            "wrong": avg(lambda r: float(bool(set(r["fed_runbooks"]) - set(gold)) if gold
+                                         else bool(r["fed_runbooks"])) if r["route"] == "incident" else None),
+            "cost": avg(lambda r: r["cost_usd"]),
+            "latency": avg(lambda r: r["latency_ms"] / 1000),
+        }
+    return out
+
+
+def bootstrap(a: dict, b: dict, metric: str, n: int = 2000, seed: int = 0) -> dict | None:
+    ids = [q for q in a if q in b and a[q][metric] is not None and b[q][metric] is not None]
+    if not ids:
+        return None
+    diffs = [b[q][metric] - a[q][metric] for q in ids]
+    rnd = random.Random(seed)
+    boots = sorted(statistics.fmean(rnd.choices(diffs, k=len(diffs))) for _ in range(n))
+    lo, hi = boots[int(0.025 * n)], boots[int(0.975 * n) - 1]
+    return {"n": len(ids), "diff": statistics.fmean(diffs), "lo": lo, "hi": hi,
+            "significant": lo > 0 or hi < 0}
+
+
+def run(split: str | None) -> dict:
+    data = {}
+    for nm in {x for p in PAIRS for x in p[:2]}:
+        rows = json.loads((RESULTS / f"{nm}_latest.json").read_text())["rows"]
+        if split:
+            rows = [r for r in rows if r.get("split") == split]
+        data[nm] = _per_query(rows)
+    out = []
+    for a, b, label in PAIRS:
+        res = {m: bootstrap(data[a], data[b], m) for m in
+               ("pass", "must", "hit1", "miss", "wrong", "cost", "latency")}
+        out.append({"a": a, "b": b, "label": label, **res})
+    return {"split": split or "all", "n_boot": 2000, "pairs": out}
+
+
+FMT = {"pass": ("평가 Judge 통과", 100, "%p"), "must": ("런북 어구 포함", 100, "%p"),
+       "hit1": ("Recall@1", 100, "%p"), "miss": ("정답 런북 누락", 100, "%p"),
+       "wrong": ("무관 런북 혼입", 100, "%p"), "cost": ("질의당 비용", 1, "$"),
+       "latency": ("질의당 지연", 1, "초")}
+
+
+def fmt(r: dict | None, metric: str) -> str:
+    if not r:
+        return "-"
+    _, k, u = FMT[metric]
+    if u == "$":
+        s = f"{r['diff']:+.4f} [{r['lo']:+.4f}, {r['hi']:+.4f}]"
+    elif u == "초":
+        s = f"{r['diff']:+.1f} [{r['lo']:+.1f}, {r['hi']:+.1f}]"
+    else:
+        s = f"{r['diff'] * k:+.0f} [{r['lo'] * k:+.0f}, {r['hi'] * k:+.0f}]"
+    return s + (" *" if r["significant"] else "")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--split", default="holdout", choices=["holdout", "dev", "all"])
+    ap.add_argument("--md", action="store_true")
+    args = ap.parse_args()
+    res = run(None if args.split == "all" else args.split)
+    (RESULTS / f"stats_{res['split']}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
+    metrics = ["hit1", "miss", "wrong", "must", "pass", "cost", "latency"]
+    head = ["비교"] + [f"{FMT[m][0]} ({FMT[m][2]})" for m in metrics]
+    lines = [[f"{p['label']}: {p['a']}→{p['b']}"] + [fmt(p[m], m) for m in metrics] for p in res["pairs"]]
+    from tabulate import tabulate
+    print(f"{'### ' if args.md else ''}구성 간 차이 — {res['split']}, 질의 단위 paired bootstrap 95% CI "
+          f"(* = 구간이 0을 포함하지 않음)\n")
+    print(tabulate(lines, headers=head, tablefmt="github" if args.md else "simple"))
+
+
+if __name__ == "__main__":
+    main()
