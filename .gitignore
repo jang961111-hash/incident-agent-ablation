@@ -18,3 +18,6 @@ results/raw/
 .omc/
 .cache/
 src/session.db
+deck/node_modules/
+deck/*.pdf
+deck/render/
