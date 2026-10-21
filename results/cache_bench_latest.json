@@ -1,0 +1,2285 @@
+{
+  "config": "final",
+  "passes": [
+    {
+      "pass": 1,
+      "cache_hits": 0,
+      "cache_lookups": 160,
+      "tokens_prompt": 97525,
+      "tokens_completion": 21452,
+      "cost_usd": 0.027186649999999996,
+      "latency_p50_ms": 7917.105707994779,
+      "rows": [
+        {
+          "id": "Q01",
+          "latency_ms": 7955.191917004413,
+          "cost_usd": 0.00047083,
+          "tokens": {
+            "prompt": 1808,
+            "completion": 339
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q02",
+          "latency_ms": 7669.937874990865,
+          "cost_usd": 0.00041539,
+          "tokens": {
+            "prompt": 1478,
+            "completion": 333
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q03",
+          "latency_ms": 7577.823583997088,
+          "cost_usd": 0.0004692,
+          "tokens": {
+            "prompt": 1667,
+            "completion": 375
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q04",
+          "latency_ms": 8432.975374991656,
+          "cost_usd": 0.0005806899999999999,
+          "tokens": {
+            "prompt": 1864,
+            "completion": 512
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q05",
+          "latency_ms": 7193.061665995629,
+          "cost_usd": 0.00040697,
+          "tokens": {
+            "prompt": 1540,
+            "completion": 300
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q06",
+          "latency_ms": 7962.787041993579,
+          "cost_usd": 0.00056238,
+          "tokens": {
+            "prompt": 2220,
+            "completion": 394
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q07",
+          "latency_ms": 7917.105707994779,
+          "cost_usd": 0.00046888999999999996,
+          "tokens": {
+            "prompt": 1897,
+            "completion": 312
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q08",
+          "latency_ms": 7742.173082995578,
+          "cost_usd": 0.0005168699999999999,
+          "tokens": {
+            "prompt": 1831,
+            "completion": 418
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q09",
+          "latency_ms": 8642.547416995512,
+          "cost_usd": 0.0004918899999999999,
+          "tokens": {
+            "prompt": 1792,
+            "completion": 382
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q10",
+          "latency_ms": 7830.128125002375,
+          "cost_usd": 0.0005450499999999999,
+          "tokens": {
+            "prompt": 1913,
+            "completion": 441
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q11",
+          "latency_ms": 9947.850291995564,
+          "cost_usd": 0.0006172299999999999,
+          "tokens": {
+            "prompt": 2077,
+            "completion": 519
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q12",
+          "latency_ms": 8546.538250011508,
+          "cost_usd": 0.00056794,
+          "tokens": {
+            "prompt": 1888,
+            "completion": 488
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q13",
+          "latency_ms": 1897.962125003687,
+          "cost_usd": 5.565e-05,
+          "tokens": {
+            "prompt": 243,
+            "completion": 32
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q14",
+          "latency_ms": 2731.1944590037456,
+          "cost_usd": 0.00011625,
+          "tokens": {
+            "prompt": 247,
+            "completion": 132
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q15",
+          "latency_ms": 1841.1060000071302,
+          "cost_usd": 7.185e-05,
+          "tokens": {
+            "prompt": 227,
+            "completion": 63
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q16",
+          "latency_ms": 9734.67408400029,
+          "cost_usd": 0.0006788100000000001,
+          "tokens": {
+            "prompt": 2443,
+            "completion": 531
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q17",
+          "latency_ms": 9451.246083001024,
+          "cost_usd": 0.0006477799999999999,
+          "tokens": {
+            "prompt": 2482,
+            "completion": 473
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q18",
+          "latency_ms": 8733.813499988173,
+          "cost_usd": 0.0005553399999999999,
+          "tokens": {
+            "prompt": 2000,
+            "completion": 439
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q19",
+          "latency_ms": 7527.738167002099,
+          "cost_usd": 0.00045829,
+          "tokens": {
+            "prompt": 1479,
+            "completion": 401
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q20",
+          "latency_ms": 7839.693542002351,
+          "cost_usd": 0.00045149,
+          "tokens": {
+            "prompt": 1470,
+            "completion": 393
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q21",
+          "latency_ms": 7099.718209006824,
+          "cost_usd": 0.00043829,
+          "tokens": {
+            "prompt": 1466,
+            "completion": 372
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q22",
+          "latency_ms": 7567.9019579984015,
+          "cost_usd": 0.00041956000000000003,
+          "tokens": {
+            "prompt": 1356,
+            "completion": 362
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q23",
+          "latency_ms": 1779.0945419983473,
+          "cost_usd": 5.655e-05,
+          "tokens": {
+            "prompt": 245,
+            "completion": 33
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q24",
+          "latency_ms": 7263.578375001089,
+          "cost_usd": 0.0004277299999999999,
+          "tokens": {
+            "prompt": 1441,
+            "completion": 360
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q25",
+          "latency_ms": 9472.463250000146,
+          "cost_usd": 0.00047896999999999995,
+          "tokens": {
+            "prompt": 1617,
+            "completion": 404
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q26",
+          "latency_ms": 8210.299290993134,
+          "cost_usd": 0.00047904999999999996,
+          "tokens": {
+            "prompt": 1686,
+            "completion": 391
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q27",
+          "latency_ms": 7235.047750000376,
+          "cost_usd": 0.0005535199999999999,
+          "tokens": {
+            "prompt": 2351,
+            "completion": 348
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q28",
+          "latency_ms": 10182.81549999665,
+          "cost_usd": 0.00047292999999999993,
+          "tokens": {
+            "prompt": 1739,
+            "completion": 363
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q29",
+          "latency_ms": 6940.800750002381,
+          "cost_usd": 0.0004840399999999999,
+          "tokens": {
+            "prompt": 2032,
+            "completion": 310
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q30",
+          "latency_ms": 8225.549707989558,
+          "cost_usd": 0.00048064999999999995,
+          "tokens": {
+            "prompt": 1556,
+            "completion": 424
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q31",
+          "latency_ms": 8699.119249999058,
+          "cost_usd": 0.0005021,
+          "tokens": {
+            "prompt": 1826,
+            "completion": 389
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q32",
+          "latency_ms": 7811.22366701311,
+          "cost_usd": 0.0005989899999999999,
+          "tokens": {
+            "prompt": 2406,
+            "completion": 407
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q33",
+          "latency_ms": 9565.626541996608,
+          "cost_usd": 0.0006083,
+          "tokens": {
+            "prompt": 2416,
+            "completion": 425
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q34",
+          "latency_ms": 10767.406208004104,
+          "cost_usd": 0.0007081599999999999,
+          "tokens": {
+            "prompt": 2559,
+            "completion": 552
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q35",
+          "latency_ms": 8108.329915994545,
+          "cost_usd": 0.00044645,
+          "tokens": {
+            "prompt": 1712,
+            "completion": 328
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q36",
+          "latency_ms": 7980.313332998776,
+          "cost_usd": 0.00044497,
+          "tokens": {
+            "prompt": 1543,
+            "completion": 368
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q37",
+          "latency_ms": 8521.145709004486,
+          "cost_usd": 0.0004986699999999999,
+          "tokens": {
+            "prompt": 1861,
+            "completion": 378
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q38",
+          "latency_ms": 9069.910083009745,
+          "cost_usd": 0.00052438,
+          "tokens": {
+            "prompt": 1835,
+            "completion": 428
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q39",
+          "latency_ms": 10162.350291997427,
+          "cost_usd": 0.0006498899999999999,
+          "tokens": {
+            "prompt": 2110,
+            "completion": 568
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q40",
+          "latency_ms": 7497.748000008869,
+          "cost_usd": 0.00043508999999999996,
+          "tokens": {
+            "prompt": 1633,
+            "completion": 326
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q41",
+          "latency_ms": 8369.083625002531,
+          "cost_usd": 0.0006196399999999999,
+          "tokens": {
+            "prompt": 2649,
+            "completion": 385
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q42",
+          "latency_ms": 8333.463333008694,
+          "cost_usd": 0.00062784,
+          "tokens": {
+            "prompt": 2299,
+            "completion": 484
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q43",
+          "latency_ms": 7157.670125001459,
+          "cost_usd": 0.0004257599999999999,
+          "tokens": {
+            "prompt": 1683,
+            "completion": 296
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q44",
+          "latency_ms": 1790.5866660003085,
+          "cost_usd": 7.365e-05,
+          "tokens": {
+            "prompt": 235,
+            "completion": 64
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q45",
+          "latency_ms": 2319.8107500065817,
+          "cost_usd": 0.00011144999999999998,
+          "tokens": {
+            "prompt": 251,
+            "completion": 123
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q46",
+          "latency_ms": 1963.4237089921953,
+          "cost_usd": 6.644999999999999e-05,
+          "tokens": {
+            "prompt": 231,
+            "completion": 53
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q47",
+          "latency_ms": 2564.0631249989383,
+          "cost_usd": 0.00010664999999999999,
+          "tokens": {
+            "prompt": 243,
+            "completion": 117
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q48",
+          "latency_ms": 9805.317082995316,
+          "cost_usd": 0.0005595899999999999,
+          "tokens": {
+            "prompt": 1860,
+            "completion": 480
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q49",
+          "latency_ms": 10080.240167008014,
+          "cost_usd": 0.0006104799999999999,
+          "tokens": {
+            "prompt": 2049,
+            "completion": 518
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q50",
+          "latency_ms": 7588.310666993493,
+          "cost_usd": 0.00047979999999999995,
+          "tokens": {
+            "prompt": 1838,
+            "completion": 351
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q51",
+          "latency_ms": 9183.332457992947,
+          "cost_usd": 0.0006893,
+          "tokens": {
+            "prompt": 2640,
+            "completion": 504
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q52",
+          "latency_ms": 9343.259125002078,
+          "cost_usd": 0.0006354099999999999,
+          "tokens": {
+            "prompt": 2215,
+            "completion": 520
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q53",
+          "latency_ms": 9964.368957997067,
+          "cost_usd": 0.0007245099999999999,
+          "tokens": {
+            "prompt": 2587,
+            "completion": 569
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q54",
+          "latency_ms": 7434.910459007369,
+          "cost_usd": 0.00044757,
+          "tokens": {
+            "prompt": 1540,
+            "completion": 372
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q55",
+          "latency_ms": 7685.450083008618,
+          "cost_usd": 0.00045443999999999997,
+          "tokens": {
+            "prompt": 1510,
+            "completion": 389
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q56",
+          "latency_ms": 1882.494042001781,
+          "cost_usd": 6.735e-05,
+          "tokens": {
+            "prompt": 245,
+            "completion": 51
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q57",
+          "latency_ms": 9532.655125003657,
+          "cost_usd": 0.0006928799999999999,
+          "tokens": {
+            "prompt": 2356,
+            "completion": 571
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q58",
+          "latency_ms": 7559.170125008677,
+          "cost_usd": 0.00044366999999999996,
+          "tokens": {
+            "prompt": 1473,
+            "completion": 379
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q59",
+          "latency_ms": 1783.9520830020774,
+          "cost_usd": 5.5049999999999996e-05,
+          "tokens": {
+            "prompt": 227,
+            "completion": 35
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q60",
+          "latency_ms": 7133.394999997108,
+          "cost_usd": 0.0004380799999999999,
+          "tokens": {
+            "prompt": 1438,
+            "completion": 378
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        }
+      ]
+    },
+    {
+      "pass": 2,
+      "cache_hits": 112,
+      "cache_lookups": 160,
+      "tokens_prompt": 78235,
+      "tokens_completion": 19462,
+      "cost_usd": 0.023319109999999997,
+      "latency_p50_ms": 5643.4936659934465,
+      "rows": [
+        {
+          "id": "Q01",
+          "latency_ms": 8105.124417008483,
+          "cost_usd": 0.00050653,
+          "tokens": {
+            "prompt": 1858,
+            "completion": 386
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q02",
+          "latency_ms": 7497.385041002417,
+          "cost_usd": 0.00041074,
+          "tokens": {
+            "prompt": 1471,
+            "completion": 327
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q03",
+          "latency_ms": 7707.782166995457,
+          "cost_usd": 0.00046875,
+          "tokens": {
+            "prompt": 1672,
+            "completion": 373
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q04",
+          "latency_ms": 7993.369083007565,
+          "cost_usd": 0.0005554899999999998,
+          "tokens": {
+            "prompt": 1840,
+            "completion": 476
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q05",
+          "latency_ms": 6788.583375004237,
+          "cost_usd": 0.00040697,
+          "tokens": {
+            "prompt": 1540,
+            "completion": 300
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q06",
+          "latency_ms": 9993.407917005243,
+          "cost_usd": 0.0006189299999999998,
+          "tokens": {
+            "prompt": 2257,
+            "completion": 479
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q07",
+          "latency_ms": 7984.472208001534,
+          "cost_usd": 0.00052169,
+          "tokens": {
+            "prompt": 1929,
+            "completion": 392
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q08",
+          "latency_ms": 8322.010999996564,
+          "cost_usd": 0.0005210699999999999,
+          "tokens": {
+            "prompt": 1831,
+            "completion": 425
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q09",
+          "latency_ms": 8297.106917001656,
+          "cost_usd": 0.0004933899999999999,
+          "tokens": {
+            "prompt": 1790,
+            "completion": 385
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q10",
+          "latency_ms": 7277.859541994985,
+          "cost_usd": 0.00048669999999999996,
+          "tokens": {
+            "prompt": 1872,
+            "completion": 354
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q11",
+          "latency_ms": 9068.749459009268,
+          "cost_usd": 0.00058048,
+          "tokens": {
+            "prompt": 2012,
+            "completion": 474
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q12",
+          "latency_ms": 9129.069750008057,
+          "cost_usd": 0.0006472899999999999,
+          "tokens": {
+            "prompt": 1977,
+            "completion": 598
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q13",
+          "latency_ms": 1845.6283749983413,
+          "cost_usd": 5.565e-05,
+          "tokens": {
+            "prompt": 243,
+            "completion": 32
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q14",
+          "latency_ms": 2615.051333006704,
+          "cost_usd": 0.00011925,
+          "tokens": {
+            "prompt": 247,
+            "completion": 137
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q15",
+          "latency_ms": 1881.9323330098996,
+          "cost_usd": 7.185e-05,
+          "tokens": {
+            "prompt": 227,
+            "completion": 63
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "chat"
+          ]
+        },
+        {
+          "id": "Q16",
+          "latency_ms": 8858.51133299002,
+          "cost_usd": 0.0006644099999999999,
+          "tokens": {
+            "prompt": 2419,
+            "completion": 513
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q17",
+          "latency_ms": 8878.722292007296,
+          "cost_usd": 0.00060323,
+          "tokens": {
+            "prompt": 2465,
+            "completion": 403
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q18",
+          "latency_ms": 8460.589499998605,
+          "cost_usd": 0.00057064,
+          "tokens": {
+            "prompt": 2006,
+            "completion": 463
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 0
+          },
+          "stages": [
+            "route",
+            "plan",
+            "embed",
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q19",
+          "latency_ms": 4758.00254198839,
+          "cost_usd": 0.00034995,
+          "tokens": {
+            "prompt": 973,
+            "completion": 340
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q20",
+          "latency_ms": 5856.763416988542,
+          "cost_usd": 0.0003507,
+          "tokens": {
+            "prompt": 990,
+            "completion": 337
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q21",
+          "latency_ms": 4932.285000002594,
+          "cost_usd": 0.00035234999999999997,
+          "tokens": {
+            "prompt": 989,
+            "completion": 340
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q22",
+          "latency_ms": 4659.942124999361,
+          "cost_usd": 0.000336,
+          "tokens": {
+            "prompt": 940,
+            "completion": 325
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q23",
+          "latency_ms": 899.0327080100542,
+          "cost_usd": 2.7749999999999997e-05,
+          "tokens": {
+            "prompt": 97,
+            "completion": 22
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 1
+          },
+          "stages": [
+            "chat"
+          ]
+        },
+        {
+          "id": "Q24",
+          "latency_ms": 4663.886999987881,
+          "cost_usd": 0.00033509999999999996,
+          "tokens": {
+            "prompt": 958,
+            "completion": 319
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q25",
+          "latency_ms": 5598.8662089948775,
+          "cost_usd": 0.00038729999999999993,
+          "tokens": {
+            "prompt": 1058,
+            "completion": 381
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q26",
+          "latency_ms": 4982.782500010217,
+          "cost_usd": 0.00031784999999999995,
+          "tokens": {
+            "prompt": 1035,
+            "completion": 271
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q27",
+          "latency_ms": 5855.1392079971265,
+          "cost_usd": 0.0004984499999999999,
+          "tokens": {
+            "prompt": 1851,
+            "completion": 368
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q28",
+          "latency_ms": 5643.4936659934465,
+          "cost_usd": 0.00033599999999999993,
+          "tokens": {
+            "prompt": 1188,
+            "completion": 263
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q29",
+          "latency_ms": 5260.2654170041205,
+          "cost_usd": 0.0003786,
+          "tokens": {
+            "prompt": 1484,
+            "completion": 260
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q30",
+          "latency_ms": 5049.299125006655,
+          "cost_usd": 0.000339,
+          "tokens": {
+            "prompt": 992,
+            "completion": 317
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q31",
+          "latency_ms": 5294.876458006911,
+          "cost_usd": 0.00039914999999999997,
+          "tokens": {
+            "prompt": 1321,
+            "completion": 335
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q32",
+          "latency_ms": 5640.153207990807,
+          "cost_usd": 0.0005277,
+          "tokens": {
+            "prompt": 1914,
+            "completion": 401
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q33",
+          "latency_ms": 6667.064959008712,
+          "cost_usd": 0.00051825,
+          "tokens": {
+            "prompt": 1863,
+            "completion": 398
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q34",
+          "latency_ms": 7196.506499996758,
+          "cost_usd": 0.0005758499999999999,
+          "tokens": {
+            "prompt": 2063,
+            "completion": 444
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q35",
+          "latency_ms": 5659.349292007391,
+          "cost_usd": 0.00034544999999999997,
+          "tokens": {
+            "prompt": 1167,
+            "completion": 284
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q36",
+          "latency_ms": 4860.12529200525,
+          "cost_usd": 0.00033584999999999995,
+          "tokens": {
+            "prompt": 991,
+            "completion": 312
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q37",
+          "latency_ms": 5563.716165997903,
+          "cost_usd": 0.00037769999999999997,
+          "tokens": {
+            "prompt": 1306,
+            "completion": 303
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q38",
+          "latency_ms": 6732.256249990314,
+          "cost_usd": 0.00040485,
+          "tokens": {
+            "prompt": 1327,
+            "completion": 343
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q39",
+          "latency_ms": 7246.024167005089,
+          "cost_usd": 0.0005475,
+          "tokens": {
+            "prompt": 1566,
+            "completion": 521
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q40",
+          "latency_ms": 5609.409875003621,
+          "cost_usd": 0.00035804999999999995,
+          "tokens": {
+            "prompt": 1143,
+            "completion": 311
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q41",
+          "latency_ms": 5485.7683750014985,
+          "cost_usd": 0.0005202,
+          "tokens": {
+            "prompt": 2068,
+            "completion": 350
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q42",
+          "latency_ms": 7549.463916991954,
+          "cost_usd": 0.0005448,
+          "tokens": {
+            "prompt": 1752,
+            "completion": 470
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q43",
+          "latency_ms": 5571.545375001733,
+          "cost_usd": 0.00032189999999999996,
+          "tokens": {
+            "prompt": 1198,
+            "completion": 237
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q44",
+          "latency_ms": 1144.0647080016788,
+          "cost_usd": 4.499999999999999e-05,
+          "tokens": {
+            "prompt": 92,
+            "completion": 52
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 1
+          },
+          "stages": [
+            "chat"
+          ]
+        },
+        {
+          "id": "Q45",
+          "latency_ms": 1701.914916993701,
+          "cost_usd": 7.739999999999998e-05,
+          "tokens": {
+            "prompt": 100,
+            "completion": 104
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 1
+          },
+          "stages": [
+            "chat"
+          ]
+        },
+        {
+          "id": "Q46",
+          "latency_ms": 1367.358667004737,
+          "cost_usd": 3.81e-05,
+          "tokens": {
+            "prompt": 90,
+            "completion": 41
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 1
+          },
+          "stages": [
+            "chat"
+          ]
+        },
+        {
+          "id": "Q47",
+          "latency_ms": 1556.5237919945503,
+          "cost_usd": 7.979999999999999e-05,
+          "tokens": {
+            "prompt": 96,
+            "completion": 109
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 1
+          },
+          "stages": [
+            "chat"
+          ]
+        },
+        {
+          "id": "Q48",
+          "latency_ms": 6678.977417002898,
+          "cost_usd": 0.00043305,
+          "tokens": {
+            "prompt": 1319,
+            "completion": 392
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q49",
+          "latency_ms": 7592.908374994295,
+          "cost_usd": 0.00050295,
+          "tokens": {
+            "prompt": 1537,
+            "completion": 454
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q50",
+          "latency_ms": 5096.487500006333,
+          "cost_usd": 0.0003763499999999999,
+          "tokens": {
+            "prompt": 1313,
+            "completion": 299
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q51",
+          "latency_ms": 7246.929458997329,
+          "cost_usd": 0.0005759999999999999,
+          "tokens": {
+            "prompt": 2072,
+            "completion": 442
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "analyze",
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q52",
+          "latency_ms": 6245.709542010445,
+          "cost_usd": 0.00048629999999999995,
+          "tokens": {
+            "prompt": 1638,
+            "completion": 401
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q53",
+          "latency_ms": 6868.104165987461,
+          "cost_usd": 0.00060585,
+          "tokens": {
+            "prompt": 2071,
+            "completion": 492
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q54",
+          "latency_ms": 5134.777250001207,
+          "cost_usd": 0.00034724999999999996,
+          "tokens": {
+            "prompt": 1007,
+            "completion": 327
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q55",
+          "latency_ms": 5061.563832990942,
+          "cost_usd": 0.0003522,
+          "tokens": {
+            "prompt": 1008,
+            "completion": 335
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q56",
+          "latency_ms": 889.6388330031186,
+          "cost_usd": 3.615e-05,
+          "tokens": {
+            "prompt": 97,
+            "completion": 36
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 1
+          },
+          "stages": [
+            "chat"
+          ]
+        },
+        {
+          "id": "Q57",
+          "latency_ms": 6086.228582993499,
+          "cost_usd": 0.0005401499999999999,
+          "tokens": {
+            "prompt": 1853,
+            "completion": 437
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q58",
+          "latency_ms": 5451.645416003885,
+          "cost_usd": 0.00035654999999999997,
+          "tokens": {
+            "prompt": 981,
+            "completion": 349
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        },
+        {
+          "id": "Q59",
+          "latency_ms": 943.2375000033062,
+          "cost_usd": 2.6999999999999996e-05,
+          "tokens": {
+            "prompt": 88,
+            "completion": 23
+          },
+          "cache": {
+            "lookups": 1,
+            "hits": 1
+          },
+          "stages": [
+            "chat"
+          ]
+        },
+        {
+          "id": "Q60",
+          "latency_ms": 4748.462582996581,
+          "cost_usd": 0.00034964999999999996,
+          "tokens": {
+            "prompt": 983,
+            "completion": 337
+          },
+          "cache": {
+            "lookups": 3,
+            "hits": 3
+          },
+          "stages": [
+            "write#1",
+            "judge"
+          ]
+        }
+      ]
+    }
+  ]
+}
