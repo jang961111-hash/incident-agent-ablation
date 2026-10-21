@@ -335,7 +335,7 @@ if (D.cache) {
   T(s, [
     { text: "반복 질문 캐시 (같은 60건 2회, 실제 API)", options: { bold: true, color: HEX.dk2, breakLine: true } },
     { text: `2회차 적중 ${c2.cache_hits}/${c2.cache_lookups}, 지연 p50 ${sec(c1.latency_p50_ms)} → ${sec(c2.latency_p50_ms)}`, options: { fontSize: 16, bold: true, color: HEX.accent6, breakLine: true } },
-    { text: "route·plan·임베딩만 캐시. 이 단계는 비용의 약 8%라 비용 효과는 작다. 모니터링·답변은 캐시하지 않음.", options: { fontSize: 12 } },
+    { text: `route·plan·임베딩만 캐시 (final 비용의 ${pct(D.cacheable_share_final)}). 2회차 비용 ${usd(c1.cost_usd)} → ${usd(c2.cost_usd)}. 모니터링·답변은 캐시하지 않음.`, options: { fontSize: 12 } },
   ], { x: 7.4, y: 4.0, w: 5.1, h: 1.7, fontSize: 14, valign: "top" });
 }
 src(s, "동시성·장애 주입은 공용 키 한도 소진 뒤 API 없이 측정 (results/concurrency_bench_simulated_latest.json · fault_bench_fake_latest.json). 캐시는 실제 API (cache_bench_latest.json)", 6.1);

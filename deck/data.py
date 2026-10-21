@@ -38,6 +38,16 @@ except Exception as e:
     out["claude_agreement"] = {"error": str(e)}
 out["calibrate"] = (load(R / "calibrate_rag.json") or {}).get("best")
 out["cache"] = load(R / "cache_bench_latest.json")
+# 캐시 대상 단계(route·plan·임베딩)가 final cold 비용에서 차지하는 비중 — 캐시 비용 절감의 상한
+_P = {"gpt-4o-mini": (0.00015, 0.0006), "gpt-4o": (0.0025, 0.01), "text-embedding-3-small": (0.00002, 0)}
+_tot = _cache = 0.0
+for _r in load(R / "final_latest.json")["rows"]:
+    for _c in _r.get("llm_calls", []):
+        _v = _c["prompt"] / 1000 * _P[_c["model"]][0] + _c["completion"] / 1000 * _P[_c["model"]][1]
+        _tot += _v
+        if _c["stage"].split("#")[0] in ("route", "plan", "embed"):
+            _cache += _v
+out["cacheable_share_final"] = _cache / _tot if _tot else None
 out["concurrency"] = load(R / "concurrency_bench_latest.json") or load(R / "concurrency_bench_simulated_latest.json")
 fault = load(R / "fault_bench_latest.json") or load(R / "fault_bench_fake_latest.json")
 if fault:   # 행 본문은 빼고 요약만
