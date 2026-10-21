@@ -52,7 +52,7 @@ class JudgeResult:
     verdicts: dict = field(default_factory=dict)   # metric -> "Pass"|"Fail"
     reasons: dict = field(default_factory=dict)    # metric -> str
     score: float = 0.0                             # 통과 비율 0.0~1.0
-    passed: bool = False                           # score >= threshold
+    passed: bool | None = None                     # score >= threshold, 판정 불가면 None
     raw: str = ""
 
     def as_dict(self):
@@ -78,10 +78,10 @@ class Judge:
             # 조용히 0점을 주면 Judge 오류가 모델 성능 저하로 오인된다.
             res.verdicts = {m: "ParseError" for m in METRICS}
             res.score = float("nan")
-            return res
+            return res   # passed=None → 통과율 분모에서 빠진다
 
         for m in METRICS:
-            item = data.get(m, {})
+            item = data.get(m) if isinstance(data.get(m), dict) else {}
             res.verdicts[m] = item.get("verdict", "Fail")
             res.reasons[m] = item.get("reason", "")
         n_pass = sum(1 for m in METRICS if res.verdicts[m] == "Pass")

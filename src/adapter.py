@@ -47,6 +47,9 @@ from ext.rag import LocalNgramEmbedder, OpenAIEmbedder, RunbookRetriever  # noqa
 RUNBOOK_DIR = SRC / "data" / "runbooks"
 CACHE_DIR = ROOT / ".cache"
 NO_CONTEXT = "(수집된 근거 없음 — chat 경로로 답변)"
+# 질의 1건의 절대 상한. Judge 가드(2회·120초)는 Judge 호출 사이에서만 검사되므로,
+# API 지연이 길어지는 경우까지 막는 바깥 울타리다. 넘으면 오류로 기록한다.
+HARD_TIMEOUT_S = 300
 
 # 구성 이름별로 프로세스 수명 동안 유지 (cost.cache 가 켜진 구성만 사용)
 _CACHES: dict[str, QueryCache] = {}
@@ -106,11 +109,13 @@ def _retrieved(result: dict) -> list[str]:
 
 
 async def _run(query: str, cfg: dict) -> dict:
-    meter = start_meter()
     mcp = MCPClient()
     await mcp.start()
     try:
         deps = _build_deps(cfg, mcp)
+        if deps.retriever is not None:
+            deps.retriever._index()   # 런북 색인은 1회성 비용 — 질의 계측 전에 만든다
+        meter = start_meter()
         graph = build_graph(deps) if _is_base(cfg) else build_graph_ext(deps)
         state = {"query": query, "thread_id": f"eval-{uuid.uuid4().hex[:8]}", "history": [],
                  "events": [], "cost_usd": 0.0, "started_at": time.monotonic()}
@@ -124,7 +129,7 @@ async def _run(query: str, cfg: dict) -> dict:
             return res, (str(rt.id) if rt else None)
 
         t0 = time.perf_counter()
-        result, run_id = await invoke(query)
+        result, run_id = await asyncio.wait_for(invoke(query), timeout=HARD_TIMEOUT_S)
         latency_ms = (time.perf_counter() - t0) * 1000
     finally:
         await mcp.stop()

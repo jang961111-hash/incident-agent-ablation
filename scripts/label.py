@@ -10,6 +10,7 @@
 입력: p = Pass, f = Fail, s = 건너뜀, q = 저장 후 종료
 결과는 eval/queries.yaml 의 해당 id human_label: 줄에 바로 기록된다.
 """
+import hashlib
 import json
 import re
 import sys
@@ -19,11 +20,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 QY = ROOT / "eval" / "queries.yaml"
 BASE = ROOT / "results" / "base_latest.json"
+META = ROOT / "eval" / "labels_meta.json"   # 라벨을 매긴 답변의 해시 — base 재실행 시 불일치 경고용
+
+
+def answer_hash(answer: str) -> str:
+    return hashlib.sha1(answer.encode()).hexdigest()[:12]
 
 
 def set_label(text: str, qid: str, label: str) -> str:
     """'- id: Qxx' 블록 안의 첫 human_label 줄만 바꾼다. 다른 서식·주석은 그대로 둔다."""
-    pat = re.compile(rf"(- id: {qid}\n(?:(?!\s*- id:).*\n)*?\s*human_label:)\s*\S+")
+    pat = re.compile(rf"(- id: {re.escape(qid)}\n(?:(?!\s*- id:).*\n)*?[^\S\n]*human_label:)[^\S\n]*\S*")
     new, n = pat.subn(rf"\1 {label}", text, count=1)
     if n != 1:
         raise SystemExit(f"{qid} 의 human_label 줄을 찾지 못함")
@@ -68,6 +74,9 @@ def main():
             continue
         text = set_label(text, r["id"], "Pass" if k == "p" else "Fail")
         QY.write_text(text)   # 매 건 저장 — 중간에 끊겨도 잃지 않는다
+        meta = json.loads(META.read_text()) if META.exists() else {}
+        meta[r["id"]] = answer_hash(r["answer"])
+        META.write_text(json.dumps(meta, indent=1, sort_keys=True))
     done = sum(1 for q in yaml.safe_load(QY.read_text())["queries"]
                if q.get("human_label") in ("Pass", "Fail"))
     print(f"\n라벨 완료 {done}/{len(queries)}건. 일치율: .venv/bin/python -m eval.report")

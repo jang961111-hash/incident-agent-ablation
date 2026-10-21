@@ -29,8 +29,13 @@ ROWS = [
     ("pass_rate",              "통과율 (3/4 이상)", "pct"),
     ("__r", "검색 품질 (gold 있는 18건)", None),
     ("recall@1",               "Recall@1",          "pct"),
-    ("recall@3",               "Recall@3",          "pct"),
+    ("recall@3",               "Recall@3 *",        "pct"),
     ("mrr",                    "MRR",               "f3"),
+    ("fed_recall",             "투입 런북 재현율",  "pct"),
+    ("fed_precision",          "투입 런북 정밀도",  "pct"),
+    ("fed_count_mean",         "투입 런북 수(평균)", "f2"),
+    ("recall@1|incident",      "Recall@1 (장애 경로만)", "pct"),
+    ("n_retrieval_incident",   "  └ 장애 경로 건수", "f0"),
     ("__o", "운영", None),
     ("latency_p50_ms",         "지연 p50 (ms)",     "f0"),
     ("latency_p95_ms",         "지연 p95 (ms)",     "f0"),
@@ -39,16 +44,29 @@ ROWS = [
     ("tokens_completion",      "출력 토큰",         "f0"),
     ("cost_usd_total",         "추정 비용 (USD)",   "f4"),
     ("errors",                 "실행 오류",         "f0"),
+    ("n_judged",               "평가 Judge 판정 건수", "f0"),
 ]
 
-FMT = {"pct": lambda v: f"{v:.0%}", "f3": lambda v: f"{v:.3f}",
+FMT = {"pct": lambda v: f"{v:.0%}", "f3": lambda v: f"{v:.3f}", "f2": lambda v: f"{v:.2f}",
        "f0": lambda v: f"{v:,.0f}", "f4": lambda v: f"{v:.4f}"}
-DELTA = {"pct": lambda v: f"{v * 100:+.0f}%p", "f3": lambda v: f"{v:+.3f}",
+DELTA = {"pct": lambda v: f"{v * 100:+.0f}%p", "f3": lambda v: f"{v:+.3f}", "f2": lambda v: f"{v:+.2f}",
          "f0": lambda v: f"{v:+,.0f}", "f4": lambda v: f"{v:+.4f}"}
 
 
 def is_num(v) -> bool:
     return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v
+
+
+def stale_labels() -> list[str]:
+    """라벨을 매긴 뒤 base 를 다시 돌려 답변이 바뀐 건. 이 건의 라벨은 새 답변에 맞지 않는다."""
+    import hashlib
+    meta_p, base_p = ROOT / "eval" / "labels_meta.json", RESULTS / "base_latest.json"
+    if not (meta_p.exists() and base_p.exists()):
+        return []
+    meta = json.loads(meta_p.read_text())
+    rows = {r["id"]: r for r in json.loads(base_p.read_text())["rows"] if "answer" in r}
+    return [qid for qid, h in meta.items()
+            if qid in rows and hashlib.sha1(rows[qid]["answer"].encode()).hexdigest()[:12] != h]
 
 
 def judge_agreement() -> tuple[float | None, int, list[str]]:
@@ -110,6 +128,10 @@ def main():
     n = next(iter(found.values())).get("n")
     agree, n_lab, miss = judge_agreement()
     print(f"\n평가셋 {n}건. 비용은 OpenAI 공개 단가 × 실측 토큰으로 낸 추정치.")
+    print("* base 는 런북을 1개만 고르므로 base 의 Recall@3 = Recall@1. 공정 비교는 '투입 런북' 행으로 본다.")
+    stale = stale_labels()
+    if stale:
+        print(f"경고: 라벨 이후 base 답변이 바뀐 건 {stale} — 이 건의 일치율은 신뢰할 수 없음.")
     if agree is None:
         print("사람 라벨 미입력 — Judge 일치율 미산출. 품질 수치는 Judge 오차를 모른 채 읽어야 함.")
     else:

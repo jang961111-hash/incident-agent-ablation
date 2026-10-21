@@ -77,6 +77,9 @@ class LocalNgramEmbedder:
         return out
 
 
+_INDEX: dict[str, list[list[float]]] = {}   # 임베더 이름 → 런북 벡터 (프로세스당 1회)
+
+
 class RunbookRetriever:
     def __init__(self, runbook_dir: Path, embedder, cache: QueryCache | None = None):
         self.embedder = embedder
@@ -87,8 +90,12 @@ class RunbookRetriever:
         self._vecs = None
 
     def _index(self) -> list[list[float]]:
+        """색인 비용은 질의별 비용이 아니므로 adapter 가 Meter 시작 전에 미리 부른다."""
         if self._vecs is None:
-            self._vecs = self.embedder.embed([self.docs[i] for i in self.ids], persist=True)
+            key = self.embedder.name
+            if key not in _INDEX:
+                _INDEX[key] = self.embedder.embed([self.docs[i] for i in self.ids], persist=True)
+            self._vecs = _INDEX[key]
         return self._vecs
 
     def rank(self, query: str, top_k: int) -> list[tuple[str, float]]:

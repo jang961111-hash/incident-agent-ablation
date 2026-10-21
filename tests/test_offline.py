@@ -79,3 +79,33 @@ def test_label_writer_only_touches_target(tmp_path):
     changed = [(a, b) for a, b in zip(text.splitlines(), new.splitlines()) if a != b]
     assert len(changed) == 1 and re.search(r"human_label: Pass", changed[0][1])
     assert yaml.safe_load(new)["queries"][4]["human_label"] == "Pass"
+
+
+def test_label_writer_blank_value_does_not_eat_next_line():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("label", ROOT / "scripts" / "label.py")
+    label = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(label)
+    text = "queries:\n  - id: Q01\n    human_label:\n    note: keep\n  - id: Q02\n    human_label: null\n"
+    new = label.set_label(text, "Q01", "Fail")
+    assert "    human_label: Fail\n    note: keep\n" in new
+    assert new.endswith("human_label: null\n")
+
+
+def test_summary_metrics_shape():
+    from eval.run_ablation import build_summary
+    rows = [{"id": "Q1", "category": "normal", "route": "incident", "judge_passed": True,
+             "judge_score": 1.0, **{f"judge_{m}": "Pass" for m in
+             ("relevance", "completeness", "domain_appropriateness", "clarity")},
+             "latency_ms": 100.0, "rewrites": 0, "cost_usd": 0.01,
+             "tokens": {"prompt": 10, "completion": 5}, "cache": {}},
+            {"id": "Q2", "category": "normal", "route": "chat", "judge_passed": None,
+             "judge_score": float("nan"), "latency_ms": 300.0, "rewrites": 0,
+             "cost_usd": 0.0, "tokens": {}, "cache": {}}]
+    rec = [{"retrieved": ["a"], "gold": ["a"], "fed": ["a"], "route": "incident"},
+           {"retrieved": [], "gold": ["b"], "fed": [], "route": "chat"}]
+    s = build_summary("t", rows, rec)
+    assert s["n_judged"] == 1 and s["pass_rate"] == 1.0        # 판정 불가 건은 분모에서 제외
+    assert s["latency_p50_ms"] == 200.0
+    assert s["recall@1"] == 0.5 and s["recall@1|incident"] == 1.0
+    assert s["fed_recall"] == 0.5 and s["fed_precision"] == 1.0

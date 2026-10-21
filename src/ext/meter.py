@@ -80,12 +80,23 @@ def stage(name: str):
         _stage.reset(token)
 
 
+RETRY_LOG: list[dict] = []   # 재시도 발생 기록 — 지연 p95 해석용
+
+
 def post_with_retry(url: str, payload: dict, api_key: str, tries: int = 4) -> dict:
-    """429/5xx 만 지수 백오프로 재시도. 그 외 오류는 바로 올린다."""
+    """429/5xx·타임아웃·연결 오류만 지수 백오프로 재시도. 4xx 등은 바로 올린다."""
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     for i in range(tries):
-        resp = httpx.post(url, json=payload, headers=headers, timeout=120.0)
-        if resp.status_code in (429, 500, 502, 503) and i < tries - 1:
+        try:
+            resp = httpx.post(url, json=payload, headers=headers, timeout=60.0)
+        except (httpx.TimeoutException, httpx.TransportError) as e:
+            if i == tries - 1:
+                raise
+            RETRY_LOG.append({"reason": type(e).__name__, "try": i + 1})
+            time.sleep(2 ** i)
+            continue
+        if resp.status_code in (429, 500, 502, 503, 504) and i < tries - 1:
+            RETRY_LOG.append({"reason": resp.status_code, "try": i + 1})
             time.sleep(2 ** i)
             continue
         resp.raise_for_status()
