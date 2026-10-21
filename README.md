@@ -87,7 +87,7 @@ AI Agent Mini-Project 선택과제 1 (Base AI Agent 개선) · 2026-10-22
 ### 3.1 아키텍처 흐름도 — 파란 노드가 교체한 곳
 
 ```mermaid
-flowchart LR
+flowchart TD
     Q([당직자 질문]) --> route
     route -->|잡담| chat[chat_answer] --> E1([응답])
     route -->|장애| plan --> gate --> research
