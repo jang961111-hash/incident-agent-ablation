@@ -27,6 +27,9 @@ ROWS = [
     ("domain_appropriateness", "도메인 적합성",     "pct"),
     ("clarity",                "명확성",            "pct"),
     ("pass_rate",              "통과율 (3/4 이상)", "pct"),
+    ("__d", "답변 품질 (결정적, Judge 무관 — must_include 13건)", None),
+    ("must_phrase_rate",       "런북 핵심 어구 포함률", "pct"),
+    ("must_all_rate",          "어구 전부 포함 비율", "pct"),
     ("__r", "검색 품질 (gold 있는 18건)", None),
     ("recall@1",               "Recall@1",          "pct"),
     ("recall@3",               "Recall@3 *",        "pct"),
@@ -98,6 +101,10 @@ def main():
     if not found:
         print("results/ 에 결과가 없습니다. 먼저 run_ablation 을 실행하세요.")
         return
+    from eval.answer_metrics import load_all
+    for nm, m in load_all().items():   # 저장된 답변에서 계산하는 결정적 지표를 합친다
+        if nm in found:
+            found[nm].update({k: v for k, v in m.items() if k != "per_query"})
 
     cols = list(found)
     table = []

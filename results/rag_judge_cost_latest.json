@@ -1,0 +1,4561 @@
+{
+  "config": {
+    "name": "rag_judge_cost",
+    "description": "위에 비용 최적화 추가 — 1차 초안 저가 모델(반려 시에만 gpt-4o 재작성) + 질의 캐시. 최종 After.",
+    "backend": "openai",
+    "runbook_selection": "rag",
+    "validator": "judge",
+    "cost": {
+      "model_tiering": true,
+      "cache": true,
+      "cache_ttl": 600
+    },
+    "models": {
+      "fast": "gpt-4o-mini",
+      "quality": "gpt-4o",
+      "cascade_writer": "gpt-4o-mini",
+      "judge": "gpt-4o-mini"
+    },
+    "rag": {
+      "top_k": 3,
+      "margin": 0.05,
+      "embedding": "text-embedding-3-small"
+    },
+    "judge": {
+      "threshold": 0.75,
+      "max_retries": 2,
+      "max_seconds": 120
+    }
+  },
+  "summary": {
+    "config": "rag_judge_cost",
+    "n": 24,
+    "errors": 0,
+    "n_judged": 24,
+    "relevance": 0.9583333333333334,
+    "completeness": 1.0,
+    "domain_appropriateness": 0.875,
+    "clarity": 0.9583333333333334,
+    "judge_mean": 0.9479166666666666,
+    "pass_rate": 0.9583333333333334,
+    "latency_p50_ms": 7228.968582996458,
+    "latency_p95_ms": 11738.585025000064,
+    "rewrites_total": 3,
+    "cost_usd_total": 0.026433919999999996,
+    "tokens_prompt": 44851,
+    "tokens_completion": 9222,
+    "cache_hits": 0,
+    "cache_lookups": 64,
+    "routed_incident": 20,
+    "pass_rate[ambiguous]": 1.0,
+    "pass_rate[composite]": 1.0,
+    "pass_rate[constrained]": 1.0,
+    "pass_rate[normal]": 1.0,
+    "pass_rate[unregistered]": 0.6666666666666666,
+    "n_retrieval": 18,
+    "recall@1": 0.7222222222222222,
+    "hit@1": 0.7777777777777778,
+    "recall@3": 0.8055555555555556,
+    "hit@3": 0.8333333333333334,
+    "mrr": 0.8055555555555556,
+    "n_retrieval_incident": 15,
+    "recall@1|incident": 0.8666666666666667,
+    "hit@1|incident": 0.9333333333333333,
+    "recall@3|incident": 0.9666666666666667,
+    "hit@3|incident": 1.0,
+    "mrr|incident": 0.9666666666666667,
+    "fed_recall": 0.7777777777777778,
+    "fed_precision": 0.7777777777777778,
+    "fed_count_mean": 1.3333333333333333,
+    "eval_judge_model": "gpt-4o"
+  },
+  "rows": [
+    {
+      "id": "Q01",
+      "category": "normal",
+      "query": "DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.",
+      "answer": "1) 모니터링 알람으로 장애를 즉시 인지한다. 현재 상태 확인 결과, auth-service의 상태는 degraded이며, CPU 사용률은 75.8%, 메모리 사용률은 59.9%로 나타났다. 알림은 2건 발생하였고, 내용은 'p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'이다.  \n2) 커넥션 풀과 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환한다.  \n3) 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화한다.  ",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 75.8%, 메모리 59.9%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: DB Down 대응 절차\n\n1. 모니터링 알람으로 장애를 즉시 인지한다 (get_monitoring_status로 현재 상태 확인).\n2. 커넥션 풀/리플리케이션 상태를 점검하고 필요 시 failover 노드로 전환한다.\n3. 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화한다.\n- runbook 발췌:\n# Runbook: 디스크 용량 부족 대응 절차\n\n1. get_monitoring_status와 서버 디스크 사용률을 확인해 임계 수준(90% 이상)인지 판단한다.\n2. 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다.\n3. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축한다.\n4. 임시 조치로도 부족하면 볼륨을 확장하거나 추가 스토리지를 연결한다.\n5. 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토해 조기에 감지되도록 조정한다.",
+      "route": "incident",
+      "retrieved": [
+        "db-down",
+        "disk-full",
+        "memory-leak"
+      ],
+      "fed_runbooks": [
+        "db-down",
+        "disk-full"
+      ],
+      "gold": [
+        "db-down"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "DB 프라이머리 다운에 대한 대응 절차를 정확히 설명했다.",
+        "completeness": "Context에 있는 DB Down 대응 절차를 모두 포함했다.",
+        "domain_appropriateness": "DB Down 대응 절차에 맞는 조치를 설명했다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 DB 프라이머리 다운에 대한 대응 절차를 제공하고 있으며, 요청된 시스템에 대한 정보도 포함하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 모두 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 DB Down 대응 절차를 정확히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 6739.636375001282,
+      "tokens": {
+        "prompt": 1642,
+        "completion": 339
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1613,
+          "completion": 339,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 29,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00044593,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 138,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 301,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 29,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 432,
+          "completion": 150
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 742,
+          "completion": 142
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1"
+          ],
+          "target": [
+            "db-down",
+            "disk-full"
+          ],
+          "ranking": [
+            [
+              "db-down",
+              0.3838
+            ],
+            [
+              "disk-full",
+              0.3537
+            ],
+            [
+              "memory-leak",
+              0.3236
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "db-down",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "disk-full",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 288,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c1e-d9a8-7b46-bd11-17be72abff22"
+    },
+    {
+      "id": "Q02",
+      "category": "normal",
+      "query": "auth-service DB 커넥션이 다 끊겼고 DB 프라이머리가 응답이 없습니다. 어떻게 복구하죠?",
+      "answer": "1) 모니터링 알람으로 장애를 즉시 인지하였습니다. 현재 auth-service 상태는 degraded이며, CPU 사용률은 81.7%, 메모리 사용률은 62.9%입니다. 알림은 2건 발생하였습니다: ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'].\n\n2) 커넥션 풀과 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환합니다.\n\n3) 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 81.7%, 메모리 62.9%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: DB Down 대응 절차\n\n1. 모니터링 알람으로 장애를 즉시 인지한다 (get_monitoring_status로 현재 상태 확인).\n2. 커넥션 풀/리플리케이션 상태를 점검하고 필요 시 failover 노드로 전환한다.\n3. 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화한다.",
+      "route": "incident",
+      "retrieved": [
+        "db-down",
+        "disk-full",
+        "network-timeout"
+      ],
+      "fed_runbooks": [
+        "db-down"
+      ],
+      "gold": [
+        "db-down"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에서 묻는 DB 프라이머리 응답 문제에 대한 복구 절차를 설명하고 있습니다.",
+        "completeness": "Context에 있는 필수 정보인 모니터링 상태와 대응 절차가 모두 답변에 포함되어 있습니다.",
+        "domain_appropriateness": "DB Down 대응 절차에 맞는 조치가 답변에 반영되었습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되어 있습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 DB 커넥션 문제에 대한 복구 절차를 포함하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 모두 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 Context의 런북 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식과 길이에 맞추어 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 6883.576124993851,
+      "tokens": {
+        "prompt": 1360,
+        "completion": 326
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1313,
+          "completion": 326,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 47,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00039349,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 151,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 327,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 47,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 269,
+          "completion": 137
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 566,
+          "completion": 142
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "db-down"
+          ],
+          "ranking": [
+            [
+              "db-down",
+              0.3794
+            ],
+            [
+              "disk-full",
+              0.269
+            ],
+            [
+              "network-timeout",
+              0.265
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "db-down",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 273,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c1f-005f-763f-bf07-de7c72a2efc8"
+    },
+    {
+      "id": "Q03",
+      "category": "normal",
+      "query": "auth-service 응답이 느립니다. p95 지연이 2초를 넘는데 어떻게 대응해야 하나요?",
+      "answer": "1) 현재 auth-service의 p95 지연시간은 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률은 92%로 확인되었습니다.  \n2) 커넥션 풀 사용률이 90%를 초과하므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.  \n3) 5분 내에 p95 지연이 임계치 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산해야 합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 80.9%, 메모리 62.4%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.",
+      "route": "incident",
+      "retrieved": [
+        "high-latency",
+        "network-timeout",
+        "db-down"
+      ],
+      "fed_runbooks": [
+        "high-latency"
+      ],
+      "gold": [
+        "high-latency"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "The answer directly addresses the issue of high latency in auth-service as mentioned in the query.",
+        "completeness": "The answer includes all necessary information from the context, such as p95 latency, connection pool usage, and relevant steps from the runbook.",
+        "domain_appropriateness": "The answer follows the domain-specific procedures outlined in the runbook for handling high latency issues.",
+        "clarity": "The answer is logically structured and clearly presents the steps to address the latency issue."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 auth-service의 응답 지연 문제에 대한 적절한 대응 방법을 제시하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실인 p95 지연시간과 커넥션 풀 사용률을 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 조치 및 절차를 적절히 반영하여 auth-service의 응답 지연 문제에 대한 대응을 설명하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있으며, 각 단계가 명확하게 전달되고 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 6764.873709005769,
+      "tokens": {
+        "prompt": 1552,
+        "completion": 363
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1507,
+          "completion": 363,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 45,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00044475,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 147,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 319,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 45,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 372,
+          "completion": 137
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 669,
+          "completion": 179
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "high-latency"
+          ],
+          "ranking": [
+            [
+              "high-latency",
+              0.5336
+            ],
+            [
+              "network-timeout",
+              0.3641
+            ],
+            [
+              "db-down",
+              0.3224
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 218,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c1f-286e-7fb4-b27b-cad7337a8f6e"
+    },
+    {
+      "id": "Q04",
+      "category": "normal",
+      "query": "로그인할 때 화면이 한참 걸린다는 문의가 계속 들어옵니다. 지연 원인 확인 순서를 알려주세요.",
+      "answer": "1) auth-service의 모니터링 상태를 확인한 결과, 상태는 degraded이며 CPU 사용률은 82.3%, 메모리 사용률은 63.2%로 나타났습니다. 또한, p95 지연시간은 2.4초로 임계치인 1.0초를 초과하였고, 커넥션 풀 사용률은 92%로 확인되었습니다.\n\n2) 커넥션 풀 사용률이 90%를 초과하므로, 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 지연이 특정 리전이나 인스턴스에 집중되어 있는지 확인하고, 해당 인스턴스를 로드밸런서에서 일시 제외하는 조치를 취해야 합니다. 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산해야 합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 82.3%, 메모리 63.2%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n- runbook 발췌:\n# Runbook: 네트워크 타임아웃 대응 절차\n\n1. get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.\n2. DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.\n3. 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.\n4. 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.\n5. 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다.\n- runbook 발췌:\n# Runbook: DB Down 대응 절차\n\n1. 모니터링 알람으로 장애를 즉시 인지한다 (get_monitoring_status로 현재 상태 확인).\n2. 커넥션 풀/리플리케이션 상태를 점검하고 필요 시 failover 노드로 전환한다.\n3. 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화한다.",
+      "route": "incident",
+      "retrieved": [
+        "high-latency",
+        "network-timeout",
+        "db-down"
+      ],
+      "fed_runbooks": [
+        "high-latency",
+        "network-timeout",
+        "db-down"
+      ],
+      "gold": [
+        "high-latency"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에 대한 지연 원인 확인 순서를 적절히 설명했습니다.",
+        "completeness": "Context에 있는 필수 정보를 모두 포함하여 답변했습니다.",
+        "domain_appropriateness": "응답 지연 대응 절차에 맞는 조치를 설명했습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자의 요청에 대해 로그인 지연 원인 확인 절차를 설명하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7751.041249997797,
+      "tokens": {
+        "prompt": 2235,
+        "completion": 398
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 2188,
+          "completion": 398,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 47,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00056794,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 150,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 324,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 47,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 668,
+          "completion": 218
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 1046,
+          "completion": 133
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1",
+            "task-gap-runbook-2"
+          ],
+          "target": [
+            "high-latency",
+            "network-timeout",
+            "db-down"
+          ],
+          "ranking": [
+            [
+              "high-latency",
+              0.3248
+            ],
+            [
+              "network-timeout",
+              0.3041
+            ],
+            [
+              "db-down",
+              0.2991
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "network-timeout",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-2",
+          "source": "runbook",
+          "target": "db-down",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 361,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c1f-50bf-7a52-a496-9ea97c050999"
+    },
+    {
+      "id": "Q05",
+      "category": "normal",
+      "query": "log-service의 /var/log 디스크 사용률이 95%입니다. 지금 뭘 해야 하나요?",
+      "answer": "1) 모니터링 상태를 확인한 결과, log-service의 디스크 사용률이 95%로 임계 수준(90% 이상)을 초과하였습니다.  \n2) 안전하게 지울 수 있는 로그 파일, 임시 파일, 오래된 백업 등을 정리하여 여유 공간을 즉시 확보합니다.  \n3) 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축합니다.",
+      "context": "- 모니터링 log-service: 상태=degraded, CPU 22.9%, 메모리 36.5%, 알림 2건 ['disk usage 95% on /var/log', 'disk space low']\n- runbook 발췌:\n# Runbook: 디스크 용량 부족 대응 절차\n\n1. get_monitoring_status와 서버 디스크 사용률을 확인해 임계 수준(90% 이상)인지 판단한다.\n2. 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다.\n3. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축한다.\n4. 임시 조치로도 부족하면 볼륨을 확장하거나 추가 스토리지를 연결한다.\n5. 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토해 조기에 감지되도록 조정한다.",
+      "route": "incident",
+      "retrieved": [
+        "disk-full",
+        "db-down",
+        "network-timeout"
+      ],
+      "fed_runbooks": [
+        "disk-full"
+      ],
+      "gold": [
+        "disk-full"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에 대한 답변으로 log-service의 디스크 사용률 문제를 다루고 있습니다.",
+        "completeness": "Context에 있는 필수 정보가 답변에 모두 포함되어 있습니다.",
+        "domain_appropriateness": "Context의 도메인 조치 절차가 질문에 맞게 반영되었습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "사용자가 요청한 log-service의 디스크 사용률 문제에 대해 적절한 대응을 제시하였다.",
+            "completeness": "Context의 핵심 사실인 디스크 사용률과 상태를 포함하여 필요한 조치를 모두 언급하였다.",
+            "domain_appropriateness": "runbook의 조치 절차가 적절히 반영되어 있다.",
+            "clarity": "요청한 형식에 맞춰 논리적으로 정리된 답변이다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 6249.743666994618,
+      "tokens": {
+        "prompt": 1429,
+        "completion": 281
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1398,
+          "completion": 281,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 31,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00037892,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 146,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 317,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 31,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 335,
+          "completion": 105
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 600,
+          "completion": 129
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "log-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "log-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "disk-full"
+          ],
+          "ranking": [
+            [
+              "disk-full",
+              0.5775
+            ],
+            [
+              "db-down",
+              0.4382
+            ],
+            [
+              "network-timeout",
+              0.3973
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "disk-full",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 194,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c1f-7b7f-74be-9d2f-8f11a4b6c43f"
+    },
+    {
+      "id": "Q06",
+      "category": "normal",
+      "query": "서버 저장공간이 거의 꽉 찼다고 알람이 왔어요. 로그가 계속 쌓이는 것 같은데 급한 조치가 뭔가요?",
+      "answer": "1) 서버 디스크 사용률을 확인하여 임계 수준(90% 이상)인지 판단합니다.  \n2) 로그 파일, 임시 파일, 오래된 백업 등 안전하게 지울 수 있는 항목부터 정리하여 여유 공간을 즉시 확보합니다.  \n3) 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축합니다.  ",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 84.9%, 메모리 64.5%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 디스크 용량 부족 대응 절차\n\n1. get_monitoring_status와 서버 디스크 사용률을 확인해 임계 수준(90% 이상)인지 판단한다.\n2. 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다.\n3. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축한다.\n4. 임시 조치로도 부족하면 볼륨을 확장하거나 추가 스토리지를 연결한다.\n5. 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토해 조기에 감지되도록 조정한다.\n- runbook 발췌:\n# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.",
+      "route": "incident",
+      "retrieved": [
+        "disk-full",
+        "memory-leak",
+        "db-down"
+      ],
+      "fed_runbooks": [
+        "disk-full",
+        "memory-leak"
+      ],
+      "gold": [
+        "disk-full"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에서 묻는 서버 저장공간 문제에 대한 급한 조치를 정확히 답변했습니다.",
+        "completeness": "Context에 있는 디스크 용량 부족 대응 절차를 모두 포함했습니다.",
+        "domain_appropriateness": "디스크 용량 부족 대응 절차에 맞는 조치를 답변에 반영했습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 서버 저장공간 부족에 대한 조치를 요청한 사용자 질문에 적절하게 대응하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 Context의 런북 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식과 길이에 맞추어 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 6194.241707999026,
+      "tokens": {
+        "prompt": 1940,
+        "completion": 282
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1886,
+          "completion": 282,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 54,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00045317999999999986,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 160,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 344,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 54,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 564,
+          "completion": 94
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 818,
+          "completion": 141
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1"
+          ],
+          "target": [
+            "disk-full",
+            "memory-leak"
+          ],
+          "ranking": [
+            [
+              "disk-full",
+              0.3838
+            ],
+            [
+              "memory-leak",
+              0.3351
+            ],
+            [
+              "db-down",
+              0.2974
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "disk-full",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "memory-leak",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 172,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c1f-a0ac-743b-92d4-3af05928eea0"
+    },
+    {
+      "id": "Q07",
+      "category": "normal",
+      "query": "payments-service CPU가 91%입니다. 어떻게 대응하나요?",
+      "answer": "1) 모니터링 상태를 확인한 결과, payments-service의 CPU 사용률이 97.8%로 확인되었습니다. 알림으로는 'CPU 91% (threshold 80%)'와 'payments-service-3 instance responding slow'가 있습니다.  \n2) CPU 사용률이 90%를 넘고 지속되고 있으므로, 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산합니다.  \n3) 이후, 정상화된 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록합니다.",
+      "context": "- 모니터링 payments-service: 상태=degraded, CPU 97.8%, 메모리 58.4%, 알림 2건 ['CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow']\n- runbook 발췌:\n# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.",
+      "route": "incident",
+      "retrieved": [
+        "cpu-spike",
+        "high-latency",
+        "disk-full"
+      ],
+      "fed_runbooks": [
+        "cpu-spike",
+        "high-latency"
+      ],
+      "gold": [
+        "cpu-spike"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에 대한 답변으로 CPU 사용률 문제를 다루고 있습니다.",
+        "completeness": "Context에 있는 필수 정보와 절차가 답변에 포함되어 있습니다.",
+        "domain_appropriateness": "CPU 급증 대응 절차에 맞는 조치가 답변에 반영되었습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 0.75,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Fail",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 CPU 대응 방법에 대해 적절히 설명하고 있다.",
+            "completeness": "답변에서 CPU 사용률이 91%라는 요청의 핵심 사실이 누락되었고, 로그 확인 절차가 빠져 있다.",
+            "domain_appropriateness": "답변은 runbook의 CPU 급증 대응 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 논리적으로 정리되어 있으며, 형식과 길이 제약을 잘 지켰다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7302.130249998299,
+      "tokens": {
+        "prompt": 1802,
+        "completion": 328
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1780,
+          "completion": 328,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 22,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00046424,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 136,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 297,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 22,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 526,
+          "completion": 135
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 821,
+          "completion": 146
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "payments-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "payments-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1"
+          ],
+          "target": [
+            "cpu-spike",
+            "high-latency"
+          ],
+          "ranking": [
+            [
+              "cpu-spike",
+              0.481
+            ],
+            [
+              "high-latency",
+              0.4596
+            ],
+            [
+              "disk-full",
+              0.3667
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "cpu-spike",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 280,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 0.75,
+          "failed": [
+            "completeness"
+          ],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c1f-c8b9-7a70-b956-2986cb97f8e8"
+    },
+    {
+      "id": "Q08",
+      "category": "normal",
+      "query": "결제 서버 인스턴스 하나가 계속 버벅이고 CPU가 한계 근처에 붙어 있어요. 배포 직후부터 그런 것 같은데 어떻게 하죠?",
+      "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 CPU 사용률이 80.0%로 높은 상태이며, 메모리 사용률은 62.0%입니다. 또한, 알림이 2건 발생하였고, p95 지연시간이 2.4초로 설정된 임계치인 1.0초를 초과했습니다. 연결 풀 사용률은 92%입니다.\n\n2) 최근 배포 직후부터 문제가 발생한 것으로 보이며, 반복 호출이나 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그를 통해 확인할 필요가 있습니다.\n\n3) CPU 사용률이 90%를 넘고 지속될 경우, 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산해야 합니다. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석을 별도로 진행해야 합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 80.0%, 메모리 62.0%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.",
+      "route": "incident",
+      "retrieved": [
+        "cpu-spike",
+        "network-timeout",
+        "memory-leak"
+      ],
+      "fed_runbooks": [
+        "cpu-spike"
+      ],
+      "gold": [
+        "cpu-spike"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에 대한 답변으로, CPU 문제와 배포 직후 문제 발생을 언급하며 적절히 대응하고 있습니다.",
+        "completeness": "Context에 있는 필수 정보인 CPU 사용률, 메모리 사용률, 알림 등을 모두 포함하고 있습니다.",
+        "domain_appropriateness": "Context의 도메인 조치 절차에 따라 모니터링 상태 확인, 로그 분석, 오토스케일링, 롤백을 언급하고 있습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되어 있습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 결제 서버 인스턴스의 문제에 대해 적절히 대응하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 모두 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 논리적으로 정리되어 있으며, 형식과 길이 제약을 잘 지켰다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7124.694083002396,
+      "tokens": {
+        "prompt": 1649,
+        "completion": 401
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1583,
+          "completion": 401,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 66,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00047936999999999996,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 161,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 347,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 66,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 353,
+          "completion": 209
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 722,
+          "completion": 145
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "cpu-spike"
+          ],
+          "ranking": [
+            [
+              "cpu-spike",
+              0.4709
+            ],
+            [
+              "network-timeout",
+              0.42
+            ],
+            [
+              "memory-leak",
+              0.415
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "cpu-spike",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 371,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c1f-f427-7375-8e01-b28cf3f5fda5"
+    },
+    {
+      "id": "Q09",
+      "category": "normal",
+      "query": "cache-service 메모리가 6시간째 계속 올라가고 힙이 한계에 가깝습니다. 대응 절차를 알려주세요.",
+      "answer": "1) cache-service의 메모리 사용률이 88.6%로 OOM 직전 상태이므로, 해당 프로세스를 즉시 재시작하여 서비스 중단을 방지합니다. 이 재시작은 임시 조치임을 기록합니다.  \n2) get_monitoring_status를 통해 메모리 사용률 추세를 확인하여, 시간이 지남에 따라 꾸준히 증가하는지 점검합니다.  \n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이는지 확인하고, 최근 배포에서 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 등의 패턴이 있었는지 점검합니다.  ",
+      "context": "- 모니터링 cache-service: 상태=degraded, CPU 41.2%, 메모리 88.6%, 알림 2건 ['memory usage climbing steadily over 6h', 'heap near limit']\n- runbook 발췌:\n# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.",
+      "route": "incident",
+      "retrieved": [
+        "memory-leak",
+        "high-latency",
+        "network-timeout"
+      ],
+      "fed_runbooks": [
+        "memory-leak"
+      ],
+      "gold": [
+        "memory-leak"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에 명확히 답하고 있으며, cache-service에 대한 대응 절차를 설명하고 있습니다.",
+        "completeness": "Context에 있는 필수 정보와 절차가 답변에 모두 포함되어 있습니다.",
+        "domain_appropriateness": "Context의 메모리 누수 대응 절차에 맞는 조치가 답변에 반영되었습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되어 있습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 cache-service의 메모리 문제에 대한 대응 절차를 제공하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 논리적으로 정리되어 있으며, 형식과 길이 제약을 준수하고 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7019.5308750116965,
+      "tokens": {
+        "prompt": 1591,
+        "completion": 347
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1544,
+          "completion": 347,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 47,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00044073999999999996,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 153,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 331,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 47,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 371,
+          "completion": 158
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 689,
+          "completion": 142
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "cache-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "cache-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "memory-leak"
+          ],
+          "ranking": [
+            [
+              "memory-leak",
+              0.4886
+            ],
+            [
+              "high-latency",
+              0.3771
+            ],
+            [
+              "network-timeout",
+              0.3723
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "memory-leak",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 291,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c20-1dfb-71ec-8469-2157f7db2003"
+    },
+    {
+      "id": "Q10",
+      "category": "normal",
+      "query": "캐시 서버가 몇 시간째 메모리를 계속 먹고 있어서 곧 OOM 날 것 같아요. 일단 뭘 해야 하나요?",
+      "answer": "1) 현재 cache-service의 메모리 사용률이 88.0%로 OOM 직전 상태입니다. 즉시 해당 프로세스를 재시작하여 서비스 중단을 방지합니다. 이 재시작은 임시 조치임을 기록합니다.  \n2) 메모리 사용률 추세를 확인하기 위해 get_monitoring_status를 실행하여 메모리 사용이 꾸준히 증가하고 있는지 확인합니다.  \n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이는지 분석합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 80.4%, 메모리 62.2%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- 모니터링 cache-service: 상태=degraded, CPU 40.0%, 메모리 88.0%, 알림 2건 ['memory usage climbing steadily over 6h', 'heap near limit']\n- runbook 발췌:\n# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.\n- 패턴 분석: 특이 패턴 없음",
+      "route": "incident",
+      "retrieved": [
+        "memory-leak",
+        "disk-full",
+        "cpu-spike"
+      ],
+      "fed_runbooks": [
+        "memory-leak"
+      ],
+      "gold": [
+        "memory-leak"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에 대해 cache-service의 메모리 문제를 다루고 있으며, OOM 방지를 위한 조치를 설명하고 있다.",
+        "completeness": "Context에 있는 필수 정보인 메모리 사용률과 관련된 조치가 모두 포함되어 있다.",
+        "domain_appropriateness": "메모리 누수 대응 절차에 따라 적절한 조치를 제안하고 있다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되어 있다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 캐시 서버의 메모리 문제에 대한 적절한 조치를 제시하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식과 길이에 맞추어 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7564.859124991926,
+      "tokens": {
+        "prompt": 1846,
+        "completion": 349
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1796,
+          "completion": 349,
+          "calls": 5
+        },
+        "text-embedding-3-small": {
+          "prompt": 50,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00047979999999999995,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 154,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 333,
+          "completion": 73
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 50,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "analyze",
+          "prompt": 149,
+          "completion": 5
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 439,
+          "completion": 121
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 721,
+          "completion": 138
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 3,
+          "targets": [
+            "auth-service",
+            "cache-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-1",
+          "source": "monitoring",
+          "target": "cache-service",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "memory-leak"
+          ],
+          "ranking": [
+            [
+              "memory-leak",
+              0.4579
+            ],
+            [
+              "disk-full",
+              0.2922
+            ],
+            [
+              "cpu-spike",
+              0.2701
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "memory-leak",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisCompleted",
+          "length": 8
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 236,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c20-4774-750c-90d7-b352d20800ba"
+    },
+    {
+      "id": "Q11",
+      "category": "normal",
+      "query": "gateway-service에서 payments-service로 가는 호출이 504 타임아웃이고 패킷 손실도 있습니다. 확인 순서를 알려주세요.",
+      "answer": "1) **타임아웃 및 패킷 손실 확인**: `get_monitoring_status`를 사용하여 gateway-service에서 payments-service로의 호출에서 발생하는 타임아웃과 패킷 손실을 확인합니다. 현재 gateway-service에서 'upstream timeout to payments-service (504)'와 'network packet loss 3%' 알림이 발생하고 있습니다.\n\n2) **네트워크 설정 점검**: DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 등 최근 네트워크 설정 변경 사항이 있는지 점검합니다. 변경 사항이 발견되면 이를 복구하거나 조정합니다.\n\n3) **임시 라우팅 조정**: 특정 리전이나 가용영역에서만 문제가 발생하는 경우, 해당 구간을 우회하는 라우팅으로 임시 전환하여 문제를 완화합니다.\n\n4) **타임아웃 임계값 조정**: 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면, 임계값을 임시로 상향 조정하여 2차 피해를 줄입니다.\n\n5) **CPU 과부하 해결**: payments-service의 CPU 사용률이 89.6%로 높습니다. 커넥션 풀 사용률을 확인하고, 필요 시 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정합니다. 특정 인스턴스에 부하가 집중되면 해당 인스턴스를 로드밸런서에서 일시 제외합니다.\n\n6) **정상화 후 조치**: 문제가 해결되면 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토합니다. 느린 쿼리 로그를 분석하여 근본 원인을 문서화하고 후속 최적화 티켓을 등록합니다.",
+      "context": "- 모니터링 gateway-service: 상태=degraded, CPU 33.5%, 메모리 46.7%, 알림 2건 ['upstream timeout to payments-service (504)', 'network packet loss 3%']\n- 모니터링 payments-service: 상태=degraded, CPU 89.6%, 메모리 54.3%, 알림 2건 ['CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow']\n- runbook 발췌:\n# Runbook: 네트워크 타임아웃 대응 절차\n\n1. get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.\n2. DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.\n3. 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.\n4. 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.\n5. 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다.\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n- runbook 발췌:\n# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.\n- 패턴 분석: 공통 원인으로 네트워크 문제와 CPU 과부하가 의심되며, 두 서비스 모두 성능 저하를 겪고 있다.",
+      "route": "incident",
+      "retrieved": [
+        "network-timeout",
+        "high-latency",
+        "memory-leak"
+      ],
+      "fed_runbooks": [
+        "network-timeout",
+        "high-latency",
+        "memory-leak"
+      ],
+      "gold": [
+        "network-timeout"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에 명시된 타임아웃과 패킷 손실 문제를 해결하는 절차를 설명하고 있습니다.",
+        "completeness": "Context에 있는 필수 정보와 절차를 모두 포함하고 있습니다.",
+        "domain_appropriateness": "네트워크 타임아웃과 CPU 과부하에 대한 적절한 런북 절차를 따르고 있습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되어 있습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 0.5,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Fail",
+            "domain_appropriateness": "Fail",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 확인 순서에 대한 내용을 포함하고 있다.",
+            "completeness": "Context의 핵심 사실인 '타임아웃'과 '패킷 손실'에 대한 구체적인 조치가 빠져 있다.",
+            "domain_appropriateness": "답변에서 제시된 조치가 runbook의 절차를 충분히 반영하지 않고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        },
+        {
+          "attempt": 2,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 타임아웃 문제와 패킷 손실에 대한 확인 순서를 제공하고 있으며, 요청 대상이 등록된 시스템에 포함되어 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 조치 및 절차를 적절히 반영하여 네트워크 타임아웃과 응답 지연 문제를 해결하는 방법을 제시하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있으며, 각 단계가 명확하게 설명되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 1,
+      "latency_ms": 13727.24379200372,
+      "tokens": {
+        "prompt": 5170,
+        "completion": 1062
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 4164,
+          "completion": 640,
+          "calls": 6
+        },
+        "text-embedding-3-small": {
+          "prompt": 44,
+          "completion": 0,
+          "calls": 1
+        },
+        "gpt-4o": {
+          "prompt": 962,
+          "completion": 422,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00763448,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 153,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 331,
+          "completion": 76
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 44,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "analyze",
+          "prompt": 147,
+          "completion": 33
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 864,
+          "completion": 199
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 1223,
+          "completion": 139
+        },
+        {
+          "model": "gpt-4o",
+          "stage": "write#2",
+          "prompt": 962,
+          "completion": 422
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 1446,
+          "completion": 181
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 3,
+          "targets": [
+            "gateway-service",
+            "payments-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "gateway-service",
+          "retries": 1
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-1",
+          "source": "monitoring",
+          "target": "payments-service",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1",
+            "task-gap-runbook-2"
+          ],
+          "target": [
+            "network-timeout",
+            "high-latency",
+            "memory-leak"
+          ],
+          "ranking": [
+            [
+              "network-timeout",
+              0.3257
+            ],
+            [
+              "high-latency",
+              0.3167
+            ],
+            [
+              "memory-leak",
+              0.3097
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "network-timeout",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-2",
+          "source": "runbook",
+          "target": "memory-leak",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisCompleted",
+          "length": 54
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 489,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 0.5,
+          "failed": [
+            "completeness",
+            "domain_appropriateness"
+          ],
+          "verdict": "불합격"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 2,
+          "length": 805,
+          "writer": "openai:gpt-4o"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 2,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c20-740f-770b-9c03-17cbefd14776"
+    },
+    {
+      "id": "Q12",
+      "category": "normal",
+      "query": "서비스 간 호출이 간헐적으로 타임아웃 나는데 방화벽이나 DNS 쪽 변경이 있었는지 모르겠어요. 어디부터 봐야 하나요?",
+      "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 상태가 degraded이며 CPU 사용률이 81.1%, 메모리 사용률이 62.5%로 나타났습니다. 또한, 알림이 2건 발생하였고, 내용은 'p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'입니다. 이를 바탕으로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인합니다.\n\n2) DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검합니다.\n\n3) 특정 리전/가용영역에서만 발생하는 경우, 해당 구간을 우회하는 라우팅으로 임시 전환합니다. \n\n4) 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우, 임계값을 임시 상향하여 2차 피해를 줄입니다.\n\n5) 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 81.1%, 메모리 62.5%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 네트워크 타임아웃 대응 절차\n\n1. get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.\n2. DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.\n3. 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.\n4. 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.\n5. 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다.",
+      "route": "incident",
+      "retrieved": [
+        "network-timeout",
+        "high-latency",
+        "db-down"
+      ],
+      "fed_runbooks": [
+        "network-timeout"
+      ],
+      "gold": [
+        "network-timeout"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에 대한 답변으로 네트워크 타임아웃 대응 절차를 설명하고 있습니다.",
+        "completeness": "Context에 있는 필수 정보가 답변에 모두 포함되어 있습니다.",
+        "domain_appropriateness": "질문에 맞는 네트워크 타임아웃 대응 절차가 답변에 반영되었습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 0.75,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Fail",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자의 질문에 대해 네트워크 타임아웃 문제를 해결하기 위한 절차를 제시하고 있다.",
+            "completeness": "답변에서 모니터링 상태에 대한 핵심 사실이 포함되었으나, 타임아웃 발생 원인에 대한 구체적인 수치나 상태가 부족하다.",
+            "domain_appropriateness": "답변은 런북의 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 논리적으로 정리되어 있으며, 요청한 형식과 길이 제약을 준수하고 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7931.188041999121,
+      "tokens": {
+        "prompt": 1744,
+        "completion": 470
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1682,
+          "completion": 470,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 62,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.0005355399999999999,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 160,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 345,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 62,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 379,
+          "completion": 259
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 798,
+          "completion": 164
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "network-timeout"
+          ],
+          "ranking": [
+            [
+              "network-timeout",
+              0.425
+            ],
+            [
+              "high-latency",
+              0.2947
+            ],
+            [
+              "db-down",
+              0.289
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "network-timeout",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 467,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 0.75,
+          "failed": [
+            "completeness"
+          ],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c20-b888-75cc-980d-7f2c92b47bf1"
+    },
+    {
+      "id": "Q13",
+      "category": "constrained",
+      "query": "DB 다운 시 대응 절차를 알려주세요. 답변은 50자 이내로 간결하게 작성해주세요.",
+      "answer": "DB 다운 시 백업 확인, 로그 분석, 서비스 복구, 사용자 안내를 진행하세요.",
+      "context": "(수집된 근거 없음 — chat 경로로 답변)",
+      "route": "chat",
+      "retrieved": [],
+      "fed_runbooks": [],
+      "gold": [
+        "db-down"
+      ],
+      "judge_score": 0.75,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Fail",
+      "judge_reasons": {
+        "relevance": "질문이 모호하므로 대상·증상을 되묻지 않고 일반적인 절차를 제공했다.",
+        "completeness": "Context에 수집된 근거가 없으므로 추가적인 정보가 필요하지 않다.",
+        "domain_appropriateness": "DB 다운 시 일반적인 대응 절차를 적절히 반영했다.",
+        "clarity": "답변이 50자를 초과하여 형식 요구를 충족하지 못했다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [],
+      "rewrites": 0,
+      "latency_ms": 1760.0724170042668,
+      "tokens": {
+        "prompt": 243,
+        "completion": 32
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 243,
+          "completion": 32,
+          "calls": 2
+        }
+      },
+      "cost_usd": 5.565e-05,
+      "cache": {
+        "lookups": 1,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 147,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "chat",
+          "prompt": 96,
+          "completion": 20
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "chat"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "chat-direct"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c20-e621-7219-8f84-8b8de7d56c7a"
+    },
+    {
+      "id": "Q14",
+      "category": "constrained",
+      "query": "payments-service CPU 급증 대응 절차를 표로 정리해주세요. 열은 단계, 조치 두 개로 해주세요.",
+      "answer": "아래와 같이 표로 정리했습니다.\n\n| 단계       | 조치                           |\n|------------|--------------------------------|\n| 1단계     | CPU 사용량 모니터링 시작      |\n| 2단계     | 비정상적인 프로세스 식별      |\n| 3단계     | 프로세스 최적화 또는 재시작   |\n| 4단계     | 서버 리소스 확장 고려         |\n| 5단계     | 성능 분석 및 보고서 작성      |",
+      "context": "(수집된 근거 없음 — chat 경로로 답변)",
+      "route": "chat",
+      "retrieved": [],
+      "fed_runbooks": [],
+      "gold": [
+        "cpu-spike"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "The answer acknowledges the lack of context and provides a general procedure for CPU spike handling.",
+        "completeness": "The answer does not introduce any fabricated data and provides a plausible generic procedure.",
+        "domain_appropriateness": "The steps provided are appropriate for handling CPU spikes in a service context.",
+        "clarity": "The answer is clearly structured in a table format as requested."
+      },
+      "judge_error": null,
+      "pipeline_judge": [],
+      "rewrites": 0,
+      "latency_ms": 2263.9955000049667,
+      "tokens": {
+        "prompt": 247,
+        "completion": 121
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 247,
+          "completion": 121,
+          "calls": 2
+        }
+      },
+      "cost_usd": 0.00010964999999999998,
+      "cache": {
+        "lookups": 1,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 149,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "chat",
+          "prompt": 98,
+          "completion": 109
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "chat"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "chat-direct"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c20-fa0d-78e9-afc1-0347cef2585c"
+    },
+    {
+      "id": "Q15",
+      "category": "constrained",
+      "query": "log-service 디스크 부족 대응을 3줄 이내로 요약해주세요.",
+      "answer": "log-service 디스크 부족 대응은 불필요한 로그 파일 삭제, 로그 로테이션 설정, 디스크 용량 모니터링을 포함합니다.",
+      "context": "(수집된 근거 없음 — chat 경로로 답변)",
+      "route": "chat",
+      "retrieved": [],
+      "fed_runbooks": [],
+      "gold": [
+        "disk-full"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "The answer addresses the query about log-service disk shortage.",
+        "completeness": "The answer does not introduce any information not present in the context.",
+        "domain_appropriateness": "The answer includes appropriate domain actions for disk shortage in log-service.",
+        "clarity": "The answer is concise and within the 3-line limit specified."
+      },
+      "judge_error": null,
+      "pipeline_judge": [],
+      "rewrites": 0,
+      "latency_ms": 1816.439166010241,
+      "tokens": {
+        "prompt": 227,
+        "completion": 45
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 227,
+          "completion": 45,
+          "calls": 2
+        }
+      },
+      "cost_usd": 6.104999999999999e-05,
+      "cache": {
+        "lookups": 1,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 139,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "chat",
+          "prompt": 88,
+          "completion": 33
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "chat"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "chat-direct"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c21-0f97-7bfe-a151-d32a0dfeeee0"
+    },
+    {
+      "id": "Q16",
+      "category": "composite",
+      "query": "gateway-service에서 payments-service로 504 타임아웃이 나는데 동시에 payments-service CPU도 91%입니다. 같이 어떻게 대응하죠?",
+      "answer": "1) gateway-service와 payments-service의 모니터링 상태를 확인한 결과, 두 서비스 모두 degraded 상태이며, payments-service의 CPU 사용률이 90.8%로 임계치를 초과하고 있습니다.  \n2) payments-service의 CPU 과부하로 인해 응답 지연이 발생하고 있으며, gateway-service에서 payments-service로의 요청이 504 타임아웃으로 이어지고 있습니다.  \n3) 대응 방안으로는, payments-service의 오토스케일링 그룹에 인스턴스를 추가하여 부하를 분산하고, 커넥션 풀 사용률을 확인하여 필요 시 풀 크기를 조정하거나 느린 쿼리에 타임아웃을 설정해야 합니다.",
+      "context": "- 모니터링 gateway-service: 상태=degraded, CPU 35.2%, 메모리 47.6%, 알림 2건 ['upstream timeout to payments-service (504)', 'network packet loss 3%']\n- 모니터링 payments-service: 상태=degraded, CPU 90.8%, 메모리 54.9%, 알림 2건 ['CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow']\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n- runbook 발췌:\n# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n- 패턴 분석: 공통 원인으로 네트워크 문제와 CPU 과부하가 의심되며, 이는 두 서비스의 성능 저하와 관련이 있을 수 있다.",
+      "route": "incident",
+      "retrieved": [
+        "high-latency",
+        "cpu-spike",
+        "memory-leak"
+      ],
+      "fed_runbooks": [
+        "high-latency",
+        "cpu-spike"
+      ],
+      "gold": [
+        "network-timeout",
+        "cpu-spike"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에서 언급된 두 서비스의 상태와 관련된 문제를 정확히 다루고 있습니다.",
+        "completeness": "Context에 있는 필수 정보인 두 서비스의 상태와 CPU 사용률을 모두 언급했습니다.",
+        "domain_appropriateness": "CPU 급증과 응답 지연에 대한 적절한 런북 절차를 반영했습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 504 타임아웃과 payments-service의 CPU 과부하에 대한 대응 방안을 제시하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 모두 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 조치 및 절차를 적절히 반영하여 대응 방안을 제시하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 8054.230458990787,
+      "tokens": {
+        "prompt": 2258,
+        "completion": 423
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 2210,
+          "completion": 423,
+          "calls": 5
+        },
+        "text-embedding-3-small": {
+          "prompt": 48,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00058626,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 153,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 331,
+          "completion": 73
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 48,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "analyze",
+          "prompt": 147,
+          "completion": 35
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 633,
+          "completion": 153
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 946,
+          "completion": 150
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 3,
+          "targets": [
+            "gateway-service",
+            "payments-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "gateway-service",
+          "retries": 1
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-1",
+          "source": "monitoring",
+          "target": "payments-service",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1"
+          ],
+          "target": [
+            "high-latency",
+            "cpu-spike"
+          ],
+          "ranking": [
+            [
+              "high-latency",
+              0.4683
+            ],
+            [
+              "cpu-spike",
+              0.4558
+            ],
+            [
+              "memory-leak",
+              0.4124
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "cpu-spike",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisCompleted",
+          "length": 61
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 364,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c21-246a-728b-a707-cefbdb03477e"
+    },
+    {
+      "id": "Q17",
+      "category": "composite",
+      "query": "cache-service 메모리가 계속 오르는 중인데 auth-service 응답 지연(p95 2.4초)도 같이 발생하고 있습니다. 둘 다 대응 절차를 알려주세요.",
+      "answer": "1) cache-service의 메모리 사용률이 90.1%로 OOM 직전 상태이므로, 해당 프로세스를 즉시 재시작하여 서비스 중단을 방지한다. 재시작은 임시 조치임을 기록한다.  \n2) auth-service의 p95 지연시간이 2.4초로 임계치(1.0초)를 초과하므로, 커넥션 풀 사용률이 92%로 높아 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정한다.  \n3) 두 서비스 모두 모니터링 상태를 지속적으로 확인하고, 원인 분석을 위해 힙 덤프 및 프로파일링 도구를 사용하여 메모리 누수 및 지연의 근본 원인을 문서화하고 후속 최적화 작업을 진행한다.",
+      "context": "- 모니터링 cache-service: 상태=degraded, CPU 44.2%, 메모리 90.1%, 알림 2건 ['memory usage climbing steadily over 6h', 'heap near limit']\n- 모니터링 auth-service: 상태=degraded, CPU 79.7%, 메모리 61.8%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n- 패턴 분석: 특이 패턴 없음",
+      "route": "incident",
+      "retrieved": [
+        "memory-leak",
+        "high-latency",
+        "db-down"
+      ],
+      "fed_runbooks": [
+        "memory-leak",
+        "high-latency"
+      ],
+      "gold": [
+        "memory-leak",
+        "high-latency"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "답변은 cache-service와 auth-service의 문제를 모두 다루고 있다.",
+        "completeness": "Context에 있는 필수 정보와 절차가 답변에 포함되어 있다.",
+        "domain_appropriateness": "답변은 메모리 누수와 응답 지연에 대한 적절한 런북 절차를 반영하고 있다.",
+        "clarity": "답변은 논리적이고 체계적으로 작성되어 있다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 두 서비스의 대응 절차를 모두 포함하고 있다.",
+            "completeness": "답변은 Context의 핵심 사실을 모두 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 Context의 런북 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식과 길이에 맞추어 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 8008.305665993248,
+      "tokens": {
+        "prompt": 2370,
+        "completion": 421
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 2306,
+          "completion": 421,
+          "calls": 5
+        },
+        "text-embedding-3-small": {
+          "prompt": 64,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.0005997799999999998,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 161,
+          "completion": 16
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 347,
+          "completion": 73
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 64,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "analyze",
+          "prompt": 149,
+          "completion": 5
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 649,
+          "completion": 190
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 1000,
+          "completion": 137
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 3,
+          "targets": [
+            "cache-service",
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "cache-service",
+          "retries": 1
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-1",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1"
+          ],
+          "target": [
+            "memory-leak",
+            "high-latency"
+          ],
+          "ranking": [
+            [
+              "memory-leak",
+              0.5
+            ],
+            [
+              "high-latency",
+              0.46
+            ],
+            [
+              "db-down",
+              0.3749
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "memory-leak",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisCompleted",
+          "length": 8
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 316,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c21-51fb-7ac5-8041-26481f4d1942"
+    },
+    {
+      "id": "Q18",
+      "category": "composite",
+      "query": "log-service 디스크가 95%까지 찼고 auth-service 커넥션 풀도 92%라 응답이 느려졌습니다. 둘 다 어떻게 처리하죠?",
+      "answer": "1) log-service의 디스크 사용률이 95%로 임계 수준(90% 이상)에 도달했으므로, 즉시 로그 파일, 임시 파일, 오래된 백업 등을 정리하여 여유 공간을 확보해야 합니다.  \n2) auth-service의 커넥션 풀이 92% 사용 중이며, p95 지연 시간이 2.4초로 임계값(1.0초)을 초과하였으므로, 커넥션 풀의 사용량을 줄이기 위해 불필요한 연결을 종료하거나 커넥션 풀 크기를 조정해야 합니다.  \n3) 두 서비스 모두 상태가 degraded이므로, 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토하여 조기에 감지될 수 있도록 조정해야 합니다.",
+      "context": "- 모니터링 log-service: 상태=degraded, CPU 19.4%, 메모리 34.7%, 알림 2건 ['disk usage 95% on /var/log', 'disk space low']\n- 모니터링 auth-service: 상태=degraded, CPU 75.8%, 메모리 59.9%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 디스크 용량 부족 대응 절차\n\n1. get_monitoring_status와 서버 디스크 사용률을 확인해 임계 수준(90% 이상)인지 판단한다.\n2. 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다.\n3. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축한다.\n4. 임시 조치로도 부족하면 볼륨을 확장하거나 추가 스토리지를 연결한다.\n5. 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토해 조기에 감지되도록 조정한다.\n- 패턴 분석: 특이 패턴 없음",
+      "route": "incident",
+      "retrieved": [
+        "disk-full",
+        "high-latency",
+        "db-down"
+      ],
+      "fed_runbooks": [
+        "disk-full"
+      ],
+      "gold": [
+        "disk-full",
+        "high-latency"
+      ],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문에서 언급된 log-service와 auth-service의 문제를 모두 다루고 있습니다.",
+        "completeness": "Context에 있는 필수 정보인 디스크 사용률과 커넥션 풀 사용률을 모두 언급했습니다.",
+        "domain_appropriateness": "디스크 용량 부족과 커넥션 풀 문제에 대한 적절한 조치가 포함되어 있습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 요청한 log-service와 auth-service의 문제에 대해 적절히 대응 방법을 제시하였다.",
+            "completeness": "답변은 Context의 핵심 사실을 모두 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 runbook의 조치 및 절차를 적절히 반영하여 두 서비스의 문제를 해결하는 방법을 제시하였다.",
+            "clarity": "답변은 요청한 형식과 길이를 준수하며, 논리적으로 정리되어 있어 이해하기 쉽다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 8045.502875000238,
+      "tokens": {
+        "prompt": 1893,
+        "completion": 426
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1831,
+          "completion": 426,
+          "calls": 5
+        },
+        "text-embedding-3-small": {
+          "prompt": 62,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.0005314899999999999,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 161,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 347,
+          "completion": 73
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 62,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "analyze",
+          "prompt": 150,
+          "completion": 5
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 417,
+          "completion": 178
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 756,
+          "completion": 158
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 3,
+          "targets": [
+            "log-service",
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "log-service",
+          "retries": 1
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-1",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "disk-full"
+          ],
+          "ranking": [
+            [
+              "disk-full",
+              0.5375
+            ],
+            [
+              "high-latency",
+              0.4708
+            ],
+            [
+              "db-down",
+              0.4391
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "disk-full",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisCompleted",
+          "length": 8
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 323,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c21-7e94-7014-9bfc-9eac7b6f1ed6"
+    },
+    {
+      "id": "Q19",
+      "category": "unregistered",
+      "query": "외부 PG사 결제 승인 API가 계속 실패합니다. 복구 절차 알려주세요.",
+      "answer": "1) 모니터링 auth-service의 상태가 degraded이며, CPU 사용률이 84.9%로 높은 상태입니다. p95 지연시간이 2.4s로 임계치인 1.0s를 초과하고, 커넥션 풀 사용률이 92%로 높습니다. \n\n2) get_monitoring_status를 통해 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인하고, 반복 호출이나 배치 작업 중복 실행 등의 요청 패턴이 원인인지 최근 로그에서 확인합니다.\n\n3) CPU 사용률이 90%를 넘고 지속될 경우, 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산합니다. 또한, p95 지연시간이 5분 내에 임계치 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 84.9%, 메모리 64.4%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n- runbook 발췌:\n# Runbook: 네트워크 타임아웃 대응 절차\n\n1. get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.\n2. DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.\n3. 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.\n4. 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.\n5. 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다.\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.",
+      "route": "incident",
+      "retrieved": [
+        "cpu-spike",
+        "network-timeout",
+        "high-latency"
+      ],
+      "fed_runbooks": [
+        "cpu-spike",
+        "network-timeout",
+        "high-latency"
+      ],
+      "gold": [],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "The answer addresses the issue of API failures by focusing on relevant system metrics and procedures.",
+        "completeness": "The answer includes all necessary information from the context, such as CPU usage, latency, and connection pool status.",
+        "domain_appropriateness": "The answer correctly applies procedures from the context related to CPU usage and high latency.",
+        "clarity": "The answer is logically structured and clearly explains the steps to address the issue."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 0.75,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Fail",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 외부 PG사 결제 승인 API의 실패에 대한 복구 절차를 요청한 것에 대해 관련된 정보를 제공하고 있다.",
+            "completeness": "답변에서 결제 승인 API 실패의 직접적인 원인이나 해결책이 빠져 있으며, Context의 핵심 사실인 알림 내용이 충분히 반영되지 않았다.",
+            "domain_appropriateness": "답변은 Context의 런북 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7552.928249991965,
+      "tokens": {
+        "prompt": 2313,
+        "completion": 408
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 2281,
+          "completion": 408,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 32,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.0005875899999999999,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 142,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 309,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 32,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 734,
+          "completion": 202
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 1096,
+          "completion": 159
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1",
+            "task-gap-runbook-2"
+          ],
+          "target": [
+            "cpu-spike",
+            "network-timeout",
+            "high-latency"
+          ],
+          "ranking": [
+            [
+              "cpu-spike",
+              0.2622
+            ],
+            [
+              "network-timeout",
+              0.2357
+            ],
+            [
+              "high-latency",
+              0.2314
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "cpu-spike",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "network-timeout",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-2",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 368,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 0.75,
+          "failed": [
+            "completeness"
+          ],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c21-aae6-7690-a7f8-fa709ce80b32"
+    },
+    {
+      "id": "Q20",
+      "category": "unregistered",
+      "query": "Kafka 컨슈머 랙이 계속 쌓이고 있습니다. 대응 절차 알려주세요.",
+      "answer": "1) Kafka 컨슈머 랙 문제를 해결하기 위해 먼저 auth-service의 상태를 점검합니다. 현재 CPU 사용률은 82.8%이며, 메모리 사용률은 63.4%입니다. p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고, 커넥션 풀 사용률이 92%로 높은 상태입니다.\n\n2) auth-service의 높은 지연시간과 커넥션 풀 사용률을 해결하기 위해 다음 조치를 취합니다:\n   - 커넥션 풀 사용률이 90%를 넘으므로 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정합니다.\n   - 5분 내 p95 지연시간이 1.0초 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산합니다.\n\n3) Kafka 컨슈머 랙이 계속 쌓이는 원인을 분석합니다. 메모리 누수나 응답 지연이 원인일 수 있으므로, 메모리 사용률 추세를 확인하고, 필요 시 프로세스를 재시작합니다. 또한, 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 82.8%, 메모리 63.4%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n- runbook 발췌:\n# Runbook: 네트워크 타임아웃 대응 절차\n\n1. get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.\n2. DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.\n3. 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.\n4. 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.\n5. 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다.",
+      "route": "incident",
+      "retrieved": [
+        "memory-leak",
+        "high-latency",
+        "network-timeout"
+      ],
+      "fed_runbooks": [
+        "memory-leak",
+        "high-latency",
+        "network-timeout"
+      ],
+      "gold": [],
+      "judge_score": 0.5,
+      "judge_passed": false,
+      "judge_relevance": "Fail",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Fail",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문은 Kafka 컨슈머 랙에 대한 것이지만, 답변은 auth-service의 상태 점검과 관련된 내용으로 초점을 맞추고 있습니다.",
+        "completeness": "Context에 있는 auth-service의 상태 정보와 관련된 필수 정보를 포함하고 있습니다.",
+        "domain_appropriateness": "Kafka 컨슈머 랙 문제에 대한 구체적인 대응 절차가 아닌, auth-service의 지연 문제에 대한 대응 절차를 설명하고 있습니다.",
+        "clarity": "답변은 논리적이고 체계적으로 작성되어 있습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 0.25,
+          "verdicts": {
+            "relevance": "Fail",
+            "completeness": "Fail",
+            "domain_appropriateness": "Fail",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변이 Kafka 컨슈머 랙에 대한 대응 절차를 제공하지 않고, auth-service의 상태에 대한 정보만 포함되어 있다.",
+            "completeness": "Context의 핵심 사실인 Kafka 컨슈머 랙에 대한 구체적인 수치나 원인에 대한 언급이 없고, 필요한 조치도 빠져 있다.",
+            "domain_appropriateness": "Kafka 컨슈머 랙에 대한 대응 절차가 전혀 반영되지 않았다.",
+            "clarity": "답변은 논리적으로 정리되어 있으나, 주제와 관련이 없기 때문에 의미가 없다."
+          },
+          "guard": null
+        },
+        {
+          "attempt": 2,
+          "score": 0.75,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Fail",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 Kafka 컨슈머 랙 문제에 대한 대응 절차를 요청한 것에 대해 관련된 정보를 제공하고 있다.",
+            "completeness": "답변에서 메모리 사용률 추세 확인 및 OOM 직전 재시작과 같은 핵심 사실이 누락되었다.",
+            "domain_appropriateness": "답변은 runbook의 응답 지연 대응 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 1,
+      "latency_ms": 11856.284624998807,
+      "tokens": {
+        "prompt": 4527,
+        "completion": 867
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 3587,
+          "completion": 577,
+          "calls": 5
+        },
+        "text-embedding-3-small": {
+          "prompt": 37,
+          "completion": 0,
+          "calls": 1
+        },
+        "gpt-4o": {
+          "prompt": 903,
+          "completion": 290,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.006042489999999999,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 141,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 307,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 37,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 769,
+          "completion": 222
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 1151,
+          "completion": 161
+        },
+        {
+          "model": "gpt-4o",
+          "stage": "write#2",
+          "prompt": 903,
+          "completion": 290
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 1219,
+          "completion": 147
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1",
+            "task-gap-runbook-2"
+          ],
+          "target": [
+            "memory-leak",
+            "high-latency",
+            "network-timeout"
+          ],
+          "ranking": [
+            [
+              "memory-leak",
+              0.3225
+            ],
+            [
+              "high-latency",
+              0.3034
+            ],
+            [
+              "network-timeout",
+              0.2774
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "memory-leak",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-2",
+          "source": "runbook",
+          "target": "network-timeout",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 350,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 0.25,
+          "failed": [
+            "relevance",
+            "completeness",
+            "domain_appropriateness"
+          ],
+          "verdict": "불합격"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 2,
+          "length": 491,
+          "writer": "openai:gpt-4o"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 2,
+          "score": 0.75,
+          "failed": [
+            "completeness"
+          ],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c21-d5f1-7558-b99c-966667b193d1"
+    },
+    {
+      "id": "Q21",
+      "category": "unregistered",
+      "query": "SSL 인증서가 만료돼서 사이트 접속이 막혔습니다. 어떻게 해야 하나요?",
+      "answer": "1) SSL 인증서 만료로 인해 사이트 접속이 차단된 상황입니다. 인증서를 갱신하여 문제를 해결해야 합니다.  \n2) 모니터링 결과 auth-service의 상태가 degraded이며, CPU 사용률은 77.8%, 메모리 사용률은 60.9%입니다. 알림이 2건 발생하였으며, 내용은 'p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'입니다.  \n3) 네트워크 타임아웃 대응 절차에 따라, get_monitoring_status를 통해 시스템 간 호출에서 타임아웃 발생 여부를 확인하고, 최근 DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 여부를 점검해야 합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 77.8%, 메모리 60.9%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 네트워크 타임아웃 대응 절차\n\n1. get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.\n2. DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.\n3. 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.\n4. 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.\n5. 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다.",
+      "route": "incident",
+      "retrieved": [
+        "network-timeout",
+        "db-down",
+        "disk-full"
+      ],
+      "fed_runbooks": [
+        "network-timeout"
+      ],
+      "gold": [],
+      "judge_score": 0.75,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Fail",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "SSL 인증서 만료에 대한 해결책을 제시했습니다.",
+        "completeness": "Context에 있는 모니터링 정보와 관련된 내용을 포함했습니다.",
+        "domain_appropriateness": "네트워크 타임아웃 대응 절차는 SSL 인증서 문제와 관련이 없습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 0.75,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Fail",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 SSL 인증서 만료 문제에 대한 해결책을 제시하고 있으며, 관련된 시스템 상태를 언급하고 있다.",
+            "completeness": "답변에서 SSL 인증서 갱신 외에 필요한 조치나 상태에 대한 핵심 사실이 빠져 있다.",
+            "domain_appropriateness": "답변은 네트워크 타임아웃 대응 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7155.806915994617,
+      "tokens": {
+        "prompt": 1560,
+        "completion": 371
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 1523,
+          "completion": 371,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 37,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.00045178999999999993,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 144,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 313,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 37,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 363,
+          "completion": 180
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 703,
+          "completion": 144
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0"
+          ],
+          "target": [
+            "network-timeout"
+          ],
+          "ranking": [
+            [
+              "network-timeout",
+              0.2527
+            ],
+            [
+              "db-down",
+              0.1895
+            ],
+            [
+              "disk-full",
+              0.1723
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "network-timeout",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 361,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 0.75,
+          "failed": [
+            "completeness"
+          ],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c22-13d1-7237-b29b-f7dd73752f10"
+    },
+    {
+      "id": "Q22",
+      "category": "ambiguous",
+      "query": "서버가 이상해요.",
+      "answer": "1) 현재 auth-service의 상태는 'degraded'이며, CPU 사용률은 85.8%, 메모리 사용률은 64.9%로 확인되었습니다. 또한, 두 가지 알림이 발생했습니다: 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다.\n\n2) 디스크 용량 부족 대응 절차는 현재 상황과 직접적인 관련이 없으므로, DB Down 대응 절차를 참고하여 문제를 해결해야 합니다. 우선, 모니터링 알람을 통해 장애를 인지하고, get_monitoring_status로 현재 상태를 확인합니다.\n\n3) 커넥션 풀 상태를 점검하고 필요 시 failover 노드로 전환하여 서비스 정상화를 시도합니다. 이후, 서비스가 정상화되면 원인 분석과 재발 방지 대책을 문서화하여 향후 유사한 문제가 발생하지 않도록 대비합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 85.8%, 메모리 64.9%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 디스크 용량 부족 대응 절차\n\n1. get_monitoring_status와 서버 디스크 사용률을 확인해 임계 수준(90% 이상)인지 판단한다.\n2. 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다.\n3. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축한다.\n4. 임시 조치로도 부족하면 볼륨을 확장하거나 추가 스토리지를 연결한다.\n5. 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토해 조기에 감지되도록 조정한다.\n- runbook 발췌:\n# Runbook: DB Down 대응 절차\n\n1. 모니터링 알람으로 장애를 즉시 인지한다 (get_monitoring_status로 현재 상태 확인).\n2. 커넥션 풀/리플리케이션 상태를 점검하고 필요 시 failover 노드로 전환한다.\n3. 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화한다.",
+      "route": "incident",
+      "retrieved": [
+        "disk-full",
+        "db-down",
+        "network-timeout"
+      ],
+      "fed_runbooks": [
+        "disk-full",
+        "db-down"
+      ],
+      "gold": [],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "답변은 auth-service의 상태와 관련된 정보를 제공하고 있습니다.",
+        "completeness": "답변은 Context에 있는 필수 정보를 모두 포함하고 있습니다.",
+        "domain_appropriateness": "답변은 DB Down 대응 절차를 적절히 반영하고 있습니다.",
+        "clarity": "답변은 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 0.5,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Fail",
+            "domain_appropriateness": "Fail",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 언급한 서버의 이상 상태에 대한 정보를 제공하고 관련된 모니터링 데이터를 포함하고 있다.",
+            "completeness": "답변에서 서버의 상태와 관련된 핵심 사실인 'auth-service'의 degraded 상태와 알림 내용을 포함했지만, 디스크 용량 부족 대응 절차와 관련된 정보가 누락되었다.",
+            "domain_appropriateness": "답변은 디스크 용량 부족 대응 절차를 설명하고 있으나, 현재 상황에 적합한 DB Down 대응 절차를 반영하지 않았다.",
+            "clarity": "답변은 명확하게 단계별로 정리되어 있으며, 사용자가 요청한 형식과 길이 제약을 준수하고 있다."
+          },
+          "guard": null
+        },
+        {
+          "attempt": 2,
+          "score": 1.0,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Pass",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 언급한 서버의 이상 상태에 대한 정보를 제공하고 관련된 런북 절차를 언급하였다.",
+            "completeness": "답변은 Context의 핵심 사실을 모두 포함하고 있으며, 추가적인 수치나 사실을 만들어내지 않았다.",
+            "domain_appropriateness": "답변은 DB Down 대응 절차를 적절히 반영하여 문제 해결을 위한 조치를 제시하였다.",
+            "clarity": "답변은 논리적으로 정리되어 있으며, 요청된 형식과 길이 제약을 준수하였다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 1,
+      "latency_ms": 11071.6206250072,
+      "tokens": {
+        "prompt": 2917,
+        "completion": 752
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 2363,
+          "completion": 547,
+          "calls": 5
+        },
+        "text-embedding-3-small": {
+          "prompt": 8,
+          "completion": 0,
+          "calls": 1
+        },
+        "gpt-4o": {
+          "prompt": 546,
+          "completion": 205,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.0040978099999999995,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 129,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 282,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 8,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 423,
+          "completion": 158
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 741,
+          "completion": 188
+        },
+        {
+          "model": "gpt-4o",
+          "stage": "write#2",
+          "prompt": 546,
+          "completion": 205
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 788,
+          "completion": 154
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1"
+          ],
+          "target": [
+            "disk-full",
+            "db-down"
+          ],
+          "ranking": [
+            [
+              "disk-full",
+              0.2397
+            ],
+            [
+              "db-down",
+              0.2243
+            ],
+            [
+              "network-timeout",
+              0.1707
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "disk-full",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "db-down",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 331,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 0.5,
+          "failed": [
+            "completeness",
+            "domain_appropriateness"
+          ],
+          "verdict": "불합격"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 2,
+          "length": 430,
+          "writer": "openai:gpt-4o"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 2,
+          "score": 1.0,
+          "failed": [],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c22-3d1f-7cdc-a075-5e5c58a30279"
+    },
+    {
+      "id": "Q23",
+      "category": "ambiguous",
+      "query": "아침부터 알람이 계속 울리는데 뭐가 문제인지 모르겠어요. 봐주실 수 있나요?",
+      "answer": "알람 설정을 확인해 보세요. 여러 개의 알람이 설정되어 있을 수 있습니다.",
+      "context": "(수집된 근거 없음 — chat 경로로 답변)",
+      "route": "chat",
+      "retrieved": [],
+      "fed_runbooks": [],
+      "gold": [],
+      "judge_score": 1.0,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Pass",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문이 모호하므로 알람 설정을 확인하라는 일반적인 조언을 제공했습니다.",
+        "completeness": "Context에 수집된 근거가 없으므로 추가 정보가 필요하지 않습니다.",
+        "domain_appropriateness": "알람 문제에 대한 일반적인 해결책을 제시했습니다.",
+        "clarity": "답변이 명확하고 간결하게 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [],
+      "rewrites": 0,
+      "latency_ms": 1633.4470000001602,
+      "tokens": {
+        "prompt": 245,
+        "completion": 33
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 245,
+          "completion": 33,
+          "calls": 2
+        }
+      },
+      "cost_usd": 5.655e-05,
+      "cache": {
+        "lookups": 1,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 148,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "chat",
+          "prompt": 97,
+          "completion": 21
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "chat"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "chat-direct"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c22-7552-70a6-868e-e904592af161"
+    },
+    {
+      "id": "Q24",
+      "category": "ambiguous",
+      "query": "어제부터 뭔가 자꾸 장애 같은 게 나는데 어떻게 해야 해요?",
+      "answer": "1) auth-service의 상태가 degraded이며, CPU 사용률이 83.9%, 메모리 사용률이 63.9%로 확인되었습니다. 알림으로는 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'가 발생했습니다.  \n2) 메모리 누수 가능성을 고려하여, get_monitoring_status로 메모리 사용률 추세를 확인하고, OOM 직전(90% 이상)일 경우 해당 프로세스를 즉시 재시작해야 합니다.  \n3) 추가적으로, 로그 파일 및 임시 파일 정리를 통해 디스크 용량 확보를 검토하고, 커넥션 풀 상태를 점검하여 필요 시 failover 노드로 전환하는 절차를 진행해야 합니다.",
+      "context": "- 모니터링 auth-service: 상태=degraded, CPU 83.9%, 메모리 63.9%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 디스크 용량 부족 대응 절차\n\n1. get_monitoring_status와 서버 디스크 사용률을 확인해 임계 수준(90% 이상)인지 판단한다.\n2. 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다.\n3. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축한다.\n4. 임시 조치로도 부족하면 볼륨을 확장하거나 추가 스토리지를 연결한다.\n5. 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토해 조기에 감지되도록 조정한다.\n- runbook 발췌:\n# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.\n- runbook 발췌:\n# Runbook: DB Down 대응 절차\n\n1. 모니터링 알람으로 장애를 즉시 인지한다 (get_monitoring_status로 현재 상태 확인).\n2. 커넥션 풀/리플리케이션 상태를 점검하고 필요 시 failover 노드로 전환한다.\n3. 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화한다.",
+      "route": "incident",
+      "retrieved": [
+        "disk-full",
+        "memory-leak",
+        "db-down"
+      ],
+      "fed_runbooks": [
+        "disk-full",
+        "memory-leak",
+        "db-down"
+      ],
+      "gold": [],
+      "judge_score": 0.75,
+      "judge_passed": true,
+      "judge_relevance": "Pass",
+      "judge_completeness": "Pass",
+      "judge_domain_appropriateness": "Fail",
+      "judge_clarity": "Pass",
+      "judge_reasons": {
+        "relevance": "질문이 모호하지만, auth-service의 상태를 확인하고 관련 조치를 제안하여 답변했습니다.",
+        "completeness": "Context에 있는 auth-service의 상태와 관련 알림 정보를 모두 포함했습니다.",
+        "domain_appropriateness": "메모리 누수와 관련 없는 디스크 용량 및 DB Down 대응 절차를 혼합했습니다.",
+        "clarity": "답변이 논리적이고 체계적으로 작성되었습니다."
+      },
+      "judge_error": null,
+      "pipeline_judge": [
+        {
+          "attempt": 1,
+          "score": 0.75,
+          "verdicts": {
+            "relevance": "Pass",
+            "completeness": "Fail",
+            "domain_appropriateness": "Pass",
+            "clarity": "Pass"
+          },
+          "reasons": {
+            "relevance": "답변은 사용자가 겪고 있는 장애 상황에 대한 정보를 제공하고 관련된 시스템 상태를 언급했다.",
+            "completeness": "답변에서 장애의 원인이나 상태에 대한 핵심 사실이 빠져 있으며, 특히 메모리 사용률이 90% 이상인지 여부를 확인하는 절차가 누락되었다.",
+            "domain_appropriateness": "답변은 관련된 런북의 조치 및 절차를 적절히 반영하고 있다.",
+            "clarity": "답변은 요청한 형식에 맞춰 논리적으로 정리되어 있다."
+          },
+          "guard": null
+        }
+      ],
+      "rewrites": 0,
+      "latency_ms": 7546.300000001793,
+      "tokens": {
+        "prompt": 2091,
+        "completion": 377
+      },
+      "tokens_by_model": {
+        "gpt-4o-mini": {
+          "prompt": 2057,
+          "completion": 377,
+          "calls": 4
+        },
+        "text-embedding-3-small": {
+          "prompt": 34,
+          "completion": 0,
+          "calls": 1
+        }
+      },
+      "cost_usd": 0.0005354299999999998,
+      "cache": {
+        "lookups": 3,
+        "hits": 0
+      },
+      "llm_calls": [
+        {
+          "model": "gpt-4o-mini",
+          "stage": "route",
+          "prompt": 140,
+          "completion": 12
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "plan",
+          "prompt": 305,
+          "completion": 35
+        },
+        {
+          "model": "text-embedding-3-small",
+          "stage": "embed",
+          "prompt": 34,
+          "completion": 0
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "write#1",
+          "prompt": 640,
+          "completion": 172
+        },
+        {
+          "model": "gpt-4o-mini",
+          "stage": "judge",
+          "prompt": 972,
+          "completion": 158
+        }
+      ],
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 1,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 1
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "selector": "rag",
+          "gap_task": [
+            "task-gap-runbook-0",
+            "task-gap-runbook-1",
+            "task-gap-runbook-2"
+          ],
+          "target": [
+            "disk-full",
+            "memory-leak",
+            "db-down"
+          ],
+          "ranking": [
+            [
+              "disk-full",
+              0.2254
+            ],
+            [
+              "memory-leak",
+              0.2235
+            ],
+            [
+              "db-down",
+              0.2103
+            ]
+          ]
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-0",
+          "source": "runbook",
+          "target": "disk-full",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-1",
+          "source": "runbook",
+          "target": "memory-leak",
+          "retries": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook-2",
+          "source": "runbook",
+          "target": "db-down",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 360,
+          "writer": "openai:gpt-4o-mini"
+        },
+        {
+          "type": "Validation",
+          "validator": "judge",
+          "attempt": 1,
+          "score": 0.75,
+          "failed": [
+            "completeness"
+          ],
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "trace_url": "langsmith-run:01a15c22-89c7-7116-96b7-cc7c2996dfbb"
+    }
+  ]
+}
