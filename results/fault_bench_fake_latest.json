@@ -1,0 +1,747 @@
+{
+ "rate": 0.3,
+ "seed": 7,
+ "n_queries": 38,
+ "variants": {
+  "base": {
+   "completed": 17,
+   "n": 38,
+   "queries_with_fault": 21,
+   "completed_among_faulted": 0,
+   "rows": [
+    {
+     "id": "Q01",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 78.8% (알림 2건) · web-01 상태=healthy, CPU 37.5% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다. 3) 정상화 확인 후 원"
+    },
+    {
+     "id": "Q02",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q03",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q04",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'web-01'})"
+    },
+    {
+     "id": "Q05",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'log-service의 /var/log 디스크 사용률이 95%입니다. 지금 뭘 해야 하나요?' 진단 결과: 1) 모니터링: log-service 상태=degraded, CPU 23.5% (알림 2건) · web-01 상태=healthy, CPU 42.0% (알림 0건) 2) 표준 절차: 'Runbook: 디스크 용량 부족 대응 절차'에 따라 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기"
+    },
+    {
+     "id": "Q06",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'서버 저장공간이 거의 꽉 찼다고 알람이 왔어요. 로그가 계속 쌓이는 것 같은데 급한 조치가 뭔가요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 82.5% (알림 2건) · web-01 상태=healthy, CPU 41.5% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에"
+    },
+    {
+     "id": "Q07",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'payments-service CPU가 91%입니다. 어떻게 대응하나요?' 진단 결과: 1) 모니터링: payments-service 상태=degraded, CPU 93.8% (알림 2건) · web-01 상태=healthy, CPU 35.4% (알림 0건) 2) 표준 절차: 'Runbook: CPU 급증 대응 절차'에 따라 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다. 3) 정상화 "
+    },
+    {
+     "id": "Q08",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q09",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'web-01'})"
+    },
+    {
+     "id": "Q10",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'캐시 서버가 몇 시간째 메모리를 계속 먹고 있어서 곧 OOM 날 것 같아요. 일단 뭘 해야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 83.9% (알림 2건) · web-01 상태=healthy, CPU 34.7% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에"
+    },
+    {
+     "id": "Q11",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'gateway-service에서 payments-service로 가는 호출이 504 타임아웃이고 패킷 손실도 있습니다. 확인 순서를 알려주세요.' 진단 결과: 1) 모니터링: gateway-service 상태=degraded, CPU 27.0% (알림 2건) · payments-service 상태=degraded, CPU 90.6% (알림 2건) · web-01 상태=healthy, CPU 36.2% (알림 0건) 2) 표준 절차: 'Runbook: CPU 급증 대응 절차'에 따라 반복 호출, 배치 작업 중복 실행 같은 특정 요청"
+    },
+    {
+     "id": "Q12",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q16",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q17",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'cache-service'})"
+    },
+    {
+     "id": "Q18",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'log-service'})"
+    },
+    {
+     "id": "Q25",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'primary DB 인스턴스가 크래시 났고 앱에서 쓰기 쿼리가 전부 실패합니다. 복구 절차를 알려주세요.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 85.7% (알림 2건) · web-01 상태=healthy, CPU 39.9% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸"
+    },
+    {
+     "id": "Q26",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'주문 DB가 갑자기 연결이 안 되고 앱 로그에 connection refused만 쏟아집니다. 레플리카는 살아 있는 것 같은데 어디서부터 손대야 할까요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 79.2% (알림 2건) · web-01 상태=healthy, CPU 34.4% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리"
+    },
+    {
+     "id": "Q27",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q28",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q29",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service-3'})"
+    },
+    {
+     "id": "Q30",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q31",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'log-service에서 disk space low 알람이 떴습니다. 용량 확보 절차와 이후 조치를 알려주세요.' 진단 결과: 1) 모니터링: log-service 상태=degraded, CPU 21.3% (알림 2건) · web-01 상태=healthy, CPU 31.0% (알림 0건) 2) 표준 절차: 'Runbook: 디스크 용량 부족 대응 절차'에 따라 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮"
+    },
+    {
+     "id": "Q32",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'앱 서버에서 No space left on device 에러가 나기 시작했어요. 뭘 지우고 뭘 늘려야 할지 감이 안 옵니다.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 77.8% (알림 2건) · web-01 상태=healthy, CPU 37.5% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리전/인스턴스에 몰려 있으면 해"
+    },
+    {
+     "id": "Q33",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q34",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q35",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'auth-service p95 지연이 임계치를 넘은 채 5분째 안 내려옵니다. 트래픽을 어떻게 분산해야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 84.8% (알림 2건) · web-01 상태=healthy, CPU 35.8% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를"
+    },
+    {
+     "id": "Q36",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q37",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'cache-service 힙 사용량이 계속 우상향이고 메모리 알람이 떴습니다. 당장 할 일과 원인 파악 방법을 알려주세요.' 진단 결과: 1) 모니터링: cache-service 상태=degraded, CPU 44.2% (알림 2건) · web-01 상태=healthy, CPU 37.2% (알림 0건) 2) 표준 절차: 'Runbook: 메모리 누수(Memory Leak) 대응 절차'에 따라 OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다. 힙 덤프 또는"
+    },
+    {
+     "id": "Q38",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'cache-service 메모리가 89%인데 몇 시간째 내려가질 않습니다. 누수인지 어떻게 확인하고 재발은 어떻게 막죠?' 진단 결과: 1) 모니터링: cache-service 상태=degraded, CPU 46.9% (알림 2건) · web-01 상태=healthy, CPU 37.4% (알림 0건) 2) 표준 절차: 'Runbook: 메모리 누수(Memory Leak) 대응 절차'에 따라 OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다. 힙 덤프 또는 "
+    },
+    {
+     "id": "Q39",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'자바 서비스가 며칠에 한 번씩 OOMKilled 되면서 재기동됩니다. 근본 원인을 찾으려면 뭘 봐야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 77.7% (알림 2건) · web-01 상태=healthy, CPU 39.8% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로"
+    },
+    {
+     "id": "Q40",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'gateway-service 쪽 upstream timeout 알람이 안 꺼집니다. 네트워크 경로 점검 항목을 알려주세요.' 진단 결과: 1) 모니터링: gateway-service 상태=degraded, CPU 29.8% (알림 2건) · web-01 상태=healthy, CPU 37.6% (알림 0건) 2) 표준 절차: 'Runbook: 네트워크 타임아웃 대응 절차'에 따라 DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다. 특정 리전/가용영역에서만 발생하면 해당 구간을"
+    },
+    {
+     "id": "Q41",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q42",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'배포한 지 얼마 안 됐는데 내부 API가 정상 응답까지 타임아웃으로 처리됩니다. 클라이언트 설정 문제일 수도 있나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 85.5% (알림 2건) · web-01 상태=healthy, CPU 36.1% (알림 0건) 2) 표준 절차: 'Runbook: 응답 지연(High Latency) 대응 절차'에 따라 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스"
+    },
+    {
+     "id": "Q48",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q49",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'payments-service CPU가 계속 높고 같은 시점부터 cache-service 메모리도 꾸준히 오르고 있습니다. 둘 다 어떻게 대응해야 하나요?' 진단 결과: 1) 모니터링: payments-service 상태=degraded, CPU 94.1% (알림 2건) · cache-service 상태=degraded, CPU 44.5% (알림 2건) · web-01 상태=healthy, CPU 32.7% (알림 0건) 2) 표준 절차: 'Runbook: CPU 급증 대응 절차'에 따라 반복 호출, 배치 작업 중복 실행 같은 특"
+    },
+    {
+     "id": "Q50",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'gateway-service'})"
+    },
+    {
+     "id": "Q51",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q52",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    }
+   ]
+  },
+  "final_no_tolerance": {
+   "completed": 17,
+   "n": 38,
+   "queries_with_fault": 21,
+   "completed_among_faulted": 0,
+   "rows": [
+    {
+     "id": "Q01",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 76.5% (알림 2건) · web-01 상태=healthy, CPU 34.9% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q02",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q03",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q04",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'web-01'})"
+    },
+    {
+     "id": "Q05",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'log-service의 /var/log 디스크 사용률이 95%입니다. 지금 뭘 해야 하나요?' 진단 결과: 1) 모니터링: log-service 상태=degraded, CPU 25.1% (알림 2건) · web-01 상태=healthy, CPU 31.2% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q06",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'서버 저장공간이 거의 꽉 찼다고 알람이 왔어요. 로그가 계속 쌓이는 것 같은데 급한 조치가 뭔가요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 80.5% (알림 2건) · web-01 상태=healthy, CPU 41.7% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q07",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'payments-service CPU가 91%입니다. 어떻게 대응하나요?' 진단 결과: 1) 모니터링: payments-service 상태=degraded, CPU 97.7% (알림 2건) · web-01 상태=healthy, CPU 39.4% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q08",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q09",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'web-01'})"
+    },
+    {
+     "id": "Q10",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'캐시 서버가 몇 시간째 메모리를 계속 먹고 있어서 곧 OOM 날 것 같아요. 일단 뭘 해야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 82.2% (알림 2건) · web-01 상태=healthy, CPU 31.9% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q11",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'gateway-service에서 payments-service로 가는 호출이 504 타임아웃이고 패킷 손실도 있습니다. 확인 순서를 알려주세요.' 진단 결과: 1) 모니터링: gateway-service 상태=degraded, CPU 29.5% (알림 2건) · payments-service 상태=degraded, CPU 93.0% (알림 2건) · web-01 상태=healthy, CPU 40.8% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q12",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q16",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q17",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'cache-service'})"
+    },
+    {
+     "id": "Q18",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'log-service'})"
+    },
+    {
+     "id": "Q25",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'primary DB 인스턴스가 크래시 났고 앱에서 쓰기 쿼리가 전부 실패합니다. 복구 절차를 알려주세요.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 83.6% (알림 2건) · web-01 상태=healthy, CPU 38.6% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q26",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'주문 DB가 갑자기 연결이 안 되고 앱 로그에 connection refused만 쏟아집니다. 레플리카는 살아 있는 것 같은데 어디서부터 손대야 할까요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 78.4% (알림 2건) · web-01 상태=healthy, CPU 36.0% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q27",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q28",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q29",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service-3'})"
+    },
+    {
+     "id": "Q30",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q31",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'log-service에서 disk space low 알람이 떴습니다. 용량 확보 절차와 이후 조치를 알려주세요.' 진단 결과: 1) 모니터링: log-service 상태=degraded, CPU 26.1% (알림 2건) · web-01 상태=healthy, CPU 32.0% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q32",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'앱 서버에서 No space left on device 에러가 나기 시작했어요. 뭘 지우고 뭘 늘려야 할지 감이 안 옵니다.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 75.2% (알림 2건) · web-01 상태=healthy, CPU 37.7% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q33",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q34",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q35",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'auth-service p95 지연이 임계치를 넘은 채 5분째 안 내려옵니다. 트래픽을 어떻게 분산해야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 79.1% (알림 2건) · web-01 상태=healthy, CPU 38.4% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q36",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q37",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'cache-service 힙 사용량이 계속 우상향이고 메모리 알람이 떴습니다. 당장 할 일과 원인 파악 방법을 알려주세요.' 진단 결과: 1) 모니터링: cache-service 상태=degraded, CPU 44.4% (알림 2건) · web-01 상태=healthy, CPU 33.7% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q38",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'cache-service 메모리가 89%인데 몇 시간째 내려가질 않습니다. 누수인지 어떻게 확인하고 재발은 어떻게 막죠?' 진단 결과: 1) 모니터링: cache-service 상태=degraded, CPU 49.3% (알림 2건) · web-01 상태=healthy, CPU 32.1% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q39",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'자바 서비스가 며칠에 한 번씩 OOMKilled 되면서 재기동됩니다. 근본 원인을 찾으려면 뭘 봐야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 84.7% (알림 2건) · web-01 상태=healthy, CPU 40.5% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q40",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'gateway-service 쪽 upstream timeout 알람이 안 꺼집니다. 네트워크 경로 점검 항목을 알려주세요.' 진단 결과: 1) 모니터링: gateway-service 상태=degraded, CPU 35.7% (알림 2건) · web-01 상태=healthy, CPU 35.1% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q41",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q42",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'배포한 지 얼마 안 됐는데 내부 API가 정상 응답까지 타임아웃으로 처리됩니다. 클라이언트 설정 문제일 수도 있나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 76.4% (알림 2건) · web-01 상태=healthy, CPU 32.4% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q48",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q49",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'payments-service CPU가 계속 높고 같은 시점부터 cache-service 메모리도 꾸준히 오르고 있습니다. 둘 다 어떻게 대응해야 하나요?' 진단 결과: 1) 모니터링: payments-service 상태=degraded, CPU 91.9% (알림 2건) · cache-service 상태=degraded, CPU 49.3% (알림 2건) · web-01 상태=healthy, CPU 42.0% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q50",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'gateway-service'})"
+    },
+    {
+     "id": "Q51",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q52",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    }
+   ]
+  },
+  "final": {
+   "completed": 38,
+   "n": 38,
+   "queries_with_fault": 21,
+   "completed_among_faulted": 21,
+   "rows": [
+    {
+     "id": "Q01",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 82.4% (알림 2건) · web-01 상태=healthy, CPU 33.9% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q02",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'auth-service DB 커넥션이 다 끊겼고 DB 프라이머리가 응답이 없습니다. 어떻게 복구하죠?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 37.0% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q03",
+     "ok": true,
+     "faults": 2,
+     "tool_failures": 2,
+     "answer": "'auth-service 응답이 느립니다. p95 지연이 2초를 넘는데 어떻게 대응해야 하나요?' 진단 결과: 1) 모니터링:  3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q04",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'로그인할 때 화면이 한참 걸린다는 문의가 계속 들어옵니다. 지연 원인 확인 순서를 알려주세요.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 83.7% (알림 2건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q05",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'log-service의 /var/log 디스크 사용률이 95%입니다. 지금 뭘 해야 하나요?' 진단 결과: 1) 모니터링: log-service 상태=degraded, CPU 25.4% (알림 2건) · web-01 상태=healthy, CPU 35.8% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q06",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'서버 저장공간이 거의 꽉 찼다고 알람이 왔어요. 로그가 계속 쌓이는 것 같은데 급한 조치가 뭔가요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 81.3% (알림 2건) · web-01 상태=healthy, CPU 40.1% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q07",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'payments-service CPU가 91%입니다. 어떻게 대응하나요?' 진단 결과: 1) 모니터링: payments-service 상태=degraded, CPU 96.7% (알림 2건) · web-01 상태=healthy, CPU 39.5% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q08",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'결제 서버 인스턴스 하나가 계속 버벅이고 CPU가 한계 근처에 붙어 있어요. 배포 직후부터 그런 것 같은데 어떻게 하죠?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 41.3% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q09",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'cache-service 메모리가 6시간째 계속 올라가고 힙이 한계에 가깝습니다. 대응 절차를 알려주세요.' 진단 결과: 1) 모니터링: cache-service 상태=degraded, CPU 41.4% (알림 2건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q10",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'캐시 서버가 몇 시간째 메모리를 계속 먹고 있어서 곧 OOM 날 것 같아요. 일단 뭘 해야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 83.0% (알림 2건) · web-01 상태=healthy, CPU 39.6% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q11",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'gateway-service에서 payments-service로 가는 호출이 504 타임아웃이고 패킷 손실도 있습니다. 확인 순서를 알려주세요.' 진단 결과: 1) 모니터링: gateway-service 상태=degraded, CPU 31.4% (알림 2건) · payments-service 상태=degraded, CPU 95.4% (알림 2건) · web-01 상태=healthy, CPU 36.6% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q12",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'서비스 간 호출이 간헐적으로 타임아웃 나는데 방화벽이나 DNS 쪽 변경이 있었는지 모르겠어요. 어디부터 봐야 하나요?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 32.3% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q16",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'gateway-service에서 payments-service로 504 타임아웃이 나는데 동시에 payments-service CPU도 91%입니다. 같이 어떻게 대응하죠?' 진단 결과: 1) 모니터링: gateway-service 상태=degraded, CPU 32.2% (알림 2건) · web-01 상태=healthy, CPU 39.7% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q17",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'cache-service 메모리가 계속 오르는 중인데 auth-service 응답 지연(p95 2.4초)도 같이 발생하고 있습니다. 둘 다 대응 절차를 알려주세요.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 82.5% (알림 2건) · web-01 상태=healthy, CPU 40.7% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q18",
+     "ok": true,
+     "faults": 2,
+     "tool_failures": 2,
+     "answer": "'log-service 디스크가 95%까지 찼고 auth-service 커넥션 풀도 92%라 응답이 느려졌습니다. 둘 다 어떻게 처리하죠?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 84.9% (알림 2건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q25",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'primary DB 인스턴스가 크래시 났고 앱에서 쓰기 쿼리가 전부 실패합니다. 복구 절차를 알려주세요.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 85.9% (알림 2건) · web-01 상태=healthy, CPU 32.1% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q26",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'주문 DB가 갑자기 연결이 안 되고 앱 로그에 connection refused만 쏟아집니다. 레플리카는 살아 있는 것 같은데 어디서부터 손대야 할까요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 82.5% (알림 2건) · web-01 상태=healthy, CPU 34.6% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q27",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'새벽에 데이터베이스 마스터가 내려간 것 같다는 알림이 왔습니다. 다른 노드로 넘기는 건 어떤 기준으로 판단하나요?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 41.8% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q28",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'payments-service 인스턴스들 CPU가 90%를 넘은 채 안 내려옵니다. 스케일 아웃부터 해야 하나요?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 36.5% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q29",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'payments-service-3 인스턴스가 응답이 느리고 CPU가 높다는 알람이 떴습니다. 확인할 것들을 순서대로 알려주세요.' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 31.3% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q30",
+     "ok": true,
+     "faults": 2,
+     "tool_failures": 2,
+     "answer": "'야간 정산 배치가 겹쳐서 돌았는지 서버 하나가 계속 풀로드예요. 지금 부하를 어떻게 줄이죠?' 진단 결과: 1) 모니터링:  3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q31",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'log-service에서 disk space low 알람이 떴습니다. 용량 확보 절차와 이후 조치를 알려주세요.' 진단 결과: 1) 모니터링: log-service 상태=degraded, CPU 26.8% (알림 2건) · web-01 상태=healthy, CPU 34.2% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q32",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'앱 서버에서 No space left on device 에러가 나기 시작했어요. 뭘 지우고 뭘 늘려야 할지 감이 안 옵니다.' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 86.0% (알림 2건) · web-01 상태=healthy, CPU 31.6% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q33",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'어떤 애플리케이션이 디버그 로그를 엄청 쓰는지 하루 만에 저장공간이 20GB나 줄었습니다. 재발하지 않게 하려면 어떻게 하나요?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 35.8% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q34",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'auth-service 커넥션 풀 사용률이 92%까지 올라갔고 p95가 계속 1초를 넘습니다. 어디부터 조치할까요?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 33.8% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q35",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'auth-service p95 지연이 임계치를 넘은 채 5분째 안 내려옵니다. 트래픽을 어떻게 분산해야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 80.1% (알림 2건) · web-01 상태=healthy, CPU 40.0% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q36",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'특정 서버 한 대에서만 요청이 유난히 오래 걸리는 것 같아요. 나머지는 멀쩡합니다. 어떻게 처리하죠?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 34.9% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q37",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'cache-service 힙 사용량이 계속 우상향이고 메모리 알람이 떴습니다. 당장 할 일과 원인 파악 방법을 알려주세요.' 진단 결과: 1) 모니터링: cache-service 상태=degraded, CPU 44.6% (알림 2건) · web-01 상태=healthy, CPU 35.8% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q38",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'cache-service 메모리가 89%인데 몇 시간째 내려가질 않습니다. 누수인지 어떻게 확인하고 재발은 어떻게 막죠?' 진단 결과: 1) 모니터링: cache-service 상태=degraded, CPU 40.1% (알림 2건) · web-01 상태=healthy, CPU 37.5% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q39",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'자바 서비스가 며칠에 한 번씩 OOMKilled 되면서 재기동됩니다. 근본 원인을 찾으려면 뭘 봐야 하나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 83.9% (알림 2건) · web-01 상태=healthy, CPU 40.5% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q40",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'gateway-service 쪽 upstream timeout 알람이 안 꺼집니다. 네트워크 경로 점검 항목을 알려주세요.' 진단 결과: 1) 모니터링: gateway-service 상태=degraded, CPU 28.8% (알림 2건) · web-01 상태=healthy, CPU 39.4% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q41",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'특정 가용영역에 있는 서버들끼리만 호출이 자꾸 끊깁니다. 다른 영역은 괜찮아요. 임시로 돌려놓는 방법이 있나요?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 39.3% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q42",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'배포한 지 얼마 안 됐는데 내부 API가 정상 응답까지 타임아웃으로 처리됩니다. 클라이언트 설정 문제일 수도 있나요?' 진단 결과: 1) 모니터링: auth-service 상태=degraded, CPU 79.1% (알림 2건) · web-01 상태=healthy, CPU 32.5% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q48",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'DB 프라이머리가 죽었는데 그 여파로 auth-service 응답 지연도 심합니다. 두 문제를 같이 어떻게 대응하죠?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 35.7% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q49",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "'payments-service CPU가 계속 높고 같은 시점부터 cache-service 메모리도 꾸준히 오르고 있습니다. 둘 다 어떻게 대응해야 하나요?' 진단 결과: 1) 모니터링: payments-service 상태=degraded, CPU 95.5% (알림 2건) · cache-service 상태=degraded, CPU 41.2% (알림 2건) · web-01 상태=healthy, CPU 36.5% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q50",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'gateway-service 쪽 호출이 타임아웃 나고 있는데 log-service 디스크도 95%입니다. 우선순위와 절차를 알려주세요.' 진단 결과: 1) 모니터링: log-service 상태=degraded, CPU 24.9% (알림 2건) · web-01 상태=healthy, CPU 39.6% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q51",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'DB 연결이 한 번 끊긴 뒤부터 앱 인스턴스 메모리가 계속 오르고 DB 쪽도 아직 복구가 안 됐습니다. 두 가지를 같이 어떻게 처리하죠?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 32.2% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    },
+    {
+     "id": "Q52",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "'배치 작업이 중복 실행돼서 CPU가 90%를 넘었고, 그 배치가 쓴 로그 때문에 디스크도 거의 찼습니다. 같이 정리하려면 어떻게 하죠?' 진단 결과: 1) 모니터링: web-01 상태=healthy, CPU 38.2% (알림 0건) 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요."
+    }
+   ]
+  }
+ },
+ "backend": "fake",
+ "note": "LLM 없이(fake 백엔드) 코드 경로만 측정 — 도구 실패 시 완주 여부는 LLM 품질과 무관. fake 라우터 대신 모든 질의를 장애 경로로 보냄"
+}

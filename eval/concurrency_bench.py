@@ -59,7 +59,8 @@ async def run_batch(cfg: dict, queries: list[str]) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ns", default="1,3,5,10")
-    ap.add_argument("--backend", choices=["openai", "fake"])
+    ap.add_argument("--backend", choices=["openai", "fake", "fake_slow"])
+    ap.add_argument("--latency", type=float, default=0.5, help="fake_slow 호출당 지연(초)")
     args = ap.parse_args()
     ns = [int(x) for x in args.ns.split(",")]
 
@@ -69,6 +70,7 @@ def main():
     base_cfg["cost"]["cache"] = False
     if args.backend:
         base_cfg["backend"] = args.backend
+        base_cfg["fake_latency_s"] = args.latency
 
     out = {"config": "final (cache off)", "queries": pool[:max(ns)], "runs": []}
     warm = copy.deepcopy(base_cfg)   # 예열 1회 (임베딩 색인·모듈 로딩) — 측정에서 뺀다
@@ -84,10 +86,14 @@ def main():
             out["runs"].append(r)
             print(f"N={n:2d} async_io={async_io!s:5}  wall {r['wall_ms']/1000:6.1f}s  "
                   f"throughput {r['throughput_qps']:.2f} q/s  mean {r['latency_mean_ms']/1000:.1f}s", flush=True)
+    out["backend"] = args.backend or "openai"
+    if args.backend == "fake_slow":
+        out["note"] = f"모의 LLM(호출당 동기 지연 {args.latency}초, 작성 {args.latency * 2}초) — 이벤트 루프 블로킹 메커니즘 검증, 실제 API 지연 아님"
     if args.backend != "fake":
-        p = ROOT / "results" / f"concurrency_bench_{datetime.now():%Y%m%d_%H%M}.json"
+        tag = "_simulated" if args.backend == "fake_slow" else ""
+        p = ROOT / "results" / f"concurrency_bench{tag}_{datetime.now():%Y%m%d_%H%M}.json"
         p.write_text(json.dumps(out, ensure_ascii=False, indent=1))
-        (ROOT / "results/concurrency_bench_latest.json").write_text(p.read_text())
+        (ROOT / f"results/concurrency_bench{tag}_latest.json").write_text(p.read_text())
         print("saved", p.name)
 
 

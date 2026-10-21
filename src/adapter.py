@@ -67,12 +67,22 @@ def _build_deps(cfg: dict, mcp: MCPClient) -> ExtDeps:
     models = cfg.get("models", {})
     cache = _cache_for(cfg)
 
-    if backend == "fake":
+    if backend == "fake_slow":   # 동시성 메커니즘 검증용 모의 지연 (src/ext/slow_fake.py)
+        from ext.slow_fake import SlowFastLLM, SlowJudge, SlowQualityLLM
+        d = cfg.get("fake_latency_s", 0.5)
+        fast = SlowFastLLM("fast-stub-slow", 0.00015, d)
+        quality = SlowQualityLLM("quality-stub-slow", 0.005, d)
+        cheap = SlowQualityLLM("quality-stub-slow(cheap)", 0.00015, d)
+        judge = SlowJudge(d)
+        embedder = LocalNgramEmbedder()
+    elif backend == "fake":
         fast = FastLLM("fast-model-stub", usd_per_1k_tokens=0.00015)
         quality = QualityLLM("quality-model-stub", usd_per_1k_tokens=0.005)
         cheap = QualityLLM("quality-model-stub(cheap)", usd_per_1k_tokens=0.00015)
         judge = FakeJudge()
         embedder = LocalNgramEmbedder()
+        if cfg.get("fake_force_incident"):   # 장애 주입 실험용 — 라우팅과 무관하게 모든 질의를 장애 경로로
+            fast.route = lambda q: ({"route": "incident", "needs_analysis": False}, fast._usage(q, "incident"))
     else:
         # 원본 server.py 의 기본값과 같은 단가 인자 (cost_usd 상태값 호환용, 보고서 비용은 Meter 사용)
         fast = MeteredFastLLM(models.get("fast", "gpt-4o-mini"), 0.00015, cache=cache)

@@ -45,6 +45,7 @@ def main():
         cfg.setdefault("cost", {})["cache"] = False
         if args.backend:
             cfg["backend"] = args.backend
+            cfg["fake_force_incident"] = args.backend == "fake"
 
         def job(q):
             try:
@@ -63,11 +64,15 @@ def main():
         out["variants"][name] = res
         print(f"{name:20} 완주 {res['completed']}/{res['n']}  장애 맞은 질의 {len(hit)}건 중 완주 "
               f"{res['completed_among_faulted']}", flush=True)
-    if args.backend != "fake":
-        p = ROOT / "results" / f"fault_bench_{datetime.now():%Y%m%d_%H%M}.json"
-        p.write_text(json.dumps(out, ensure_ascii=False, indent=1))
-        (ROOT / "results/fault_bench_latest.json").write_text(p.read_text())
-        print("saved", p.name)
+    out["backend"] = args.backend or "openai"
+    if args.backend == "fake":
+        out["note"] = ("LLM 없이(fake 백엔드) 코드 경로만 측정 — 도구 실패 시 완주 여부는 LLM 품질과 무관. "
+                       "fake 라우터 대신 모든 질의를 장애 경로로 보냄")
+    tag = "_fake" if args.backend == "fake" else ""
+    p = ROOT / "results" / f"fault_bench{tag}_{datetime.now():%Y%m%d_%H%M}.json"
+    p.write_text(json.dumps(out, ensure_ascii=False, indent=1))
+    (ROOT / f"results/fault_bench{tag}_latest.json").write_text(p.read_text())
+    print("saved", p.name)
 
 
 if __name__ == "__main__":

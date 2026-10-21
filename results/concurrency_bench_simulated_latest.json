@@ -1,0 +1,91 @@
+{
+ "config": "final (cache off)",
+ "queries": [
+  "DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.",
+  "auth-service DB 커넥션이 다 끊겼고 DB 프라이머리가 응답이 없습니다. 어떻게 복구하죠?",
+  "auth-service 응답이 느립니다. p95 지연이 2초를 넘는데 어떻게 대응해야 하나요?",
+  "로그인할 때 화면이 한참 걸린다는 문의가 계속 들어옵니다. 지연 원인 확인 순서를 알려주세요.",
+  "log-service의 /var/log 디스크 사용률이 95%입니다. 지금 뭘 해야 하나요?",
+  "서버 저장공간이 거의 꽉 찼다고 알람이 왔어요. 로그가 계속 쌓이는 것 같은데 급한 조치가 뭔가요?",
+  "payments-service CPU가 91%입니다. 어떻게 대응하나요?",
+  "결제 서버 인스턴스 하나가 계속 버벅이고 CPU가 한계 근처에 붙어 있어요. 배포 직후부터 그런 것 같은데 어떻게 하죠?",
+  "cache-service 메모리가 6시간째 계속 올라가고 힙이 한계에 가깝습니다. 대응 절차를 알려주세요.",
+  "캐시 서버가 몇 시간째 메모리를 계속 먹고 있어서 곧 OOM 날 것 같아요. 일단 뭘 해야 하나요?"
+ ],
+ "runs": [
+  {
+   "n": 1,
+   "wall_ms": 4672.37358399143,
+   "throughput_qps": 0.21402398203478804,
+   "latency_mean_ms": 4672.2307500022,
+   "latency_max_ms": 4672.2307500022,
+   "cost_usd": 0.0,
+   "async_io": false
+  },
+  {
+   "n": 1,
+   "wall_ms": 4638.9495830080705,
+   "throughput_qps": 0.21556604186061495,
+   "latency_mean_ms": 4638.838958009728,
+   "latency_max_ms": 4638.838958009728,
+   "cost_usd": 0.0,
+   "async_io": true
+  },
+  {
+   "n": 3,
+   "wall_ms": 9704.944583005272,
+   "throughput_qps": 0.3091207759448131,
+   "latency_mean_ms": 7142.825430661712,
+   "latency_max_ms": 9704.834459000267,
+   "cost_usd": 0.0,
+   "async_io": false
+  },
+  {
+   "n": 3,
+   "wall_ms": 4754.600499989465,
+   "throughput_qps": 0.6309678384138998,
+   "latency_mean_ms": 3508.0395829960858,
+   "latency_max_ms": 4754.406207997818,
+   "cost_usd": 0.0,
+   "async_io": true
+  },
+  {
+   "n": 5,
+   "wall_ms": 14829.82220800477,
+   "throughput_qps": 0.3371584588047943,
+   "latency_mean_ms": 9719.793958199443,
+   "latency_max_ms": 14826.625957997749,
+   "cost_usd": 0.0,
+   "async_io": false
+  },
+  {
+   "n": 5,
+   "wall_ms": 4675.857917012763,
+   "throughput_qps": 1.0693224834330124,
+   "latency_mean_ms": 3210.496924998006,
+   "latency_max_ms": 4675.265583005967,
+   "cost_usd": 0.0,
+   "async_io": true
+  },
+  {
+   "n": 10,
+   "wall_ms": 19930.124874998,
+   "throughput_qps": 0.5017530026891517,
+   "latency_mean_ms": 11730.965212598676,
+   "latency_max_ms": 19927.037708010175,
+   "cost_usd": 0.0,
+   "async_io": false
+  },
+  {
+   "n": 10,
+   "wall_ms": 4699.182333002682,
+   "throughput_qps": 2.1280297914318647,
+   "latency_mean_ms": 2141.0490039997967,
+   "latency_max_ms": 4697.31133300229,
+   "cost_usd": 0.0,
+   "async_io": true
+  }
+ ],
+ "backend": "fake_slow",
+ "note": "모의 LLM(호출당 동기 지연 0.5초, 작성 1.0초) — 이벤트 루프 블로킹 메커니즘 검증, 실제 API 지연 아님"
+}
