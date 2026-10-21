@@ -118,7 +118,7 @@ s.addText("결론: 효과는 RAG에서, 비용은 캐스케이드에서 나왔�
 stat(s, 0.6, 1.6, 3.85, `${pct(S.base["recall@1"])} → ${pct(S.rag["recall@1"])}`,
   "런북 검색 Recall@1 (gold 18건)\nbase → RAG", C.accent2, "stat-recall");
 stat(s, 4.74, 1.6, 3.85, `-${Math.round((1 - S.rag_judge_cost.cost_usd_total / S.base.cost_usd_total) * 100)}%`,
-  `추정 비용 base → 최종 (24건)\n${usd(S.base.cost_usd_total)} → ${usd(S.rag_judge_cost.cost_usd_total)}, 품질은 더 높음`, C.accent6, "stat-cost");
+  `추정 비용 base → 최종 (24건)\n${usd(S.base.cost_usd_total)} → ${usd(S.rag_judge_cost.cost_usd_total)}, 품질 상승은 RAG 몫`, C.accent6, "stat-cost");
 stat(s, 8.88, 1.6, 3.85, `+${Math.round((S.rag_judge.cost_usd_total / S.rag.cost_usd_total - 1) * 100)}%`,
   "LLM Judge를 붙였을 때 비용\n측정 가능한 품질 이득은 없음", C.accent1, "stat-judge");
 T(s, [
@@ -246,9 +246,9 @@ card(s, 0.6, 4.6, 12.1, 2.05, C.background2, "judge-sep");
 T(s, [
   { text: "평가자를 따로 둔다", options: { bold: true, fontSize: 16, color: HEX.dk2, breakLine: true } },
   { text: "평가 Judge는 gpt-4o로 고정했다. 파이프라인 안 Judge(gpt-4o-mini)와 같은 모델로 채점하면, 그 기준에 맞춰 고친 답이 자동으로 높게 나온다.", options: { bullet: true, breakLine: true } },
-  { text: "Judge 자체도 틀릴 수 있어서 Judge와 무관한 결정적 지표(측정 전에 정해 둔 런북 핵심 어구 포함률)와 사람 라벨로 검증한다.", options: { bullet: true } },
+  { text: "Judge 자체도 틀릴 수 있어서 Judge와 무관한 결정적 지표(측정 전에 정해 둔 런북 핵심 어구 포함률)를 함께 보고, 사람 라벨로 Judge 일치율을 잰다.", options: { bullet: true } },
 ], { x: 0.9, y: 4.75, w: 11.5, h: 1.8, fontSize: 14, paraSpaceAfter: 4, valign: "top" });
-s.addNotes("검색 품질과 답변 품질을 분리해서 재야 검색이 좋아져서 답이 좋아졌다는 인과를 말할 수 있습니다.");
+s.addNotes("검색 품질과 답변 품질을 분리해서 재면, 검색이 좋아진 구성에서 답도 좋아졌는지를 따로 볼 수 있습니다. 다만 24건 1회 실행이라 인과를 단정하지는 않습니다.");
 
 // ── 7. Before/After 검색 ────────────────────────────────────────────
 s = slide("CONTENT", "Before/After");
@@ -291,33 +291,40 @@ const KO = { normal: "정상", constrained: "형식 제약", composite: "복합"
 const rej = ROWS.rag_judge.filter((r) => r.rewrites > 0);
 T(s, [
   { text: `재작성이 일어난 질의: ${rej.map((r) => `${r.id}(${KO[r.category]})`).join(", ")}`, options: { bold: true, breakLine: true } },
-  { text: "정상 질의 12건에서는 한 번도 반려하지 않았다.", options: { bullet: true, breakLine: true } },
-  { text: "Kafka·SSL처럼 런북에 없는 문제에 \"런북 절차를 반영하라\"며 반려했다. 재작성으로는 채울 수 없는 요구다.", options: { bullet: true, breakLine: true } },
-  { text: "Q21은 재시도 상한 2회에서 가드가 멈췄다. 무한 루프 가드가 실제로 작동했다.", options: { bullet: true, breakLine: true } },
-  { text: "+RAG → +Judge의 어구 포함률 차이는 재작성 0회인 건에서 났다. Judge 효과가 아니라 실행 간 변동이다.", options: { bullet: true } },
+  { text: "+Judge에서 정상 질의 12건은 한 번도 반려되지 않았다.", options: { bullet: true, breakLine: true } },
+  { text: "Kafka·SSL처럼 맞는 런북이 없는 문제에 \"런북 절차를 반영하라\"며 반려했다. 재작성된 답은 무관한 절차를 섞는 쪽으로 바뀌었다.", options: { bullet: true, breakLine: true } },
+  { text: "Q21은 재시도 상한 2회에서 가드가 멈췄다 (무한 루프 가드 작동). Q20·Q22는 3회차에 통과했다.", options: { bullet: true, breakLine: true } },
+  { text: "+RAG → +Judge의 어구 포함률 차이는 재작성 0회인 건에서 났다. Judge 효과가 아니라 실행 간 변동으로 본다.", options: { bullet: true } },
 ], { x: 0.6, y: 1.5, w: 6.4, h: 4.6, fontSize: 15, paraSpaceAfter: 8, valign: "top" });
 card(s, 7.3, 1.5, 5.43, 4.3, C.background2, "q20-card");
 const q20r = ROWS.rag.find((r) => r.id === "Q20"), q20j = ROWS.rag_judge.find((r) => r.id === "Q20");
 T(s, [
-  { text: "Q20 \"Kafka 컨슈머 랙이 쌓입니다\"", options: { bold: true, color: HEX.dk2, breakLine: true } },
+  { text: "Q20 \"Kafka 컨슈머 랙이 계속 쌓이고 있습니다\"", options: { bold: true, color: HEX.dk2, breakLine: true } },
   { text: " ", options: { fontSize: 6, breakLine: true } },
   { text: `+RAG (재작성 없음): 평가 ${q20r.judge_passed ? "Pass" : "Fail"}`, options: { bold: true, breakLine: true } },
   { text: "Kafka 언급 없이 auth-service 응답 지연 절차만 답함", options: { breakLine: true } },
   { text: " ", options: { fontSize: 6, breakLine: true } },
   { text: `+Judge (재작성 ${q20j.rewrites}회): 평가 ${q20j.judge_passed ? "Pass" : "Fail"}`, options: { bold: true, breakLine: true } },
-  { text: "\"Kafka 문제를 해결하기 위해 auth-service를 점검합니다\"처럼 질문과 근거를 억지로 이어 붙임", options: { breakLine: true } },
+  { text: "\"Kafka 컨슈머 랙 문제를 해결하기 위해 먼저 auth-service의 상태를 점검합니다\"로 시작해 무관한 절차를 섞음", options: { breakLine: true } },
   { text: " ", options: { fontSize: 6, breakLine: true } },
   { text: "둘 다 정답은 \"등록된 런북에 없다\"를 밝히는 것", options: { color: HEX.accent1, bold: true } },
 ], { x: 7.6, y: 1.75, w: 4.85, h: 3.9, fontSize: 16, valign: "top" });
-s.addNotes("Judge 기준에 '근거에 없으면 없다고 말하는 게 정답'이라는 조건이 빠져서 정직한 답을 오히려 반려했습니다.");
+s.addNotes("Judge 기준의 완전성·도메인 지표가 '런북 절차를 반영하라'고 요구해서, 맞는 런북이 없는 질문에서는 무관한 절차를 섞도록 압력을 줬습니다.");
 
 // ── 11. 캐시 ─────────────────────────────────────────────────────────
 s = slide("CONTENT", "Before/After");
-s.addText("캐시: 같은 질문이 반복될 때만 효과가 있다", { placeholder: "title" });
+s.addText("캐시: 반복 질문의 지연을 줄인다, 비용 효과는 작다", { placeholder: "title" });
 if (CACHE) {
   const [p1, p2] = CACHE.passes;
   stat(s, 0.6, 1.6, 3.85, `${p2.cache_hits} / ${p2.cache_lookups}`, "2회차 캐시 적중\n(route·plan·질의 임베딩)", C.accent2, "stat-hit");
-  stat(s, 4.74, 1.6, 3.85, `-${Math.round((1 - p2.cost_usd / p1.cost_usd) * 100)}%`, `24건 비용, 1회차 → 2회차\n${usd(p1.cost_usd)} → ${usd(p2.cost_usd)}`, C.accent6, "stat-cache-cost");
+  // 캐시 대상 단계(route·plan·임베딩)가 cold 실행 비용에서 차지하는 비중 = 캐시 비용 절감의 상한
+  const PRICE = { "gpt-4o-mini": [0.00015, 0.0006], "gpt-4o": [0.0025, 0.01], "text-embedding-3-small": [0.00002, 0] };
+  let cacheable = 0, total = 0;
+  ROWS.rag_judge_cost.forEach((r) => r.llm_calls.forEach((c) => {
+    const [pi, po] = PRICE[c.model]; const v = c.prompt / 1000 * pi + c.completion / 1000 * po;
+    total += v; if (/^(route|plan|embed)/.test(c.stage)) cacheable += v;
+  }));
+  stat(s, 4.74, 1.6, 3.85, `${Math.round(cacheable / total * 100)}%`, `캐시 대상 단계의 비용 비중\n= 캐시로 줄일 수 있는 비용의 상한`, C.accent6, "stat-cache-cost");
   stat(s, 8.88, 1.6, 3.85, `-${Math.round((1 - p2.latency_p50_ms / p1.latency_p50_ms) * 100)}%`, `지연 p50, 1회차 → 2회차\n${sec(p1.latency_p50_ms)} → ${sec(p2.latency_p50_ms)}`, C.accent6, "stat-cache-lat");
 } else {
   T(s, "캐시 측정 결과 없음 (python -m eval.cache_bench)", { x: 0.6, y: 1.6, w: 12.1, h: 2.0 });
@@ -325,6 +332,7 @@ if (CACHE) {
 T(s, [
   { text: "Ablation 본 실행(각 질의 1회)에서는 24개 질의가 정규화 후에도 모두 달라 캐시가 한 번도 맞지 않았다. 그래서 같은 24건을 같은 프로세스에서 두 번 연속 돌려 따로 쟀다.", options: { bullet: true, breakLine: true } },
   { text: "모니터링 값과 최종 답은 캐시하지 않는다. 장애 상황은 호출마다 바뀌기 때문이다.", options: { bullet: true, breakLine: true } },
+  { text: `총비용은 ${usd(CACHE.passes[0].cost_usd)} → ${usd(CACHE.passes[1].cost_usd)}로 줄었지만, 재작성 횟수 차이가 섞여 있어 캐시 효과로 쓰지 않는다. 캐시의 효과는 지연이다.`, options: { bullet: true, breakLine: true } },
   { text: "대가: TTL 10분 동안은 런북이 바뀌어도 옛 결과를 쓴다. 문장이 조금만 달라도 적중하지 않는다.", options: { bullet: true } },
 ], { x: 0.6, y: 4.0, w: 12.1, h: 2.6, fontSize: 15, paraSpaceAfter: 8, valign: "top" });
 s.addNotes("당직자 여러 명이 같은 알림을 반복해서 묻는 상황을 가정한 측정입니다.");
@@ -334,9 +342,9 @@ s = slide("CONTENT", "한계");
 s.addText("한계와 다음 개선", { placeholder: "title" });
 const lim = [
   ["RAG에 최소 유사도 기준이 없다", `미등록 질의에도 런북을 넣는다 (평균 투입 ${S.base.fed_count_mean.toFixed(2)} → ${S.rag.fed_count_mean.toFixed(2)}개)`, "유사도 임계값 + '등록된 런북 없음' 안내 경로"],
-  ["Judge가 근거 밖 요구로 반려한다", "고칠 수 없는 반려로 재작성·비용만 늘었다", "반려 사유를 근거 안/밖으로 나누고, 밖이면 재작성 대신 안내"],
+  ["Judge가 근거 밖 요구로 반려한다", "런북 없는 질의에서 재작성·비용만 늘고 답은 나빠졌다", "반려 사유를 근거 안/밖으로 나누고, 밖이면 재작성 대신 안내"],
   ["라우터가 형식 제약 질의를 놓친다", "'50자 이내', '표로' 질의 3건이 4구성 모두 chat으로 빠졌다", "라우팅 프롬프트 개선 후 같은 평가셋으로 재측정"],
-  ["n=24, 1회 실행", "질의 1건 = 4.2%p. 실행 간 변동이 어구 기준 약 8%p", "반복 실행으로 분산 측정, 평가셋 확장"],
+  ["n=24, 1회 실행", "질의 1건 = 4.2%p. 반복 실행 없음 (변동은 간접 추정 8%p)", "반복 실행으로 분산 측정, 평가셋 확장"],
 ];
 lim.forEach(([h, why, next], i) => {
   const y = 1.45 + i * 1.33;

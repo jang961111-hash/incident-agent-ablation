@@ -11,5 +11,5 @@ models:
   quality: gpt-4o
 rag:
   top_k: 3                      # 순위 길이 (Recall@3 대상)
-  margin: 0.05                  # 1위 점수 - 0.05 이내만 write 에 투입. 평가셋 보기 전 고정
+  margin: 0.05                  # 1위 점수 - 0.05 이내만 write 에 투입. 측정 결과 보기 전 고정
   embedding: text-embedding-3-small

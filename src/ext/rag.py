@@ -5,7 +5,7 @@
 
 - ranking: 상위 top_k 순위. Recall@k·MRR 계산 대상.
 - fed: write 에 실제로 넣는 런북. 1위 점수에서 margin 이내인 것만 넣는다. 복합 장애면
-  2개가 들어가고, 단일 장애면 대개 1개만 들어간다. margin 은 평가셋을 보기 전에 정한 값이며
+  2개가 들어가고, 단일 장애면 대개 1개만 들어간다. margin 은 측정 결과를 보기 전에 정한 값이며
   평가셋으로 튜닝하지 않는다.
 """
 from __future__ import annotations
