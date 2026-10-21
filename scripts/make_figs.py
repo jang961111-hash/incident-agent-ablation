@@ -104,7 +104,7 @@ ax.set_xticks([0, 1], groups)
 ax.set_yticks([])
 ax.set_ylim(0, 1.15)
 ax.legend(frameon=False, loc="upper right", fontsize=10.5)
-frame(ax, "원본은 '알림 문구 그대로' 물어야만 맞는 매뉴얼을 찾는다",
+frame(ax, "원본은 '알림 문구 그대로' 물을 때 주로 맞는 매뉴얼을 찾는다",
       "맞는 매뉴얼을 1순위로 고른 비율 · 조정에 안 쓴 holdout 정상 질의, 3회 평균")
 fig.tight_layout()
 fig.savefig(OUT / "fig2_bias.png", dpi=180)
@@ -205,6 +205,35 @@ ax.legend(frameon=False, loc="upper left", fontsize=10, ncol=2)
 frame(ax, "AI 채점관은 후하다 — 그래서 코드로 센 지표를 함께 봤다", "holdout, 3회 평균 (%)")
 fig.tight_layout()
 fig.savefig(OUT / "fig9_judge.png", dpi=180)
+plt.close(fig)
+
+# 10. 실행 결과 화면 — 같은 질문에 원본과 최종이 낸 답 (results/raw/demo_*.json, 실제 API 1회 실행 기록)
+import textwrap  # noqa: E402
+demo_path = sorted((R / "raw").glob("demo_*.json"))[-1]
+D = json.loads(demo_path.read_text())
+gold = set(D["gold"])
+fig = plt.figure(figsize=(12, 5.6))
+fig.text(0.03, 0.94, "실행 결과 — 같은 질문, 원본과 최종의 답", fontsize=16, fontweight="bold", color=INK)
+fig.text(0.03, 0.89, f"질문: \"{D['query']}\"   (정답 매뉴얼: {', '.join(D['gold'])})", fontsize=11.5, color=INK2)
+for i, (key, name) in enumerate((("base", "원본 (base)"), ("final", "최종 (final)"))):
+    r = D[key]
+    ok = bool(gold & set(r["fed_runbooks"]))
+    x0 = 0.03 + i * 0.485
+    ax = fig.add_axes([x0, 0.07, 0.455, 0.76])
+    ax.set_axis_off()
+    ax.add_patch(FancyBboxPatch((0, 0), 1, 1, boxstyle="round,pad=0,rounding_size=0.025",
+                                fc="#f3f2ee" if not ok else "#e7f0fb", ec=GRID, lw=1.2, transform=ax.transAxes))
+    ax.text(0.05, 0.93, name, fontsize=14, fontweight="bold", color=INK, transform=ax.transAxes)
+    mark, col = ("맞는 매뉴얼", BLUE) if ok else ("엉뚱한 매뉴얼", ORANGE)
+    ax.text(0.05, 0.85, f"고른 매뉴얼: {', '.join(r['fed_runbooks'])}  →  {mark}", fontsize=11.5,
+            color=col, fontweight="bold", transform=ax.transAxes)
+    ax.text(0.05, 0.79, f"걸린 시간 {r['latency_ms'] / 1000:.1f}초 · 비용 ${r['cost_usd']:.5f} · 재작성 {r['rewrites']}회",
+            fontsize=10.5, color=INK2, transform=ax.transAxes)
+    body = "\n".join(textwrap.fill(line.strip(), 34) for line in r["answer"].splitlines() if line.strip())
+    ax.text(0.05, 0.72, body, fontsize=10.5, color=INK, va="top", linespacing=1.55, transform=ax.transAxes)
+fig.text(0.03, 0.02, f"출처: {demo_path.relative_to(ROOT)} · scripts/demo_side_by_side.py (실제 API, 1회 실행)",
+         fontsize=9, color=INK2)
+fig.savefig(OUT / "fig10_demo.png", dpi=180)
 plt.close(fig)
 
 print("wrote", sorted(p.name for p in OUT.glob("*.png")))

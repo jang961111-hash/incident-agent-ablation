@@ -109,11 +109,11 @@ s.addNotes("개선을 많이 붙인 게 아니라, 어떤 개선이 실제로 �
 
 // ── 2. 결론 ──────────────────────────────────────────────────────────
 s = slide("CONTENT", "요약");
-s.addText("결론: 조치 정확도는 RAG가, 비용은 캐스케이드가 만들었다", { placeholder: "title" });
+s.addText("결론: 조치 정확도는 RAG가, 비용은 캐스케이드가 낮췄다", { placeholder: "title" });
 stat(s, 0.6, 1.5, 3.85, `${pct(X.base.miss_runbook_rate)} → ${pct(X.final.miss_runbook_rate)}`,
   "정답 런북 누락률 (base → final)\n= 맞는 조치를 권고하지 못할 위험", C.accent2, "stat-miss");
 stat(s, 4.74, 1.5, 3.85, `-${Math.round((1 - X.final.cost_per_incident / X.base.cost_per_incident) * 100)}%`,
-  `장애 1건당 처리 비용\n${usd(X.base.cost_per_incident, 5)} → ${usd(X.final.cost_per_incident, 5)}`, C.accent6, "stat-cost");
+  `장애 1건당 처리 비용 ${usd(X.base.cost_per_incident, 5)} → ${usd(X.final.cost_per_incident, 5)}\n(캐스케이드만 켜면 -${Math.round((1 - X.rag_judge_cost.cost_per_incident / X.base.cost_per_incident) * 100)}%)`, C.accent6, "stat-cost");
 const pj = pair("base", "judge");
 stat(s, 8.88, 1.5, 3.85, "개선 미확인",
   `LLM Judge 단독: 품질 향상 확인 안 됨\n지연은 +${pj.latency.diff.toFixed(1)}초 (유의)`, C.accent1, "stat-judge");
@@ -135,7 +135,7 @@ const q3 = [
   ["맞는 조치를 권고하나", "새벽 2시 당직자가 \"DB 프라이머리가 죽었다\"고 물었는데 응답 지연 절차를 주면, 그 답은 장애를 키운다.",
     "정답 런북 누락률 · 무관 런북 혼입률", C.accent1],
   ["그 판정을 믿어도 되나", "\"AI가 채점했더니 97점\"은 채점한 AI가 관대하면 의미가 없다. 평가자 자체를 검증해야 한다.",
-    "독립 평가자·사람 표본과의 일치도 (kappa) · Judge 무관 지표", C.accent4],
+    "독립 평가자와의 일치도 (kappa, 사람 표본은 예정) · Judge 무관 지표", C.accent4],
   ["얼마에, 얼마나 빨리", "품질을 올린 대가로 비용과 지연이 얼마나 늘었는지, 장애가 겹쳐 들어오거나 도구가 죽어도 버티는지.",
     "장애 1건당 비용 · p95 지연 · 동시 처리 · 장애 주입", C.accent2],
 ];
@@ -268,8 +268,8 @@ const rowsT = [[hdr("켠 것"), hdr("정답 누락"), hdr("무관 혼입"), hdr(
 st.forEach((p) => rowsT.push([{ text: p.label, options: { bold: p.a === "base" && p.b === "final" } },
   ...keys.map(([k, u]) => cellOf(p[k], k, u))]));
 s.addTable(rowsT, { ...TBL, x: 0.6, y: 1.4, w: 12.1, colW: [3.1, 1.45, 1.45, 1.45, 1.45, 1.6, 1.6], rowH: 0.5, objectName: "contrib-table" });
-T(s, "★ = 95% 신뢰구간이 0을 포함하지 않음 (holdout 36건, 질의 단위 paired bootstrap 2,000회). 초록 = 좋아짐, 주황 = 나빠짐. 표시 없는 칸은 차이가 있다고 말할 수 없음.",
-  { x: 0.6, y: 5.6, w: 12.1, h: 0.6, fontSize: 12.5 });
+T(s, "★ = 95% 신뢰구간이 0을 포함하지 않음 (holdout 36건, 질의 단위 paired bootstrap 2,000회). 초록 = 좋아짐, 주황 = 나빠짐. 표시 없는 칸은 차이가 있다고 말할 수 없음. 캐스케이드·v2 위 비용·전체 행의 지연은 재측정 부하(2프로세스 vs 7프로세스) 차이가 섞였을 수 있음.",
+  { x: 0.6, y: 5.55, w: 12.1, h: 0.7, fontSize: 11.5 });
 src(s, "results/stats_holdout.json · eval/stats.py", 6.3);
 s.addNotes("이 표가 핵심입니다. RAG 행에 품질 별표가 몰려 있고, Judge 행에는 비용과 지연 별표만 있습니다.");
 
@@ -336,7 +336,7 @@ if (D.cache) {
   T(s, [
     { text: "반복 질문 캐시 (같은 60건 2회, 실제 API)", options: { bold: true, color: HEX.dk2, breakLine: true } },
     { text: `2회차 적중 ${c2.cache_hits}/${c2.cache_lookups}, 지연 p50 ${sec(c1.latency_p50_ms)} → ${sec(c2.latency_p50_ms)}`, options: { fontSize: 16, bold: true, color: HEX.accent6, breakLine: true } },
-    { text: `route·plan·임베딩만 캐시 (final 비용의 ${pct(D.cacheable_share_final)}). 2회차 비용 ${usd(c1.cost_usd)} → ${usd(c2.cost_usd)}. 모니터링·답변은 캐시하지 않음.`, options: { fontSize: 12 } },
+    { text: `route·plan·임베딩만 캐시 (final 비용의 ${pct(D.cacheable_share_final)}). 1회차 → 2회차 비용 ${usd(c1.cost_usd)} → ${usd(c2.cost_usd)}. 모니터링·답변은 캐시하지 않음.`, options: { fontSize: 12 } },
   ], { x: 7.4, y: 4.0, w: 5.1, h: 1.7, fontSize: 14, valign: "top" });
 }
 src(s, (D.concurrency && D.concurrency.backend === "fake_slow" ? "동시성·장애 주입은 API 없이 측정 (results/*_simulated·_fake_latest.json)" : "동시성·장애 주입·캐시 모두 실제 API (results/concurrency_bench_latest.json · fault_bench_latest.json · cache_bench_latest.json). 동시성은 N마다 1회 측정"), 6.1);
@@ -385,7 +385,7 @@ card(s, 0.6, 1.5, 12.1, 1.0, C.text2, "demo-cmd");
 T(s, ".venv/bin/python scripts/demo_side_by_side.py --id Q01",
   { x: 0.9, y: 1.6, w: 11.5, h: 0.8, fontSize: 16, fontFace: "Courier New", color: C.background1, valign: "middle" });
 const demo = [["base", "high-latency (응답 지연 절차)", "오답", C.accent1, "커넥션 풀 늘리기, 트래픽 분산…"],
-  ["final", "db-down (+disk-full)", "정답", C.accent2, "커넥션 풀·리플리케이션 점검, failover 노드로 전환…"]];
+  ["final", "db-down (+disk-full 혼입)", "정답 포함", C.accent2, "커넥션 풀·리플리케이션 점검, failover 노드로 전환…"]];
 demo.forEach(([n, rb, ok, color, gist], i) => {
   const x = 0.6 + i * 6.13;
   card(s, x, 2.8, 5.97, 3.2, C.background2, `demo-${n}`);
@@ -402,7 +402,7 @@ s = slide("CONTENT", "한계");
 s.addText("한계와 다음 개선", { placeholder: "title" });
 const lim = [
   ["일반화 격차", `RAG Recall@1이 dev ${pct(D.dev.rag["recall@1"])} → holdout ${pct(H.rag["recall@1"])}. 자기 말로 묻는 holdout 질의는 ${pct(X.rag["recall@1[paraphrased]"])}`, "런북 본문 외에 증상 예시 문장을 색인해 질문과 문서의 표현 차이를 줄임"],
-  ["무관 런북 혼입이 남음", `final 혼입 ${pct(X.final.wrong_runbook_rate)}. 1위 점수와 가까운 런북을 함께 넣는 규칙 때문`, "재순위(reranker), 질문 속 증상 수에 맞춘 투입 개수"],
+  ["무관 런북 혼입이 남음", `final 혼입 ${pct(X.final.wrong_runbook_rate)}. 1위와 점수가 가까운 런북을 함께 넣는 규칙, 맞는 런북이 없는 질문에도 런북이 들어가는 경우`, "재순위(reranker), 질문 속 증상 수에 맞춘 투입 개수"],
   ["캐스케이드의 품질 대가", `어구 포함 ${pp(pair("rag_judge", "rag_judge_cost").must.diff)} (유의하지 않음). 저가 초안이 런북 문구를 덜 인용하는 것으로 추정 (미검증)`, "Judge 대신 결정적 어구 대조로 승급 기준을 정함"],
   ["평가 규모와 범위", "holdout 36건 x 3회 (1건 = 2.8%p). 평가 Judge 포화. 라우터는 개선 범위 밖", "질의 확대, 라우팅 개선을 같은 체계로 재측정"],
 ];
@@ -420,7 +420,7 @@ lim.forEach(([h, why, next], i) => {
 s = slide("DARK", "마무리");
 s.addText("기능을 더하기 전에, 효과를 재는 법부터", { placeholder: "title" });
 s.addText([
-  { text: "RAG가 조치 정확도를 올렸고, Judge는 기준을 잘못 세우면 비용만 늘렸으며, 캐스케이드로 장애 1건당 비용을 낮췄다. 모두 holdout에서, 반복과 짝지은 비교로 확인했다.", options: { breakLine: true } },
+  { text: "RAG가 조치 정확도를 올렸고, Judge는 품질 향상이 확인되지 않은 채 비용·지연만 늘렸으며, 캐스케이드로 장애 1건당 비용을 낮췄다. 모두 holdout에서, 반복과 짝지은 비교로 확인했다.", options: { breakLine: true } },
   { text: "github.com/jang961111-hash/incident-agent-ablation", options: { fontSize: 14, color: C.accent3 } },
 ], { placeholder: "body" });
 
