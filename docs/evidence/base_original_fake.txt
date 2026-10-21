@@ -1,0 +1,167 @@
+# 베이스 원본 실행 기록 — 2026-10-21 10:05:41 / LLM_BACKEND=fake
+## GET /health
+{
+    "status": "ok",
+    "instance_id": 4464746016,
+    "creation_count": 1,
+    "supervisor_version": "v2",
+    "llm_backend": "fake",
+    "fast_llm": "fast-model-stub",
+    "quality_llm": "quality-model-stub"
+}
+
+## POST /chat — auth-service 로그인 응답이 느려졌어요. 원인 확인해주세요
+{
+    "reply": "안녕하세요! 무엇을 도와드릴까요?",
+    "events": [
+        {
+            "type": "RouteDecided",
+            "route": "chat"
+        },
+        {
+            "type": "Finalize",
+            "pipeline": "chat-direct"
+        }
+    ],
+    "metadata": {
+        "route": "chat",
+        "task_count": 0,
+        "gate_removed": 0,
+        "replan_rounds": 0,
+        "retry_count": 0,
+        "parallel_elapsed": null,
+        "validation_attempts": 0,
+        "cost_usd": 5e-06,
+        "llm_backend": "fake",
+        "supervisor_version": "v2",
+        "instance_id": 4464746016,
+        "langsmith_run_id": null
+    }
+}
+
+## POST /chat — log-service 디스크 공간이 부족하다는 알림이 왔어요. 장애 진단 부탁해요
+{
+    "reply": "'log-service 디스크 공간이 부족하다는 알림이 왔어요. 장애 진단 부탁해요' 진단 결과: 1) 모니터링: log-service 상태=degraded, CPU 26.6% (알림 2건) · web-01 상태=healthy, CPU 37.0% (알림 0건) 2) 표준 절차: 'Runbook: 디스크 용량 부족 대응 절차'에 따라 로그 파일, 임시 파일, 오래된 백업처럼 안전하게 지울 수 있는 항목부터 정리해 여유 공간을 즉시 확보한다. 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축한다. 3) 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화하세요.",
+    "events": [
+        {
+            "type": "RouteDecided",
+            "route": "incident"
+        },
+        {
+            "type": "PlanCreated",
+            "task_count": 3,
+            "targets": [
+                "log-service",
+                "web-01"
+            ]
+        },
+        {
+            "type": "GateApplied",
+            "removed_analysis_tasks": 1
+        },
+        {
+            "type": "TaskCompleted",
+            "id": "task-0",
+            "source": "monitoring",
+            "target": "log-service",
+            "retries": 1
+        },
+        {
+            "type": "TaskCompleted",
+            "id": "task-1",
+            "source": "monitoring",
+            "target": "web-01",
+            "retries": 0
+        },
+        {
+            "type": "ReplanCheck",
+            "round": 0,
+            "is_sufficient": false,
+            "gap_task": "task-gap-runbook",
+            "target": "disk-full"
+        },
+        {
+            "type": "TaskCompleted",
+            "id": "task-gap-runbook",
+            "source": "runbook",
+            "target": "disk-full",
+            "retries": 0
+        },
+        {
+            "type": "ReplanCheck",
+            "round": 1,
+            "is_sufficient": true
+        },
+        {
+            "type": "AnalysisSkipped",
+            "reason": "analysis task 0개"
+        },
+        {
+            "type": "DraftWritten",
+            "attempt": 1,
+            "length": 10
+        },
+        {
+            "type": "Validation",
+            "attempt": 1,
+            "verdict": "불합격"
+        },
+        {
+            "type": "DraftWritten",
+            "attempt": 2,
+            "length": 338
+        },
+        {
+            "type": "Validation",
+            "attempt": 2,
+            "verdict": "합격"
+        },
+        {
+            "type": "Finalize",
+            "pipeline": "incident-v2"
+        }
+    ],
+    "metadata": {
+        "route": "incident",
+        "task_count": 3,
+        "gate_removed": 1,
+        "replan_rounds": 1,
+        "retry_count": 1,
+        "parallel_elapsed": 0.36,
+        "validation_attempts": 2,
+        "cost_usd": 0.000648,
+        "llm_backend": "fake",
+        "supervisor_version": "v2",
+        "instance_id": 4464746016,
+        "langsmith_run_id": null
+    }
+}
+
+## POST /chat — 안녕, 너는 누구야?
+{
+    "reply": "안녕하세요! 무엇을 도와드릴까요?",
+    "events": [
+        {
+            "type": "RouteDecided",
+            "route": "chat"
+        },
+        {
+            "type": "Finalize",
+            "pipeline": "chat-direct"
+        }
+    ],
+    "metadata": {
+        "route": "chat",
+        "task_count": 0,
+        "gate_removed": 0,
+        "replan_rounds": 0,
+        "retry_count": 0,
+        "parallel_elapsed": null,
+        "validation_attempts": 0,
+        "cost_usd": 3e-06,
+        "llm_backend": "fake",
+        "supervisor_version": "v2",
+        "instance_id": 4464746016,
+        "langsmith_run_id": null
+    }
+}
