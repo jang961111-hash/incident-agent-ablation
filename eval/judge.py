@@ -25,11 +25,16 @@ JUDGE_PROMPT = ChatPromptTemplate.from_messages([
     ("system",
      "당신은 장애 대응 답변을 채점하는 엄격한 평가자입니다.\n"
      "아래 4개 지표를 각각 Pass/Fail로 판정하고, 판정 근거를 한 문장으로 쓰세요.\n\n"
-     "1. relevance: 질문이 묻는 것에 답했는가. (Query <-> Answer)\n"
+     "1. relevance: 질문이 묻는 것에 답했는가. (Query <-> Answer) "
+     "질문 대상(시스템·장애 유형)이 Context에 없으면 그 사실을 밝혀야 Pass이고, "
+     "다른 시스템 이야기로 바꿔 답하면 Fail. 질문이 모호하면 대상·증상을 되묻거나 "
+     "확인한 범위를 밝혀야 Pass.\n"
      "2. completeness: Context에 있는 필수 정보가 답변에 들어갔는가. "
      "Context에 없는 수치나 사실을 답변이 만들어냈다면 Fail. (Answer <-> Context)\n"
-     "3. domain_appropriateness: Context의 도메인 조치/절차가 답변에 반영됐는가. (Answer <-> Context)\n"
-     "4. clarity: 답변 자체가 논리적이고 체계적으로 작성됐는가. (Answer 단독)\n\n"
+     "3. domain_appropriateness: Context의 도메인 조치/절차 중 질문에 맞는 것이 답변에 "
+     "반영됐는가. 질문과 무관한 런북 절차를 섞었다면 Fail. (Answer <-> Context)\n"
+     "4. clarity: 답변 자체가 논리적이고 체계적으로 작성됐는가. 질문이 길이·형식(예: 50자 이내, "
+     "표로, 3줄 이내)을 지정했다면 그것을 지켜야 Pass. (Answer 단독)\n\n"
      "출력은 아래 JSON 스키마만. 다른 말은 쓰지 마세요.\n"
      '{{"relevance":{{"verdict":"Pass|Fail","reason":"..."}},'
      '"completeness":{{"verdict":"Pass|Fail","reason":"..."}},'
@@ -55,10 +60,11 @@ class JudgeResult:
 
 
 class Judge:
-    def __init__(self, model: str = "gpt-4o-mini", threshold: float = 0.8,
+    def __init__(self, model: str = "gpt-4o", threshold: float = 0.75,
                  temperature: float = 0.0):
         self.threshold = threshold
-        self.llm = ChatOpenAI(model=model, temperature=temperature)
+        self.llm = ChatOpenAI(model=model, temperature=temperature).bind(
+            response_format={"type": "json_object"})
         self.chain = JUDGE_PROMPT | self.llm
 
     def evaluate(self, query: str, context: str, answer: str) -> JudgeResult:

@@ -1,17 +1,20 @@
 name: rag_judge
 description: RAG + Validator를 LLM-as-a-Judge 4지표로 교체.
+backend: openai
 runbook_selection: rag
 validator: judge
 cost:
   model_tiering: false
   cache: false
 models:
-  default: gpt-4o-mini
-  judge: gpt-4o-mini
+  fast: gpt-4o-mini
+  quality: gpt-4o
+  judge: gpt-4o-mini            # 파이프라인 내부 Validator. 평가용 Judge(gpt-4o)와 분리
 rag:
   top_k: 3
+  margin: 0.05
   embedding: text-embedding-3-small
 judge:
-  threshold: 0.8
-  max_retries: 2
-  max_seconds: 120
+  threshold: 0.75               # 4지표 중 3개 이상 Pass
+  max_retries: 2                # 재작성 상한
+  max_seconds: 120              # 시간 상한. 둘 중 먼저 닿는 쪽에서 종료

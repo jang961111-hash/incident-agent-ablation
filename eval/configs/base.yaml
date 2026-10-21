@@ -1,9 +1,11 @@
 name: base
-description: 교수님 제공 베이스 그대로. Before 기준선.
-runbook_selection: keyword      # keyword | rag
-validator: rule                 # rule | judge
+description: 교수님 베이스 원본 그대로 (원본 build_graph). Before 기준선.
+backend: openai
+runbook_selection: keyword      # 원본 _classify_incident_type — 모니터링 알림 키워드 규칙, 런북 1개
+validator: rule                 # 원본 validate_node — 30자 이상 + "1)" 포함
 cost:
   model_tiering: false
   cache: false
-models:
-  default: gpt-4o-mini
+models:                         # 원본 server.py 기본값과 동일
+  fast: gpt-4o-mini             # route, plan, analyze
+  quality: gpt-4o               # write
