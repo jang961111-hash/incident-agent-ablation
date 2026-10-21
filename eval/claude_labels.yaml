@@ -1,0 +1,67 @@
+# 독립 평가자(Claude) 라벨 — 사람 라벨이 아니다.
+# base 답변(1회차) 60건을 Judge 판정을 가린 블라인드 파일만 보고 지표별 Pass/Fail 로 매겼다.
+# 평가 Judge(gpt-4o)와 다른 모델 계열의 독립 채점으로, 'Judge 와 다른 평가자의 일치도'를 재는 데 쓴다.
+# 사람 검증은 eval/human_labels.yaml (사람이 직접, 표본 20건 — eval/human_sample_ids.txt).
+rater: claude-opus-5.5 (subagent, blind, 2026-10-21)
+source_config: base
+labels:
+  Q01: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '87b72f948522', note: 'DB 프라이머리 다운 질문에 DB 런북 없음을 밝히지 않고 응답 지연 런북 절차만 제시'}
+  Q02: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '59b75145d733', note: 'DB 프라이머리 무응답 복구 질문을 커넥션 풀·지연 대응으로 바꿔 답함, 런북 없음 미고지'}
+  Q03: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: '708dd97680b8', note: 'p95 2.4s·풀 92% 반영, 응답 지연 런북 절차를 순서대로 제시'}
+  Q04: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'c70e1a6d96e2', note: '로그인 지연을 auth-service 지연으로 연결, 수치와 지연 런북 순서 반영'}
+  Q05: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'a42b207c9d79', note: '/var/log 95% 반영, 디스크 용량 런북 1~4단계를 그대로 따름'}
+  Q06: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '96827f230779', note: '저장공간 부족 질문에 auth-service 지연·커넥션 풀 대응으로 답함, 디스크 런북 부재 미고지'}
+  Q07: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'a041db09b92a', note: 'CPU 93.1% 반영, CPU 급증 런북 1~3단계 적용'}
+  Q08: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'a8643a1f2abd', note: '결제 서버 CPU·배포 직후 질문을 auth-service 지연 이야기로 바꿈, 롤백 등 CPU 절차 없음'}
+  Q09: {relevance: Pass, completeness: Fail, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'b0a799fc227c', note: '메모리 누수 런북은 맞으나 힙 덤프·배포 점검 결과(특이 패턴 없음, 원인 배포 없음)를 수행하지 않은 확인 사실처럼 단정'}
+  Q10: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '8a0420f814f9', note: 'cache 88%·알림은 반영했으나 묻지 않은 auth 지연 절차를 섞고 캐시 조치는 런북 없이 추측'}
+  Q11: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'aa292dacbee0', note: '두 서비스 알림 모두 반영, CPU 런북으로 payments 대응 제시, 네트워크 절차는 지어내지 않음'}
+  Q12: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: 'fea90197e3a0', note: '방화벽·DNS 정보 미수집은 밝혔으나 무관한 커넥션 풀 조치를 우선 절차로 제시'}
+  Q13: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '8d6bcbb76017', note: '44자로 50자 제약 준수, 근거 없이 일반론 절차를 추측하고 런북 없음 미고지'}
+  Q14: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: 'b3c60358a501', note: '단계·조치 2열 표 형식 준수, 런북 근거 없이 일반 절차를 추측'}
+  Q15: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '64938393471f', note: '1줄로 3줄 제약 준수, 런북 없이 일반론 추측이며 없음 미고지'}
+  Q16: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '703abef6584f', note: '두 서비스 수치·알림 반영, 네트워크 장비 재부팅 등 런북에 없는 절차를 추측해 섞음'}
+  Q17: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '980e511f3b30', note: 'auth는 지연 런북대로, cache 메모리 대응은 런북 없이 캐시 정리·할당 증가를 추측'}
+  Q18: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: 'a63b8a17aa57', note: 'auth는 지연 런북 반영, log-service 디스크 대응은 런북 부재를 밝히지 않고 추측'}
+  Q19: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'ccad77cce248', note: '외부 PG 결제 API 질문을 미등록이라 밝히지 않고 auth 지연 런북으로 대체'}
+  Q20: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '35ce3efab0b3', note: 'Kafka 컨슈머 랙을 미등록이라 밝히지 않고 응답 지연 런북 5단계로 대체'}
+  Q21: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '337a588ccf4d', note: 'SSL 만료 미등록 미고지, 인증서 갱신 추측 후 무관한 auth 지연 절차를 섞음'}
+  Q22: {relevance: Fail, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'bcfbb561b56e', note: '모호한 질문에 대상·증상을 되묻거나 확인 범위를 명시하지 않고 auth 지연으로 단정'}
+  Q23: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'e5a4e5fd54db', note: '모니터링 알람을 알람시계 설정으로 오해, 되묻기·장애 대응 없음'}
+  Q24: {relevance: Fail, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: '4582c80735d3', note: '모호한 장애 질문에 되묻기·확인 범위 명시 없이 auth 지연 대응으로 바로 진행'}
+  Q25: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '28bce71587f6', note: 'DB 크래시 질문에 등록 런북 없음 언급 없이 auth-service 응답 지연 런북으로 바꿔 답함'}
+  Q26: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'f99aa9ac4bbc', note: '주문 DB connection refused 질문을 auth-service 지연·커넥션 풀 대응으로 대체'}
+  Q27: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '0776e50b5852', note: 'DB 마스터 페일오버 판단 기준을 묻는데 지연 런북만 나열하고 런북 부재 미언급'}
+  Q28: {relevance: Pass, completeness: Fail, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '680e014d48a4', note: 'CPU 91% 알림과 반대로 90% 미만이라 단정하고 무관한 auth-service 지연 런북을 섞음'}
+  Q29: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: '7452d0b13137', note: 'CPU 급증 런북 순서대로 확인 항목 제시, 95.6%를 인스턴스 수치처럼 쓴 점은 경미'}
+  Q30: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'f93e2ab8b993', note: '배치 중복 풀로드 질문에 auth-service 지연 런북으로 답하고 CPU 런북 부재 미언급'}
+  Q31: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'a569ce4a3dbb', note: '디스크 95% 확인 후 디스크 런북 5단계를 그대로 반영'}
+  Q32: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '3040b82a7201', note: 'No space left 디스크 질문을 auth-service 지연·커넥션 풀 대응으로 대체'}
+  Q33: {relevance: Fail, completeness: Fail, domain_appropriateness: Fail, clarity: Fail, overall: Fail, answer_sha: '5f4071a1bdfd', note: '디버그 로그 저장공간 문제를 지연 해결이 우선이라는 근거 없는 연결로 지연 런북에 묶음'}
+  Q34: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'ee8d483c6c0d', note: '커넥션 풀 92%·p95 2.4s 사실과 지연 런북 순서를 정확히 반영'}
+  Q35: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: '7a9d1d42dad4', note: '5분 경과 시 캐시 계층·읽기 복제본 분산 단계를 근거와 함께 제시'}
+  Q36: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: '69a4d45f2319', note: '특정 인스턴스 지연 시 로드밸런서 제외 단계를 반영, 대상 서버를 auth-service로 전제'}
+  Q37: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: '912b89357b9b', note: '메모리 92.6%·6시간 증가 알림 확인 후 메모리 누수 런북대로 재시작·덤프·배포 점검'}
+  Q38: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: '3bbfaf3e9917', note: '91.3% 실측치와 누수 런북으로 확인·재발 방지 절차를 구분해 제시'}
+  Q39: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'b9ef0fb49449', note: 'OOMKilled 근본 원인 질문을 auth-service 지연 런북 조치로 대체, 메모리 런북 부재 미언급'}
+  Q40: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'b94a00691ba4', note: '504·패킷 손실 3% 알림과 네트워크 타임아웃 런북 5단계를 반영하고 미확인 정보는 없다고 밝힘'}
+  Q41: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'b12c732d7828', note: '가용영역 간 호출 끊김을 auth-service 지연 문제로 바꿔 답하고 네트워크 런북 부재 미언급'}
+  Q42: {relevance: Fail, completeness: Fail, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'a8963e5bb55c', note: '배포 후 타임아웃 질문에 지연 런북을 쓰고 클라이언트 문제 아님이라는 근거 없는 결론'}
+  Q43: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Fail, overall: Fail, answer_sha: 'd97dac320739', note: '2줄 요청인데 한 줄 두 문장이고 근거 없이 일반 조치를 추측'}
+  Q44: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '1ad9ba44e9ac', note: '번호 없는 한 문장 형식은 지켰으나 런북 없이 일반론적 확인 절차를 추측'}
+  Q45: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '0089e96c7057', note: '체크박스 형식은 지켰으나 런북 근거 없이 일반 항목을 추측해 나열'}
+  Q46: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: 'ef11b5d193e0', note: '100자 이내는 지켰으나 런북 없음 언급 없이 복구·전환 절차를 추측'}
+  Q47: {relevance: Pass, completeness: Fail, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '2049f7968123', note: '요청 열 구성의 표는 맞으나 담당 조직을 지어냈고 런북 없이 절차 추측'}
+  Q48: {relevance: Fail, completeness: Fail, domain_appropriateness: Fail, clarity: Fail, overall: Fail, answer_sha: 'bb7d0603c73f', note: 'DB 장애 대응은 빠지고 캐시로 트래픽 분산·payments 제외 등 무관하고 비논리적인 조치를 섞음'}
+  Q49: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '2a284e3c0a9c', note: 'payments는 CPU 런북 반영했으나 롤백 조건을 바꿨고 cache 메모리는 런북 없이 추측 절차'}
+  Q50: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: 'a72ffccb0381', note: '우선순위와 네트워크 런북은 정확하나 디스크 절차는 런북 없이 추측하고 부재 미언급'}
+  Q51: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'e71adee2b329', note: 'DB 미복구·메모리 증가 질문을 auth-service 지연 런북으로만 답함'}
+  Q52: {relevance: Pass, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Pass, answer_sha: '3228b34be2d7', note: '배치 중지·로그 정리로 두 문제에 답했으나 근거 없는 추측 절차에 무관한 지연 런북을 섞음'}
+  Q53: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '6750361f6071', note: '미등록 CI/CD 질문에 런북 없음 언급 없이 auth-service 지연 런북으로 답함'}
+  Q54: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'ccad77cce248', note: '미등록 메일 큐 적체 질문에 런북 없음 언급 없이 지연 런북으로 답함'}
+  Q55: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '5b91f2924687', note: '미등록 외부 API 쿼터 질문에 런북 없음 언급 없이 지연 런북으로 답함'}
+  Q56: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'abbf35b886f3', note: '미등록 도메인 만료 질문에 런북·모니터링 없음 언급 없이 일반 갱신 절차를 추측'}
+  Q57: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: 'f5fbc11f7d59', note: '모호한 질문에 대상·증상을 되묻거나 확인 범위를 밝히지 않고 지연 런북을 단정 적용'}
+  Q58: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '34beafb476db', note: '불안정 원인 불명 질문에 확인 범위 명시 없이 auth-service 지연 대응을 단정'}
+  Q59: {relevance: Pass, completeness: Pass, domain_appropriateness: Pass, clarity: Pass, overall: Pass, answer_sha: 'd79c3dbebda8', note: '근거 없는 추측 없이 무엇이 다른지 구체적으로 되물음'}
+  Q60: {relevance: Fail, completeness: Pass, domain_appropriateness: Fail, clarity: Pass, overall: Fail, answer_sha: '8abb33b49fce', note: '서비스 불가 문의에 대상·증상 확인 없이 auth-service 지연 런북을 단정 적용'}

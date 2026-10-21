@@ -47,7 +47,8 @@ def load_human(path: Path | str | None = None) -> dict:
     for v in labels.values():
         if "answer_sha" in v:
             v["answer_sha"] = str(v["answer_sha"])
-    return {"source_config": data.get("source_config", "base"), "labels": labels}
+    return {"source_config": data.get("source_config", "base"), "labels": labels,
+            "rater": data.get("rater", "사람")}
 
 
 def load_rows(config: str = "base", results_dir: Path | str | None = None) -> dict[str, dict]:
@@ -163,6 +164,7 @@ def summary_dict(config: str = "base", labels_path: Path | str | None = None,
         by_md.setdefault(d["metric"], {}).setdefault(d["direction"], []).append(d["id"])
     return {
         "config": config,
+        "rater": human["rater"],
         "source_config": human["source_config"],
         "n_labeled": len(labels),
         "n_compared": len(pairs["overall"]),
@@ -234,7 +236,11 @@ def render(s: dict, md: bool = False) -> str:
             maxcolwidths=None if md else [None, None, None, None, None, None, 70]))
     else:
         out.append("\n불일치 없음.")
-    return "\n".join(out)
+    text = "\n".join(out)
+    rater = s.get("rater", "사람")
+    if not str(rater).startswith("사람"):   # Claude 등 독립 평가자 라벨이면 '사람'으로 표기하지 않는다
+        text = text.replace("사람", "평가자").replace("Judge 일치도 —", f"Judge 일치도 (평가자: {rater}) —")
+    return text
 
 
 def main(argv=None):
