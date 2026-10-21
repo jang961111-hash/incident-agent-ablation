@@ -1,0 +1,209 @@
+{
+  "split": "dev",
+  "n": 24,
+  "best": {
+    "min_score": 0.3236,
+    "balanced_acc": 1.0,
+    "gold_kept": 1.0,
+    "nogold_filtered": 1.0,
+    "gap": 0.0023
+  },
+  "rows": [
+    {
+      "id": "Q01",
+      "category": "normal",
+      "has_gold": true,
+      "top": "db-down",
+      "score": 0.3838
+    },
+    {
+      "id": "Q02",
+      "category": "normal",
+      "has_gold": true,
+      "top": "db-down",
+      "score": 0.3794
+    },
+    {
+      "id": "Q03",
+      "category": "normal",
+      "has_gold": true,
+      "top": "high-latency",
+      "score": 0.5336
+    },
+    {
+      "id": "Q04",
+      "category": "normal",
+      "has_gold": true,
+      "top": "high-latency",
+      "score": 0.3248
+    },
+    {
+      "id": "Q05",
+      "category": "normal",
+      "has_gold": true,
+      "top": "disk-full",
+      "score": 0.5775
+    },
+    {
+      "id": "Q06",
+      "category": "normal",
+      "has_gold": true,
+      "top": "disk-full",
+      "score": 0.3838
+    },
+    {
+      "id": "Q07",
+      "category": "normal",
+      "has_gold": true,
+      "top": "cpu-spike",
+      "score": 0.481
+    },
+    {
+      "id": "Q08",
+      "category": "normal",
+      "has_gold": true,
+      "top": "cpu-spike",
+      "score": 0.4709
+    },
+    {
+      "id": "Q09",
+      "category": "normal",
+      "has_gold": true,
+      "top": "memory-leak",
+      "score": 0.4886
+    },
+    {
+      "id": "Q10",
+      "category": "normal",
+      "has_gold": true,
+      "top": "memory-leak",
+      "score": 0.4579
+    },
+    {
+      "id": "Q11",
+      "category": "normal",
+      "has_gold": true,
+      "top": "network-timeout",
+      "score": 0.3257
+    },
+    {
+      "id": "Q12",
+      "category": "normal",
+      "has_gold": true,
+      "top": "network-timeout",
+      "score": 0.425
+    },
+    {
+      "id": "Q13",
+      "category": "constrained",
+      "has_gold": true,
+      "top": "disk-full",
+      "score": 0.4215
+    },
+    {
+      "id": "Q14",
+      "category": "constrained",
+      "has_gold": true,
+      "top": "cpu-spike",
+      "score": 0.5197
+    },
+    {
+      "id": "Q15",
+      "category": "constrained",
+      "has_gold": true,
+      "top": "disk-full",
+      "score": 0.5381
+    },
+    {
+      "id": "Q16",
+      "category": "composite",
+      "has_gold": true,
+      "top": "high-latency",
+      "score": 0.4683
+    },
+    {
+      "id": "Q17",
+      "category": "composite",
+      "has_gold": true,
+      "top": "memory-leak",
+      "score": 0.5
+    },
+    {
+      "id": "Q18",
+      "category": "composite",
+      "has_gold": true,
+      "top": "disk-full",
+      "score": 0.5375
+    },
+    {
+      "id": "Q19",
+      "category": "unregistered",
+      "has_gold": false,
+      "top": "cpu-spike",
+      "score": 0.2622
+    },
+    {
+      "id": "Q20",
+      "category": "unregistered",
+      "has_gold": false,
+      "top": "memory-leak",
+      "score": 0.3225
+    },
+    {
+      "id": "Q21",
+      "category": "unregistered",
+      "has_gold": false,
+      "top": "network-timeout",
+      "score": 0.2527
+    },
+    {
+      "id": "Q22",
+      "category": "ambiguous",
+      "has_gold": false,
+      "top": "disk-full",
+      "score": 0.2397
+    },
+    {
+      "id": "Q23",
+      "category": "ambiguous",
+      "has_gold": false,
+      "top": "db-down",
+      "score": 0.2739
+    },
+    {
+      "id": "Q24",
+      "category": "ambiguous",
+      "has_gold": false,
+      "top": "disk-full",
+      "score": 0.2254
+    }
+  ],
+  "gold_scores": [
+    0.3248,
+    0.3257,
+    0.3794,
+    0.3838,
+    0.3838,
+    0.4215,
+    0.425,
+    0.4579,
+    0.4683,
+    0.4709,
+    0.481,
+    0.4886,
+    0.5,
+    0.5197,
+    0.5336,
+    0.5375,
+    0.5381,
+    0.5775
+  ],
+  "nogold_scores": [
+    0.2254,
+    0.2397,
+    0.2527,
+    0.2622,
+    0.2739,
+    0.3225
+  ]
+}

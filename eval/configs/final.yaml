@@ -1,0 +1,29 @@
+name: final
+description: rag_judge_v2 + 비용(캐스케이드·캐시) + 런타임(비동기 I/O·도구 부분 실패 허용). 최종 After.
+backend: openai
+runbook_selection: rag
+validator: judge
+cost:
+  model_tiering: true
+  cache: true
+  cache_ttl: 600
+models:
+  fast: gpt-4o-mini
+  quality: gpt-4o
+  cascade_writer: gpt-4o-mini
+  judge: gpt-4o-mini
+rag:
+  top_k: 3
+  margin: 0.05
+  min_score: 0.3236
+  notices: true
+  embedding: text-embedding-3-small
+judge:
+  version: 2
+  factcheck: true
+  threshold: 0.75
+  max_retries: 2
+  max_seconds: 120
+runtime:
+  async_io: true
+  tolerant_research: true

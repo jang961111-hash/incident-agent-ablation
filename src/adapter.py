@@ -43,6 +43,7 @@ from ext.graph_ext import ExtDeps, build_graph_ext  # noqa: E402
 from ext.judge import FakeJudge, OpenAIJudge, facts_from_collected, facts_from_prompt  # noqa: E402
 from ext.meter import MeteredFastLLM, MeteredQualityLLM, QueryCache, start_meter  # noqa: E402
 from ext.rag import LocalNgramEmbedder, OpenAIEmbedder, RunbookRetriever  # noqa: E402
+from ext.faults import FaultyMCP  # noqa: E402
 
 RUNBOOK_DIR = SRC / "data" / "runbooks"
 CACHE_DIR = ROOT / ".cache"
@@ -77,7 +78,8 @@ def _build_deps(cfg: dict, mcp: MCPClient) -> ExtDeps:
         fast = MeteredFastLLM(models.get("fast", "gpt-4o-mini"), 0.00015, cache=cache)
         quality = MeteredQualityLLM(models.get("quality", "gpt-4o"), 0.005)
         cheap = MeteredQualityLLM(models.get("cascade_writer", "gpt-4o-mini"), 0.00015)
-        judge = OpenAIJudge(models.get("judge", "gpt-4o-mini"), 0.00015)
+        judge = OpenAIJudge(models.get("judge", "gpt-4o-mini"), 0.00015,
+                            version=cfg.get("judge", {}).get("version", 1))
         emb_model = cfg.get("rag", {}).get("embedding", "text-embedding-3-small")
         embedder = (LocalNgramEmbedder() if emb_model == "local" else
                     OpenAIEmbedder(emb_model, os.environ.get("OPENAI_API_KEY", ""), CACHE_DIR))
@@ -98,7 +100,8 @@ def _is_base(cfg: dict) -> bool:
     return (cfg.get("runbook_selection", "keyword") == "keyword"
             and cfg.get("validator", "rule") == "rule"
             and not cfg.get("cost", {}).get("model_tiering")
-            and not cfg.get("cost", {}).get("cache"))
+            and not cfg.get("cost", {}).get("cache")
+            and not any(cfg.get("runtime", {}).values()))
 
 
 def _retrieved(result: dict) -> list[str]:
@@ -112,7 +115,10 @@ async def _run(query: str, cfg: dict) -> dict:
     mcp = MCPClient()
     await mcp.start()
     try:
-        deps = _build_deps(cfg, mcp)
+        fi = cfg.get("fault_injection")
+        agent_mcp = (FaultyMCP(mcp, fi.get("tool", "get_monitoring_status"), fi["rate"],
+                               fi.get("seed", 7), query) if fi else mcp)
+        deps = _build_deps(cfg, agent_mcp)
         if deps.retriever is not None:
             deps.retriever._index()   # 런북 색인은 1회성 비용 — 질의 계측 전에 만든다
         meter = start_meter()
@@ -152,6 +158,9 @@ async def _run(query: str, cfg: dict) -> dict:
         "route": result.get("route"),
         "judge_history": result.get("judge_history", []),
         "events": result.get("events", []),
+        "notices": result.get("notices", []),
+        "tool_failures": result.get("tool_failures", 0),
+        "faults_injected": getattr(agent_mcp, "injected", 0),
         "trace_url": f"langsmith-run:{run_id}" if run_id and os.environ.get(
             "LANGCHAIN_TRACING_V2") == "true" else None,
     }

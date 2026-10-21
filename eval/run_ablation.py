@@ -28,7 +28,7 @@ from eval.retrieval_metrics import summarize as summarize_retrieval
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_DIR = ROOT / "eval" / "configs"
 RESULTS = ROOT / "results"
-ORDER = ["base", "rag", "rag_judge", "rag_judge_cost"]
+ORDER = ["base", "rag", "judge", "rag_judge", "rag_judge_cost", "rag_judge_v2", "final"]
 EVAL_JUDGE_MODEL = os.environ.get("EVAL_JUDGE_MODEL", "gpt-4o")
 METRICS = ("relevance", "completeness", "domain_appropriateness", "clarity")
 
@@ -38,13 +38,57 @@ def load_queries() -> tuple[list[dict], float]:
     return data["queries"], data.get("threshold", 0.75)
 
 
-def run_config(cfg_path: Path, queries: list[dict], threshold: float,
-               use_judge: bool = True, save: bool = True, backend: str | None = None) -> dict:
+def _evaluate_one(q: dict, rep: int, cfg: dict, run_once, judge) -> dict:
+    """질의 1건 x 반복 1회 실행 + 평가. 예외는 행에 기록하고 올리지 않는다."""
+    from ext.factcheck import check as factcheck
+    try:
+        out = run_once(q["query"], cfg)
+    except Exception as e:   # 1건 실패로 전체 실행을 잃지 않는다. 실패는 그대로 기록
+        return {"id": q["id"], "rep": rep, "split": q.get("split"), "category": q.get("category"),
+                "error": repr(e), "traceback": traceback.format_exc()}
+    jerr = None
+    jverd, jreason, jscore, jpass = {}, {}, float("nan"), None
+    if judge:
+        try:   # 평가 Judge 오류는 '판정 불가'로 남긴다
+            jr = judge.evaluate(q["query"], out.get("context", ""), out["answer"])
+            jverd, jreason, jscore, jpass = jr.verdicts, jr.reasons, jr.score, jr.passed
+        except Exception as e:
+            jerr = repr(e)
+    need = q.get("must_include") or []
+    ans = out["answer"].lower()
+    fc = factcheck(out["answer"], out.get("context", ""))
+    return {
+        "id": q["id"], "rep": rep, "split": q.get("split"), "category": q.get("category"),
+        "query": q["query"], "answer": out["answer"], "context": out.get("context", ""),
+        "route": out.get("route"), "retrieved": out.get("retrieved", []),
+        "fed_runbooks": out.get("fed_runbooks", []), "gold": q.get("gold_runbooks", []),
+        "judge_score": jscore, "judge_passed": jpass,
+        **{f"judge_{m}": jverd.get(m) for m in METRICS},
+        "judge_reasons": jreason, "judge_error": jerr,
+        "must_total": len(need), "must_hit": sum(1 for m in need if m.lower() in ans),
+        "unsupported_numbers": fc["unsupported"], "n_number_claims": fc["n_claims"],
+        "pipeline_judge": out.get("judge_history", []), "rewrites": out.get("rewrites", 0),
+        "latency_ms": out.get("latency_ms"), "tokens": out.get("tokens", {}),
+        "tokens_by_model": out.get("tokens_by_model", {}),
+        "cost_usd": out.get("cost_usd", float("nan")), "cache": out.get("cache", {}),
+        "llm_calls": out.get("llm_calls", []), "events": out.get("events", []),
+        "notices": out.get("notices", []), "tool_failures": out.get("tool_failures", 0),
+        "faults_injected": out.get("faults_injected", 0), "trace_url": out.get("trace_url"),
+    }
+
+
+def run_config(cfg_path: Path, queries: list[dict], threshold: float, use_judge: bool = True,
+               save: bool = True, backend: str | None = None, reps: int = 1,
+               workers: int = 1, tag: str = "") -> dict:
+    import threading
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
     cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8"))
     if backend:
         cfg["backend"] = backend
-    name = cfg["name"]
-    print(f"\n=== {name} === {cfg.get('description', '')}", flush=True)
+    name = cfg["name"] + tag
+    print(f"\n=== {name} === reps={reps} workers={workers} n={len(queries)} {cfg.get('description', '')}",
+          flush=True)
 
     from src.adapter import run_once
 
@@ -53,76 +97,91 @@ def run_config(cfg_path: Path, queries: list[dict], threshold: float,
         from eval.judge import Judge
         judge = Judge(model=EVAL_JUDGE_MODEL, threshold=threshold)
 
-    rows, retrieval_records = [], []
-    for q in queries:
-        try:
-            out = run_once(q["query"], cfg)
-        except Exception as e:   # 1건 실패로 전체 실행을 잃지 않는다. 실패는 그대로 기록
-            print(f"  {q['id']}  ERROR {type(e).__name__}: {e}", flush=True)
-            rows.append({"id": q["id"], "category": q.get("category"), "error": repr(e),
-                         "traceback": traceback.format_exc()})
-            continue
+    jobs = [(rep, q) for rep in range(1, reps + 1) for q in queries]
+    rows, lock = [], threading.Lock()
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(_evaluate_one, q, rep, cfg, run_once, judge): (rep, q["id"]) for rep, q in jobs}
+        for f in as_completed(futs):
+            row = f.result()
+            with lock:
+                rows.append(row)
+                if "error" in row:
+                    print(f"  r{row['rep']} {row['id']}  ERROR {row['error'][:120]}", flush=True)
+                else:
+                    jtxt = (f"judge={row['judge_score']:.2f} {'PASS' if row['judge_passed'] else 'FAIL'}"
+                            if row["judge_passed"] is not None else "judge=n/a")
+                    print(f"  r{row['rep']} {row['id']}  {row['route']:8}  ret={row['retrieved'][:2]}  {jtxt}  "
+                          f"rw={row['rewrites']}  {row['latency_ms']:.0f}ms  ${row['cost_usd']:.4f}"
+                          f"  [{len(rows)}/{len(jobs)}]", flush=True)
+                if save:   # 중간 저장 — 도중에 끊겨도 앞선 결과를 잃지 않는다
+                    RESULTS.mkdir(exist_ok=True)
+                    (RESULTS / f"{name}_partial.json").write_text(
+                        json.dumps({"config": cfg, "rows": rows}, ensure_ascii=False))
+    rows.sort(key=lambda r: (r["rep"], r["id"]))
 
-        jerr = None
-        jverd, jreason, jscore, jpass = {}, {}, float("nan"), None
-        if judge:
-            try:   # 평가 Judge 오류는 '판정 불가'로 남기고 다음 건으로 간다
-                jr = judge.evaluate(q["query"], out.get("context", ""), out["answer"])
-                jverd, jreason, jscore, jpass = jr.verdicts, jr.reasons, jr.score, jr.passed
-            except Exception as e:
-                jerr = repr(e)
-                print(f"  {q['id']}  JUDGE ERROR {type(e).__name__}: {e}", flush=True)
-
-        row = {
-            "id": q["id"],
-            "category": q.get("category"),
-            "query": q["query"],
-            "answer": out["answer"],
-            "context": out.get("context", ""),
-            "route": out.get("route"),
-            "retrieved": out.get("retrieved", []),
-            "fed_runbooks": out.get("fed_runbooks", []),
-            "gold": q.get("gold_runbooks", []),
-            "judge_score": jscore,
-            "judge_passed": jpass,
-            **{f"judge_{m}": jverd.get(m) for m in METRICS},
-            "judge_reasons": jreason,
-            "judge_error": jerr,
-            "pipeline_judge": out.get("judge_history", []),
-            "rewrites": out.get("rewrites", 0),
-            "latency_ms": out.get("latency_ms"),
-            "tokens": out.get("tokens", {}),
-            "tokens_by_model": out.get("tokens_by_model", {}),
-            "cost_usd": out.get("cost_usd", float("nan")),
-            "cache": out.get("cache", {}),
-            "llm_calls": out.get("llm_calls", []),
-            "events": out.get("events", []),
-            "trace_url": out.get("trace_url"),
-        }
-        rows.append(row)
-        if q.get("gold_runbooks"):
-            retrieval_records.append({"retrieved": row["retrieved"], "gold": row["gold"],
-                                      "fed": row["fed_runbooks"], "route": row["route"]})
-        jtxt = (f"judge={jscore:.2f} {'PASS' if jpass else 'FAIL'}" if jpass is not None
-                else "judge=n/a")
-        print(f"  {q['id']}  {row['route']:8}  ret={row['retrieved'][:3]}  {jtxt}  "
-              f"rw={row['rewrites']}  {row['latency_ms']:.0f}ms  ${row['cost_usd']:.4f}", flush=True)
-        if save:   # 매 건 중간 저장 — 도중에 끊겨도 앞선 결과를 잃지 않는다
-            RESULTS.mkdir(exist_ok=True)
-            (RESULTS / f"{name}_partial.json").write_text(
-                json.dumps({"config": cfg, "rows": rows}, ensure_ascii=False, indent=2))
-
-    summary = build_summary(name, rows, retrieval_records)
+    summary = aggregate(name, rows, reps)
     summary["eval_judge_model"] = EVAL_JUDGE_MODEL if judge else None
     if save:
         payload = json.dumps({"config": cfg, "summary": summary, "rows": rows},
-                             ensure_ascii=False, indent=2)
+                             ensure_ascii=False, indent=1)
         stamp = datetime.now().strftime("%Y%m%d_%H%M")
         (RESULTS / f"{name}_{stamp}.json").write_text(payload, encoding="utf-8")
         (RESULTS / f"{name}_latest.json").write_text(payload, encoding="utf-8")
         (RESULTS / f"{name}_partial.json").unlink(missing_ok=True)
-    print(json.dumps(summary, ensure_ascii=False, indent=1), flush=True)
+    keys = ("n", "errors", "pass_rate", "must_phrase_rate", "recall@1", "fed_precision",
+            "unsupported_answer_rate", "latency_p95_ms", "cost_usd_total", "rewrites_total")
+    print(json.dumps({k: summary.get(k) for k in keys}, ensure_ascii=False), flush=True)
     return summary
+
+
+_T95 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571}
+
+
+def _agg(per_rep: list[dict]) -> dict:
+    """반복별 summary 들의 평균·표준편차·95% 신뢰구간 반폭 (t 분포)."""
+    out = {}
+    keys = {k for s in per_rep for k, v in s.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}
+    for k in keys:
+        vals = [s[k] for s in per_rep if isinstance(s.get(k), (int, float)) and s[k] == s[k]]
+        if not vals:
+            continue
+        m = statistics.fmean(vals)
+        sd = statistics.stdev(vals) if len(vals) > 1 else 0.0
+        ci = _T95.get(len(vals) - 1, 1.96) * sd / len(vals) ** 0.5 if len(vals) > 1 else float("nan")
+        out[k] = {"mean": m, "sd": sd, "ci95": ci, "n_reps": len(vals)}
+    return out
+
+
+def aggregate(name: str, rows: list[dict], reps: int) -> dict:
+    """반복별·split 별 summary 를 만들고, 전체 평균을 최상위 키로 둔다 (report 호환)."""
+    def summarize(sub):
+        ok = [r for r in sub if "error" not in r]
+        rec = [{"retrieved": r["retrieved"], "gold": r["gold"], "fed": r["fed_runbooks"],
+                "route": r["route"]} for r in ok if r["gold"]]
+        s = build_summary(name, sub, rec)
+        tot = sum(r["must_total"] for r in ok)
+        s["must_phrase_rate"] = sum(r["must_hit"] for r in ok) / tot if tot else float("nan")
+        withm = [r for r in ok if r["must_total"]]
+        s["must_all_rate"] = (sum(r["must_hit"] == r["must_total"] for r in withm) / len(withm)
+                              if withm else float("nan"))
+        s["unsupported_answer_rate"] = (sum(1 for r in ok if r["unsupported_numbers"]) / len(ok)
+                                        if ok else float("nan"))
+        s["judge_calls"] = sum(1 for r in ok for c in r["llm_calls"] if c["stage"] == "judge")
+        s["factcheck_rejects"] = sum(1 for r in ok for h in r["pipeline_judge"] if h.get("by") == "factcheck")
+        s["tool_failures"] = sum(r.get("tool_failures", 0) for r in ok)
+        return s
+
+    by_rep = {rep: [r for r in rows if r["rep"] == rep] for rep in range(1, reps + 1)}
+    per_rep = [summarize(v) for v in by_rep.values() if v]
+    agg = _agg(per_rep)
+    top = {k: v["mean"] for k, v in agg.items()}
+    top.update({"config": name, "reps": reps, "agg": agg, "per_rep": per_rep})
+    top["by_split"] = {}
+    for sp in sorted({r.get("split") for r in rows if r.get("split")}):
+        pr = [summarize([r for r in v if r.get("split") == sp]) for v in by_rep.values() if v]
+        a = _agg(pr)
+        top["by_split"][sp] = {"mean": {k: v["mean"] for k, v in a.items()}, "agg": a}
+    return top
 
 
 def _pct(values: list[float], p: float) -> float:
@@ -194,13 +253,20 @@ def main():
     ap.add_argument("--no-judge", action="store_true", help="평가용 Judge 생략 (배관 점검용)")
     ap.add_argument("--no-save", action="store_true")
     ap.add_argument("--backend", choices=["openai", "fake"], help="fake = 키 없이 배관 점검")
+    ap.add_argument("--reps", type=int, default=1, help="반복 횟수 (평균·표준편차·95%% CI)")
+    ap.add_argument("--workers", type=int, default=1, help="질의 병렬 실행 수")
+    ap.add_argument("--split", choices=["dev", "holdout"], help="해당 split 만 실행")
+    ap.add_argument("--tag", default="", help="결과 파일 이름 뒤에 붙일 접미사")
     args = ap.parse_args()
 
     queries, threshold = load_queries()
     if args.ids:
         want = set(args.ids.split(","))
         queries = [q for q in queries if q["id"] in want]
-    kw = dict(use_judge=not args.no_judge, backend=args.backend,
+    if args.split:
+        queries = [q for q in queries if q.get("split") == args.split]
+    kw = dict(use_judge=not args.no_judge, backend=args.backend, reps=args.reps,
+              workers=args.workers, tag=args.tag,
               save=(not args.no_save and not args.ids and not args.no_judge
                     and args.backend != "fake"))   # 판정 없는 결과로 _latest 를 덮어쓰지 않는다
     if args.all:

@@ -1,0 +1,17 @@
+name: judge
+description: 런북 선택은 원본(키워드), Validator만 LLM Judge로. Judge 단독 효과.
+backend: openai
+runbook_selection: keyword
+validator: judge
+cost:
+  model_tiering: false
+  cache: false
+models:
+  fast: gpt-4o-mini
+  quality: gpt-4o
+  judge: gpt-4o-mini
+judge:
+  version: 1
+  threshold: 0.75
+  max_retries: 2
+  max_seconds: 120

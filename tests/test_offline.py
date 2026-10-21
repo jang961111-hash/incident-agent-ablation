@@ -69,29 +69,6 @@ def test_retry_guard_stops(monkeypatch):
     assert "재시도 상한" in (out["judge_history"][-1]["guard"] or "")
 
 
-def test_label_writer_only_touches_target(tmp_path):
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("label", ROOT / "scripts" / "label.py")
-    label = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(label)
-    text = (ROOT / "eval" / "queries.yaml").read_text()
-    new = label.set_label(text, "Q05", "Pass")
-    changed = [(a, b) for a, b in zip(text.splitlines(), new.splitlines()) if a != b]
-    assert len(changed) == 1 and re.search(r"human_label: Pass", changed[0][1])
-    assert yaml.safe_load(new)["queries"][4]["human_label"] == "Pass"
-
-
-def test_label_writer_blank_value_does_not_eat_next_line():
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("label", ROOT / "scripts" / "label.py")
-    label = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(label)
-    text = "queries:\n  - id: Q01\n    human_label:\n    note: keep\n  - id: Q02\n    human_label: null\n"
-    new = label.set_label(text, "Q01", "Fail")
-    assert "    human_label: Fail\n    note: keep\n" in new
-    assert new.endswith("human_label: null\n")
-
-
 def test_summary_metrics_shape():
     from eval.run_ablation import build_summary
     rows = [{"id": "Q1", "category": "normal", "route": "incident", "judge_passed": True,

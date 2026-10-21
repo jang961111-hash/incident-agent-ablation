@@ -36,6 +36,27 @@ SYSTEM = (
 )
 
 
+# v2 — 1차 실측에서 찾은 문제를 고친 기준 (docs/06_결과분석.md 3절).
+# 맞는 런북이 없는 질의에서 completeness·domain 이 '런북 절차를 반영하라'는 압력이 되어
+# 재작성된 답이 무관한 절차를 섞었다. v2 는 근거 밖 요구를 하지 않고, 반려가 근거 안에서
+# 고칠 수 있는 것인지(fixable)를 함께 판정한다. fixable=false 면 재작성하지 않는다.
+SYSTEM_V2 = (
+    "당신은 ICT 장애 대응 답변을 채점하는 엄격한 평가자다. 아래 4개 지표를 각각 Pass/Fail로 "
+    "판정하고 근거를 한 문장으로 쓴다.\n"
+    "1. relevance: 사용자가 물은 것에 답했는가. 요청 대상이 등록된 시스템·런북에 없으면 그 사실을 "
+    "밝혀야 Pass. 다른 시스템·장애 이야기로 바꿔 답하면 Fail.\n"
+    "2. completeness: Context에 없는 수치·원인·사실을 만들어냈다면 Fail. Context의 핵심 사실이 빠져도 Fail.\n"
+    "3. domain_appropriateness: Context의 런북 중 질문에 맞는 절차를 반영했는가. 질문과 무관한 런북 "
+    "절차를 섞었다면 Fail. Context에 '일치하는 런북이 없음' 안내가 있으면 런북 절차를 요구하지 말고, "
+    "답이 추측한 절차 없이 확인 범위를 밝히고 되물었는지로 판정한다.\n"
+    "4. clarity: 요청한 형식·길이 제약을 지켰고 논리적으로 정리됐는가.\n"
+    "마지막으로 fixable: Fail 지표를 Context 안의 정보만으로 고칠 수 있으면 true, Context에 없는 "
+    "정보가 있어야 고칠 수 있으면 false.\n"
+    'JSON 객체로만 답한다: {"relevance":{"verdict":"Pass|Fail","reason":"..."},'
+    '"completeness":{...},"domain_appropriateness":{...},"clarity":{...},"fixable":true|false}'
+)
+
+
 def facts_from_prompt(prompt: str | None) -> str | None:
     """write 노드가 받은 프롬프트에서 '## 수집된 사실' 구간만 꺼낸다."""
     if not prompt or "## 수집된 사실" not in prompt:
@@ -61,17 +82,22 @@ def facts_from_collected(collected: list[dict]) -> str:
 
 
 class OpenAIJudge(MeteredChatMixin, OpenAILLM):
+    def __init__(self, model: str, usd_per_1k_tokens: float, version: int = 1):
+        super().__init__(model, usd_per_1k_tokens)
+        self.version = version
+
     def evaluate(self, query: str, context: str, answer: str) -> dict:
         user = f"[Query]\n{query}\n\n[Context]\n{context}\n\n[Answer]\n{answer}"
         with stage("judge"):
-            content, _ = self._chat(SYSTEM, user, json_mode=True)
+            content, _ = self._chat(SYSTEM_V2 if self.version >= 2 else SYSTEM, user, json_mode=True)
         try:
             data = json.loads(content)
         except json.JSONDecodeError:
             data = {}
         verdicts = {m: (data.get(m) or {}).get("verdict", "Fail") for m in METRICS}
         reasons = {m: (data.get(m) or {}).get("reason", "") for m in METRICS}
-        return {"verdicts": verdicts, "reasons": reasons}
+        fixable = data.get("fixable", True) if self.version >= 2 else True
+        return {"verdicts": verdicts, "reasons": reasons, "fixable": fixable is not False}
 
 
 class FakeJudge:
@@ -83,4 +109,5 @@ class FakeJudge:
         ok = len(answer) >= 30 and "1)" in answer
         v = "Pass" if ok else "Fail"
         return {"verdicts": {m: v for m in METRICS},
-                "reasons": {m: "" if ok else "짧거나 절차 번호가 없음" for m in METRICS}}
+                "reasons": {m: "" if ok else "짧거나 절차 번호가 없음" for m in METRICS},
+                "fixable": True}
