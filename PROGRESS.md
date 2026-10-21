@@ -1,6 +1,6 @@
 # 진행판 — 과제1 Ablation
 
-갱신: 10/21 10:40
+갱신: 10/21 11:05
 마감: 2026-10-22 13:00 (Git·보고서), 17:30 (발표)
 
 ## 단계
@@ -14,14 +14,17 @@
 | 4 | 평가셋 24건 | 완료 | 6b1b518, 실제 런북 id, 12/3/3/3/3 |
 | 5 | adapter + 개선 3축 코드 | 완료 | src/adapter.py, src/ext/ |
 | 6 | 오프라인 테스트 (fake) | 완료 | pytest 10 passed, 96회 실행 오류 0 |
-| 7 | OpenAI 키 입력 | 병헌 | 지금 필요 — scripts/set_keys.sh |
-| 8 | base 측정 (Before) | 대기 | 키 필요 |
+| 7 | OpenAI 키 입력 | 완료 | 인증 HTTP 200, LangSmith 키도 등록 |
+| 8 | base 측정 (Before) | 진행 | 실측 로그 탭에서 진행 중 |
 | 9 | human_label 24건 | 병헌 | scripts/label.py |
-| 10 | 4구성 Ablation | 대기 | rag, rag_judge, rag_judge_cost |
-| 11 | 보고서 · 발표자료 | 대기 | |
+| 10 | 4구성 Ablation | 진행 | base→rag→rag_judge→rag_judge_cost 순서 실행 중 |
+| 11 | 보고서 · 발표자료 | 진행 | 방법론 초안 서브에이전트 작성 중 |
 
 ## 작업 로그
 
+- 11:05 4구성 x 24건 실측 시작 (results/raw/run_all.log), 방법론 초안 병렬 위임
+- 11:03 실제 API 2건 스모크 통과 (Q05·Q16, 오류 0)
+- 11:00 코드 리뷰 반영: Judge 오류 격리, Recall@3 편향 보정(투입 런북 지표), 라벨 해시. pytest 12 passed
 - 10:40 코드 리뷰 서브에이전트 투입 (src/ext, adapter, eval)
 - 10:39 fake 백엔드로 24건×4구성 배관 점검, 오류 0. pytest 10 passed
 - 10:30 평가 Judge를 gpt-4o로 고정 (파이프라인 Validator gpt-4o-mini와 분리, 자기채점 순환 방지)
@@ -37,5 +40,4 @@
 
 ## 병헌 님이 할 일
 
-1. OpenAI 키 입력: 터미널에서 `scripts/set_keys.sh` (입력이 화면에 안 보임, Claude는 값을 보지 않음)
-2. human_label 24건: base 측정 후 `.venv/bin/python scripts/label.py`
+1. human_label 24건: base 측정 후 `.venv/bin/python scripts/label.py`
