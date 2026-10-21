@@ -97,7 +97,7 @@ def _wait_s(resp, attempt: int) -> float:
 
 def post_with_retry(url: str, payload: dict, api_key: str, tries: int = 7) -> dict:
     """429/5xx·타임아웃·연결 오류만 재시도. 4xx 등은 바로 올린다.
-    공용 수업 키라 다른 사용자 부하로 429 가 잦다 — 오류 행이 생기면 구성 간 비교가 깨지므로 넉넉히 기다린다."""
+    429(요청 한도·지출 한도)가 나면 — 오류 행이 생기면 구성 간 비교가 깨지므로 넉넉히 기다린다."""
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     for i in range(tries):
         try:

@@ -338,7 +338,7 @@ if (D.cache) {
     { text: `route·plan·임베딩만 캐시 (final 비용의 ${pct(D.cacheable_share_final)}). 2회차 비용 ${usd(c1.cost_usd)} → ${usd(c2.cost_usd)}. 모니터링·답변은 캐시하지 않음.`, options: { fontSize: 12 } },
   ], { x: 7.4, y: 4.0, w: 5.1, h: 1.7, fontSize: 14, valign: "top" });
 }
-src(s, "동시성·장애 주입은 공용 키 한도 소진 뒤 API 없이 측정 (results/concurrency_bench_simulated_latest.json · fault_bench_fake_latest.json). 캐시는 실제 API (cache_bench_latest.json)", 6.1);
+src(s, "동시성·장애 주입은 API 지출 한도 소진 뒤 API 없이 측정 (results/concurrency_bench_simulated_latest.json · fault_bench_fake_latest.json). 캐시는 실제 API (cache_bench_latest.json)", 6.1);
 s.addNotes("원본은 노드가 async여도 LLM 호출이 동기라 동시 요청이 줄을 섭니다. 도구 하나가 죽으면 질의 전체가 실패합니다. 둘 다 고쳤습니다.");
 
 // ── 13. 평가자 검증 ──────────────────────────────────────────────────
