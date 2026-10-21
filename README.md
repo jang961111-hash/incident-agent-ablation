@@ -3,7 +3,7 @@
 SKALA 4기 AI Agent Mini-Project · 선택과제 1 (Base AI Agent 개선) · 광주 2반 장병헌 (G062)
 
 교수님 베이스 인시던트 대응 에이전트에 개선을 하나씩 켜는 **7구성 Ablation**을 돌려,
-**어떤 개선이 실제로 효과였는지 통계로 분리하고, 그 판정을 한 AI 평가자(Judge)까지 검증**했다.
+**어떤 개선이 실제로 효과였는지 통계로 분리하고, 채점한 AI 평가자(Judge)가 얼마나 관대한지도 다른 평가자와 대조해 쟀다.**
 
 ## 결론 (holdout 36건 — 기준값 조정에 쓰지 않은 질의, 3회 반복 평균)
 
@@ -40,7 +40,7 @@ SKALA 4기 AI Agent Mini-Project · 선택과제 1 (Base AI Agent 개선) · 광
 
 1. **조치 정확도는 RAG가 만들었다.** base는 질의가 아니라 모니터링 알림 키워드로 런북을 고른다. 알림 문구대로 물으면 Recall@1 78%, 자기 말로 물으면 11%다. RAG로 바꾸자 정답 런북 누락이 56%에서 9%로 줄었다.
 2. **LLM Judge는 단독으로도, RAG 위에서도 품질을 유의하게 바꾸지 못했다.** 비용과 지연(+1.8~2.3초)만 유의하게 늘었다.
-3. **1차 실측에서 찾은 약점을 고친 v2가 무관 런북 혼입을 24%p 줄였다.** 최소 유사도 기준은 dev 24건으로만 정했고 holdout에서 확인했다. 미등록 질의 평가 통과는 83%에서 100%가 됐다.
+3. **1차 실측에서 찾은 약점을 고친 v2가 무관 런북 혼입을 24%p 줄였다.** 최소 유사도 기준은 dev 24건으로만 정했고 holdout에서 확인했다. 미등록 질의 평가 통과는 83%에서 100%가 됐다 (4건 x 3회, 전체 통과율 차이는 유의하지 않음).
 4. **캐스케이드(1차 초안 gpt-4o-mini, 반려될 때만 gpt-4o)가 장애 1건당 비용을 base 대비 81% 줄였다.** 대가로 런북 어구 포함이 5%p 내려갔고, 이 차이는 유의하지 않다. 지연은 줄지 않았다 (처음 측정한 지연 감소는 캐시 오염 탓이었다).
 
 자세한 분석: [docs/06_결과분석.md](docs/06_결과분석.md) · 방법: [docs/05_보고서_방법.md](docs/05_보고서_방법.md) · 전체 표: [docs/04_결과표.md](docs/04_결과표.md) · 발표: [deck/incident-agent-ablation.pptx](deck/incident-agent-ablation.pptx)
@@ -67,7 +67,7 @@ SKALA 4기 AI Agent Mini-Project · 선택과제 1 (Base AI Agent 개선) · 광
 - **반복과 유의성**: 7구성 x 3회. 반복 간 95% CI(t 분포)와 질의 단위 paired bootstrap(2,000회).
 - **지표 축 분리**: 검색(Recall@k, 정답 누락, 무관 혼입) / 답변(평가 Judge 4지표, 런북 어구 포함) / 운영(건당 비용, 지연, 재작성).
 - **평가자 분리**: 평가 Judge는 gpt-4o로 고정, 파이프라인 Judge(gpt-4o-mini)와 분리. Judge 무관 결정적 지표를 함께 본다.
-- **사람 라벨**: base 답변을 지표별로 블라인드 라벨 (`scripts/label.py` → `eval/human_labels.yaml`), `eval/agreement.py`가 지표별 kappa와 오판 유형을 낸다.
+- **평가자 대조**: 독립 평가자(Claude, LLM)가 Judge 판정을 가린 채 base 답변 60건을 지표별로 채점했다 (`eval/claude_labels.yaml`). 평가 Judge와 종합 일치 70%, kappa 0.39, Judge 관대도 59%. 사람 표본 20건 라벨(`scripts/label.py` → `eval/human_labels.yaml`)은 아직 없다.
 - **편향 검증**: 알림 문구대로 묻는 질의(aligned)와 자기 말로 묻는 질의(paraphrased), dev와 holdout을 나눠 본다.
 
 ## 한계
@@ -75,7 +75,7 @@ SKALA 4기 AI Agent Mini-Project · 선택과제 1 (Base AI Agent 개선) · 광
 - **일반화 격차**: RAG Recall@1이 dev 72%에서 holdout 52%로 떨어진다. 자기 말로 묻는 holdout 질의는 33%다.
 - **무관 런북 혼입이 남는다** (final 34%). 1위 점수와 가까운 런북을 함께 넣는 규칙 때문이다.
 - **최소 유사도는 경계값이다.** dev에서 정답 있는 질의와 없는 질의의 간격이 0.0023뿐이었다.
-- **평가 Judge가 포화됐다.** RAG 이후 97% 이상이라 구성 차이를 잘 보지 못한다. 결론은 Judge 무관 지표로 냈다.
+- **평가 Judge가 포화됐다.** RAG가 들어간 구성에서 93~99%라 구성 차이를 잘 보지 못한다. 결론은 Judge 무관 지표로 냈다.
 - 라우터는 개선 범위 밖이다. holdout 36건 x 3회라 질의 1건이 2.8%p다. 비용은 공개 단가 기준 추정치다.
 
 ## 실행

@@ -100,12 +100,12 @@ const pair = (a, b) => st.find((p) => p.a === a && p.b === b);
 
 // ── 1. 표지 ──────────────────────────────────────────────────────────
 let s = slide("DARK", "표지");
-s.addText("개선 효과를 통계로 증명하고, 평가자까지 검증했다", { placeholder: "title" });
+s.addText("개선 효과를 통계로 분리하고, AI 평가자의 관대함까지 쟀다", { placeholder: "title" });
 s.addText([
   { text: "인시던트 대응 에이전트 개선을 하나씩 켠 7구성 Ablation · 조정에 쓰지 않은 holdout 36건 · 3회 반복", options: { breakLine: true } },
   { text: "SKALA 4기 AI Mini-Project 과제1 · 광주 2반 장병헌 (G062)", options: { fontSize: 14, color: C.accent3 } },
 ], { placeholder: "body" });
-s.addNotes("개선을 많이 붙인 게 아니라, 어떤 개선이 실제로 효과였는지를 통계로 분리했고, 그 판정을 한 AI 평가자도 검증했습니다.");
+s.addNotes("개선을 많이 붙인 게 아니라, 어떤 개선이 실제로 효과였는지를 통계로 분리했고, 채점한 AI 평가자가 얼마나 관대한지도 다른 평가자와 대조해 쟀습니다.");
 
 // ── 2. 결론 ──────────────────────────────────────────────────────────
 s = slide("CONTENT", "요약");
@@ -115,8 +115,8 @@ stat(s, 0.6, 1.5, 3.85, `${pct(X.base.miss_runbook_rate)} → ${pct(X.final.miss
 stat(s, 4.74, 1.5, 3.85, `-${Math.round((1 - X.final.cost_per_incident / X.base.cost_per_incident) * 100)}%`,
   `장애 1건당 처리 비용\n${usd(X.base.cost_per_incident, 5)} → ${usd(X.final.cost_per_incident, 5)}`, C.accent6, "stat-cost");
 const pj = pair("base", "judge");
-stat(s, 8.88, 1.5, 3.85, "효과 없음",
-  `LLM Judge 단독: 품질 변화 유의하지 않음\n지연만 +${pj.latency.diff.toFixed(1)}초 (유의)`, C.accent1, "stat-judge");
+stat(s, 8.88, 1.5, 3.85, "개선 미확인",
+  `LLM Judge 단독: 품질 향상 확인 안 됨\n지연은 +${pj.latency.diff.toFixed(1)}초 (유의)`, C.accent1, "stat-judge");
 card(s, 0.6, 3.85, 12.1, 1.95, C.background2, "method");
 T(s, [
   { text: "어떻게 증명했나", options: { bold: true, fontSize: 16, color: HEX.dk2, breakLine: true } },
@@ -135,7 +135,7 @@ const q3 = [
   ["맞는 조치를 권고하나", "새벽 2시 당직자가 \"DB 프라이머리가 죽었다\"고 물었는데 응답 지연 절차를 주면, 그 답은 장애를 키운다.",
     "정답 런북 누락률 · 무관 런북 혼입률", C.accent1],
   ["그 판정을 믿어도 되나", "\"AI가 채점했더니 97점\"은 채점한 AI가 관대하면 의미가 없다. 평가자 자체를 검증해야 한다.",
-    "Judge-사람 일치도 (kappa) · Judge 무관 지표", C.accent4],
+    "독립 평가자·사람 표본과의 일치도 (kappa) · Judge 무관 지표", C.accent4],
   ["얼마에, 얼마나 빨리", "품질을 올린 대가로 비용과 지연이 얼마나 늘었는지, 장애가 겹쳐 들어오거나 도구가 죽어도 버티는지.",
     "장애 1건당 비용 · p95 지연 · 동시 처리 · 장애 주입", C.accent2],
 ];
@@ -233,7 +233,8 @@ const ev = [
   ["평가셋 60건", `dev ${nDev}건: v2 기준값(RAG 최소 유사도) 조정에만 사용\nholdout ${nHold}건: v2 구현 전에 고정해 커밋, 최종 보고에만 사용\n정상 30 · 형식 제약 8 · 복합 8 · 미등록 7 · 모호 7`],
   ["반복과 유의성", "7구성 x 60건 x 3회 = 1,260회 실행\n반복 간 95% CI (t 분포)\n구성 간 차이는 질의 단위 paired bootstrap 2,000회"],
   ["측정 축 분리", "검색: Recall@k, 정답 런북 누락·혼입\n답변: 평가 Judge 4지표 + 런북 어구 포함(결정적)\n운영: 건당 비용, p50/p95 지연, 재작성, 동시성, 장애 주입"],
-  ["평가자 검증", "평가 Judge는 gpt-4o로 고정 (파이프라인 Judge gpt-4o-mini와 분리)\n사람이 base 답변을 지표별로 블라인드 라벨\n→ 지표별 kappa, 오판 유형"],
+  ["평가자 검증", hasLabels ? "평가 Judge는 gpt-4o로 고정 (파이프라인 Judge gpt-4o-mini와 분리)\n독립 평가자(Claude) 블라인드 60건 + 사람 표본 블라인드 라벨\n→ 지표별 kappa, 오판 유형"
+    : "평가 Judge는 gpt-4o로 고정 (파이프라인 Judge gpt-4o-mini와 분리)\n독립 평가자(Claude, LLM) 블라인드 60건 → 지표별 kappa, 오판 유형\n사람 표본 20건 라벨은 아직 없음"],
 ];
 ev.forEach(([h, body], i) => {
   const x = 0.6 + (i % 2) * 6.13, y = 1.45 + Math.floor(i / 2) * 2.55;
@@ -248,7 +249,7 @@ s = slide("CONTENT", "Before/After");
 s.addText("Before/After 1: 누락은 RAG가, 무관 런북 혼입은 v2가 줄였다", { placeholder: "title" });
 bar(s, 0.6, 1.4, 6.0, 4.7, "정답 런북 누락률 (낮을수록 좋음)", CFG.map((n) => X[n].miss_runbook_rate), "0%", "chart-miss");
 bar(s, 6.73, 1.4, 6.0, 4.7, "무관 런북 혼입률 (낮을수록 좋음)", CFG.map((n) => X[n].wrong_runbook_rate), "0%", "chart-wrong");
-src(s, `holdout 장애 경로 질의, 3회 평균. Recall@1 ${pct(H.base["recall@1"])} → ${pct(H.rag["recall@1"])}, MRR ${H.base.mrr.toFixed(2)} → ${H.rag.mrr.toFixed(2)}. 누락 = 맞는 조치를 못 줄 위험, 혼입 = 잘못된 조치를 섞을 위험`, 6.25);
+src(s, `holdout, 3회 평균. 누락·혼입은 장애 경로 질의 기준. Recall@1·MRR은 gold 있는 holdout 질의 전체 기준: ${pct(H.base["recall@1"])} → ${pct(H.rag["recall@1"])}, MRR ${H.base.mrr.toFixed(2)} → ${H.rag.mrr.toFixed(2)}. 누락 = 맞는 조치를 못 줄 위험, 혼입 = 잘못된 조치를 섞을 위험`, 6.25);
 s.addNotes("왼쪽은 RAG를 켜는 순간 떨어지고, 오른쪽은 v2의 최소 유사도 기준을 켜는 순간 떨어집니다. 개선마다 고친 문제가 다릅니다.");
 
 // ── 9. B/A 2: 기여도 분해 ────────────────────────────────────────────
@@ -291,7 +292,7 @@ src(s, "holdout 36건, 3회 평균. 비용은 OpenAI 공개 단가 x 실측 토�
 s = slide("CONTENT", "Before/After");
 s.addText("1차 실측이 찾은 약점을 v2가 고쳤고, holdout에서 확인했다", { placeholder: "title" });
 stat(s, 0.6, 1.5, 3.85, `${pct(H.rag_judge["pass_rate[unregistered]"])} → ${pct(H.rag_judge_v2["pass_rate[unregistered]"])}`,
-  "미등록 질의 평가 통과율\n'등록된 런북에 없다'를 밝히게 됨", C.accent2, "stat-unreg");
+  "미등록 질의 평가 통과율 (4건 x 3회)\n전체 통과율 차이는 유의하지 않음", C.accent2, "stat-unreg");
 stat(s, 4.74, 1.5, 3.85, `${pct(X.rag_judge.wrong_runbook_rate)} → ${pct(X.rag_judge_v2.wrong_runbook_rate)}`,
   "무관 런북 혼입률\n최소 유사도 기준 (dev로만 정함)", C.accent2, "stat-wrong");
 stat(s, 8.88, 1.5, 3.85, `${H.rag_judge.rewrites_total.toFixed(1)} → ${H.rag_judge_v2.rewrites_total.toFixed(1)}`,
@@ -371,10 +372,10 @@ if (hasLabels) {
     ["명확성", ag("clarity"), kv("clarity"), len("clarity")],
     [{ text: "종합 (3/4)", options: { bold: true } }, ag("overall"), kv("overall"), len("overall")]],
   { ...TBL, x: 6.9, y: 1.5, w: 5.83, colW: [1.9, 1.2, 1.2, 1.53], fontSize: 13, rowH: 0.45, objectName: "claude-kappa-table" });
-  T(s, `평가 Judge vs 독립 평가자(Claude, Judge 판정을 가린 블라인드 채점) base 답변 ${D.claude_agreement.n_compared}건. 사람 라벨이 아니다. * 독립 평가자가 Fail로 본 답을 Judge가 Pass로 준 비율. 사람 표본 검증은 진행 중.`,
+  T(s, `평가 Judge vs 독립 평가자(Claude, Judge 판정을 가린 블라인드 채점) base 답변 ${D.claude_agreement.n_compared}건. 사람 라벨이 아니다. * 독립 평가자가 Fail로 본 답을 Judge가 Pass로 준 비율. 사람 표본 라벨은 아직 없다.`,
     { x: 6.9, y: 4.3, w: 5.83, h: 1.0, fontSize: 11.5, color: C.accent3 });
 }
-T(s, `평가 Judge는 RAG 이후 ${pct(H.rag.pass_rate)} 이상에서 포화돼 구성 차이를 잘 보지 못했다. 그래서 Judge 무관 지표(정답 누락·혼입, 런북 어구 포함)로 결론을 냈다.`,
+T(s, `평가 Judge는 RAG가 들어간 구성에서 ${pct(Math.min(...["rag","rag_judge","rag_judge_cost","rag_judge_v2","final"].map((n) => H[n].pass_rate)))}~${pct(Math.max(...["rag","rag_judge","rag_judge_cost","rag_judge_v2","final"].map((n) => H[n].pass_rate)))}로 포화돼 구성 차이를 잘 보지 못했다. 그래서 Judge 무관 지표(정답 누락·혼입, 런북 어구 포함)로 결론을 냈다.`,
   { x: 0.6, y: 5.85, w: 12.1, h: 0.7, fontSize: 13.5 });
 
 // ── 14. 시연 ─────────────────────────────────────────────────────────
@@ -402,7 +403,7 @@ s.addText("한계와 다음 개선", { placeholder: "title" });
 const lim = [
   ["일반화 격차", `RAG Recall@1이 dev ${pct(D.dev.rag["recall@1"])} → holdout ${pct(H.rag["recall@1"])}. 자기 말로 묻는 holdout 질의는 ${pct(X.rag["recall@1[paraphrased]"])}`, "런북 본문 외에 증상 예시 문장을 색인해 질문과 문서의 표현 차이를 줄임"],
   ["무관 런북 혼입이 남음", `final 혼입 ${pct(X.final.wrong_runbook_rate)}. 1위 점수와 가까운 런북을 함께 넣는 규칙 때문`, "재순위(reranker), 질문 속 증상 수에 맞춘 투입 개수"],
-  ["캐스케이드의 품질 대가", `어구 포함 ${pp(pair("rag_judge", "rag_judge_cost").must.diff)} (유의하지 않음). 저가 초안이 런북 문구를 덜 인용`, "Judge 대신 결정적 어구 대조로 승급 기준을 정함"],
+  ["캐스케이드의 품질 대가", `어구 포함 ${pp(pair("rag_judge", "rag_judge_cost").must.diff)} (유의하지 않음). 저가 초안이 런북 문구를 덜 인용하는 것으로 추정 (미검증)`, "Judge 대신 결정적 어구 대조로 승급 기준을 정함"],
   ["평가 규모와 범위", "holdout 36건 x 3회 (1건 = 2.8%p). 평가 Judge 포화. 라우터는 개선 범위 밖", "질의 확대, 라우팅 개선을 같은 체계로 재측정"],
 ];
 lim.forEach(([h, why, next], i) => {
