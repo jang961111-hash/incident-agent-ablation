@@ -154,6 +154,7 @@ async def _run(query: str, cfg: dict) -> dict:
         "llm_calls": meter.calls,
         "cost_usd": meter.cost_usd(),
         "cache": {"lookups": meter.cache_lookups, "hits": meter.cache_hits},
+        "api_retries": meter.retries,
         "latency_ms": latency_ms,
         "route": result.get("route"),
         "judge_history": result.get("judge_history", []),

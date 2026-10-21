@@ -63,7 +63,7 @@ class Judge:
     def __init__(self, model: str = "gpt-4o", threshold: float = 0.75,
                  temperature: float = 0.0):
         self.threshold = threshold
-        self.llm = ChatOpenAI(model=model, temperature=temperature).bind(
+        self.llm = ChatOpenAI(model=model, temperature=temperature, max_retries=6).bind(
             response_format={"type": "json_object"})
         self.chain = JUDGE_PROMPT | self.llm
 

@@ -73,7 +73,8 @@ def _evaluate_one(q: dict, rep: int, cfg: dict, run_once, judge) -> dict:
         "cost_usd": out.get("cost_usd", float("nan")), "cache": out.get("cache", {}),
         "llm_calls": out.get("llm_calls", []), "events": out.get("events", []),
         "notices": out.get("notices", []), "tool_failures": out.get("tool_failures", 0),
-        "faults_injected": out.get("faults_injected", 0), "trace_url": out.get("trace_url"),
+        "faults_injected": out.get("faults_injected", 0), "api_retries": out.get("api_retries", 0),
+        "trace_url": out.get("trace_url"),
     }
 
 
@@ -179,6 +180,7 @@ def aggregate(name: str, rows: list[dict], reps: int) -> dict:
         s["judge_calls"] = sum(1 for r in ok for c in r["llm_calls"] if c["stage"] == "judge")
         s["factcheck_rejects"] = sum(1 for r in ok for h in r["pipeline_judge"] if h.get("by") == "factcheck")
         s["tool_failures"] = sum(r.get("tool_failures", 0) for r in ok)
+        s["api_retries"] = sum(r.get("api_retries", 0) for r in ok)
         return s
 
     by_rep = {rep: [r for r in rows if r["rep"] == rep] for rep in range(1, reps + 1)}

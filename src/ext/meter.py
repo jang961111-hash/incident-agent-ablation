@@ -36,6 +36,7 @@ class Meter:
         self.calls: list[dict] = []
         self.cache_lookups = 0
         self.cache_hits = 0
+        self.retries = 0   # 429·5xx·타임아웃 재시도 횟수 — 지연 해석용
 
     def add(self, model: str, prompt: int, completion: int, stage: str):
         m = self.by_model.setdefault(model, {"prompt": 0, "completion": 0, "calls": 0})
@@ -83,8 +84,20 @@ def stage(name: str):
 RETRY_LOG: list[dict] = []   # 재시도 발생 기록 — 지연 p95 해석용
 
 
-def post_with_retry(url: str, payload: dict, api_key: str, tries: int = 4) -> dict:
-    """429/5xx·타임아웃·연결 오류만 지수 백오프로 재시도. 4xx 등은 바로 올린다."""
+def _wait_s(resp, attempt: int) -> float:
+    """429 는 서버가 준 Retry-After 를 따르고, 없으면 2·4·8…초 (최대 60초) + 지터."""
+    import random
+    ra = resp.headers.get("retry-after") if resp is not None else None
+    try:
+        base = float(ra) if ra else 2 ** (attempt + 1)
+    except ValueError:
+        base = 2 ** (attempt + 1)
+    return min(base, 60.0) + random.uniform(0, 1)
+
+
+def post_with_retry(url: str, payload: dict, api_key: str, tries: int = 7) -> dict:
+    """429/5xx·타임아웃·연결 오류만 재시도. 4xx 등은 바로 올린다.
+    공용 수업 키라 다른 사용자 부하로 429 가 잦다 — 오류 행이 생기면 구성 간 비교가 깨지므로 넉넉히 기다린다."""
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     for i in range(tries):
         try:
@@ -93,11 +106,15 @@ def post_with_retry(url: str, payload: dict, api_key: str, tries: int = 4) -> di
             if i == tries - 1:
                 raise
             RETRY_LOG.append({"reason": type(e).__name__, "try": i + 1})
-            time.sleep(2 ** i)
+            if (m := current_meter()) is not None:
+                m.retries += 1
+            time.sleep(_wait_s(None, i))
             continue
         if resp.status_code in (429, 500, 502, 503, 504) and i < tries - 1:
             RETRY_LOG.append({"reason": resp.status_code, "try": i + 1})
-            time.sleep(2 ** i)
+            if (m := current_meter()) is not None:
+                m.retries += 1
+            time.sleep(_wait_s(resp, i))
             continue
         resp.raise_for_status()
         return resp.json()
