@@ -385,7 +385,7 @@ card(s, 0.6, 1.5, 12.1, 1.0, C.text2, "demo-cmd");
 T(s, ".venv/bin/python scripts/demo_side_by_side.py --id Q01",
   { x: 0.9, y: 1.6, w: 11.5, h: 0.8, fontSize: 16, fontFace: "Courier New", color: C.background1, valign: "middle" });
 const demo = [["base", "high-latency (응답 지연 절차)", "오답", C.accent1, "커넥션 풀 늘리기, 트래픽 분산…"],
-  ["final", "db-down (+disk-full 혼입)", "정답 포함", C.accent2, "커넥션 풀·리플리케이션 점검, failover 노드로 전환…"]];
+  ["final", "db-down (+disk-full 혼입)", "정답 포함", C.accent2, "커넥션 풀 점검, 필요 시 failover 노드로 전환…"]];
 demo.forEach(([n, rb, ok, color, gist], i) => {
   const x = 0.6 + i * 6.13;
   card(s, x, 2.8, 5.97, 3.2, C.background2, `demo-${n}`);
