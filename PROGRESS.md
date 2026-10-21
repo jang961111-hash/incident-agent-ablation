@@ -1,6 +1,6 @@
 # 진행판 — 과제1 Ablation
 
-갱신: 10/21 10:14
+갱신: 10/21 10:40
 마감: 2026-10-22 13:00 (Git·보고서), 17:30 (발표)
 
 ## 단계
@@ -12,9 +12,9 @@
 | 2 | 베이스 zip 확보 | 완료 | 슬랙 all_total_vue_student.zip, 5.19MB |
 | 3 | 원본 이식 + 1회 실행 | 완료 | 55e15f1, docs/evidence/base_original_fake.txt |
 | 4 | 평가셋 24건 | 완료 | 6b1b518, 실제 런북 id, 12/3/3/3/3 |
-| 5 | adapter + 개선 3축 코드 | 진행 | src/adapter.py, src/ext/ |
-| 6 | 오프라인 테스트 (fake) | 대기 | 키 없이 전 구성 배관 검증 |
-| 7 | OpenAI 키 입력 | 병헌 | scripts/set_keys.sh |
+| 5 | adapter + 개선 3축 코드 | 완료 | src/adapter.py, src/ext/ |
+| 6 | 오프라인 테스트 (fake) | 완료 | pytest 10 passed, 96회 실행 오류 0 |
+| 7 | OpenAI 키 입력 | 병헌 | 지금 필요 — scripts/set_keys.sh |
 | 8 | base 측정 (Before) | 대기 | 키 필요 |
 | 9 | human_label 24건 | 병헌 | scripts/label.py |
 | 10 | 4구성 Ablation | 대기 | rag, rag_judge, rag_judge_cost |
@@ -22,6 +22,10 @@
 
 ## 작업 로그
 
+- 10:40 코드 리뷰 서브에이전트 투입 (src/ext, adapter, eval)
+- 10:39 fake 백엔드로 24건×4구성 배관 점검, 오류 0. pytest 10 passed
+- 10:30 평가 Judge를 gpt-4o로 고정 (파이프라인 Validator gpt-4o-mini와 분리, 자기채점 순환 방지)
+- 10:25 adapter: base도 retrieved 채움, context는 write 입력 원문
 - 10:14 진행판 표시 방식 변경 (scripts/board.py)
 - 10:12 평가셋 v2 커밋. threshold 0.8 → 0.75 (0.8은 4/4만 통과시키는 오류)
 - 10:08 원본 1회 실행 성공: route→plan→gate→research→replan(disk-full)→write→validate 반려→재작성→합격
