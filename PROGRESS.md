@@ -1,6 +1,6 @@
 # 진행판 — 과제1 Ablation
 
-갱신: 10/21 11:05
+갱신: 10/21 11:25
 마감: 2026-10-22 13:00 (Git·보고서), 17:30 (발표)
 
 ## 단계
@@ -15,13 +15,16 @@
 | 5 | adapter + 개선 3축 코드 | 완료 | src/adapter.py, src/ext/ |
 | 6 | 오프라인 테스트 (fake) | 완료 | pytest 10 passed, 96회 실행 오류 0 |
 | 7 | OpenAI 키 입력 | 완료 | 인증 HTTP 200, LangSmith 키도 등록 |
-| 8 | base 측정 (Before) | 진행 | 실측 로그 탭에서 진행 중 |
-| 9 | human_label 24건 | 병헌 | scripts/label.py |
+| 8 | base 측정 (Before) | 완료 | results/base_latest.json, 24건 오류 0 |
+| 9 | human_label 24건 | 병헌 | 지금 가능 — 라벨링 탭 (p/f 입력) |
 | 10 | 4구성 Ablation | 진행 | base→rag→rag_judge→rag_judge_cost 순서 실행 중 |
 | 11 | 보고서 · 발표자료 | 진행 | 방법론 초안 서브에이전트 작성 중 |
 
 ## 작업 로그
 
+- 11:25 base 완료. Recall@1 36%, 평가 Judge 통과율 83% — 런북 틀린 답도 Pass 받는 건이 보여 사람 라벨로 검증 필요
+- 11:25 base 규칙 Validator 재작성 0회 (gpt-4o 답은 항상 30자+'1)' 충족 → 규칙이 사실상 무력)
+- 11:20 방법론 초안(docs/05_보고서_방법.md) 수령, 임계치 표기 정정
 - 11:05 4구성 x 24건 실측 시작 (results/raw/run_all.log), 방법론 초안 병렬 위임
 - 11:03 실제 API 2건 스모크 통과 (Q05·Q16, 오류 0)
 - 11:00 코드 리뷰 반영: Judge 오류 격리, Recall@3 편향 보정(투입 런북 지표), 라벨 해시. pytest 12 passed
