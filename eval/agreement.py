@@ -129,6 +129,12 @@ def summary_dict(config: str = "base", labels_path: Path | str | None = None,
     human = load_human(labels_path)
     rows = load_rows(config, results_dir)
     labels = human["labels"]
+    excluded = []
+    ex_file = Path(__file__).resolve().parent / "human_exclude.txt"
+    if labels_path is None and ex_file.exists():   # 사람 라벨: 라벨러에게 판정이 노출된 건 제외 (예: 가이드 예시)
+        drop = {x.strip() for x in ex_file.read_text().split() if x.strip()}
+        excluded = sorted(set(labels) & drop)
+        labels = {k: v for k, v in labels.items() if k not in drop}
     stale, missing = [], []
     pairs = {k: [] for k in KEYS}
     disagreements = []
@@ -169,6 +175,7 @@ def summary_dict(config: str = "base", labels_path: Path | str | None = None,
         "n_labeled": len(labels),
         "n_compared": len(pairs["overall"]),
         "stale": stale,
+        "excluded": excluded,
         "missing": missing,
         "metrics": {k: _stats(pairs[k]) for k in KEYS},
         "disagreements": disagreements,

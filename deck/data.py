@@ -29,10 +29,17 @@ for n in ORDER:
 for sp in ("holdout", "dev", None):
     out[f"extra_{sp or 'all'}"] = extra(sp)
 out["stats_holdout"] = load(R / "stats_holdout.json")
+out["excluded"] = {n: load(R / f"{n}_latest.json")["summary"].get("excluded_reps") for n in ORDER}
+try:
+    from eval.agreement import summary_dict as _sd
+    c = _sd("base", labels_path=ROOT / "eval/claude_labels.yaml")
+    out["claude_agreement"] = {"n_compared": c["n_compared"], "metrics": c["metrics"]}
+except Exception as e:
+    out["claude_agreement"] = {"error": str(e)}
 out["calibrate"] = (load(R / "calibrate_rag.json") or {}).get("best")
 out["cache"] = load(R / "cache_bench_latest.json")
-out["concurrency"] = load(R / "concurrency_bench_latest.json")
-fault = load(R / "fault_bench_latest.json")
+out["concurrency"] = load(R / "concurrency_bench_latest.json") or load(R / "concurrency_bench_simulated_latest.json")
+fault = load(R / "fault_bench_latest.json") or load(R / "fault_bench_fake_latest.json")
 if fault:   # 행 본문은 빼고 요약만
     for v in fault["variants"].values():
         v.pop("rows", None)

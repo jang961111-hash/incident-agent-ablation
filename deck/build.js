@@ -28,7 +28,7 @@ const THEME = {
   },
 };
 const HEX = THEME.colors;
-const FONT = THEME.bodyFontFace;
+const FONT = "Arial";   // 차트 글꼴: LibreOffice·PowerPoint 모두에서 안전 (한글은 시스템 글꼴로 대체)
 const BAR = { base: HEX.accent3, rag: HEX.accent2, judge: "B9A15A", rag_judge: HEX.accent4,
   rag_judge_cost: "6E9C8F", rag_judge_v2: "2C7A99", final: HEX.accent6 };
 
@@ -314,7 +314,7 @@ if (D.concurrency) {
   s.addChart(pres.charts.BAR, [
     { name: "동기 (원본 방식)", labels: ns.map((n) => `동시 ${n}건`), values: wall(false) },
     { name: "비동기 I/O", labels: ns.map((n) => `동시 ${n}건`), values: wall(true) },
-  ], { x: 0.6, y: 1.4, w: 6.2, h: 4.4, barDir: "col", ...chartBase("동시 N건 처리에 걸린 시간 (초)", [HEX.accent3, HEX.accent6]),
+  ], { x: 0.6, y: 1.4, w: 6.2, h: 4.4, barDir: "col", ...chartBase(D.concurrency.backend === "fake_slow" ? "동시 N건 처리 시간 (초) — 모의 LLM, 호출당 0.5초 동기 지연" : "동시 N건 처리에 걸린 시간 (초)", [HEX.accent3, HEX.accent6]),
     showLegend: true, legendPos: "b", legendFontFace: FONT, legendFontSize: 11,
     dataLabelFormatCode: "0.0", valAxisMinVal: 0, objectName: "chart-conc" });
 } else {
@@ -325,7 +325,7 @@ if (fv) {
   card(s, 7.1, 1.4, 5.63, 2.25, C.background2, "fault-card");
   T(s, [
     { text: `도구 장애 주입 (모니터링 호출 ${Math.round(D.fault.rate * 100)}% 실패)`, options: { bold: true, color: HEX.dk2, breakLine: true } },
-    { text: "장애를 맞은 질의 중 끝까지 답한 건수", options: { fontSize: 12, color: HEX.accent3, breakLine: true } },
+    { text: D.fault.backend === "fake" ? "장애를 맞은 질의 중 끝까지 답한 건수 (LLM 없이 코드 경로만 측정)" : "장애를 맞은 질의 중 끝까지 답한 건수", options: { fontSize: 12, color: HEX.accent3, breakLine: true } },
     { text: `base ${fv.base.completed_among_faulted}/${fv.base.queries_with_fault} · 허용 끔 ${fv.final_no_tolerance.completed_among_faulted}/${fv.final_no_tolerance.queries_with_fault} · final ${fv.final.completed_among_faulted}/${fv.final.queries_with_fault}`, options: { fontSize: 17, bold: true, color: HEX.accent6 } },
   ], { x: 7.4, y: 1.55, w: 5.1, h: 2.0, fontSize: 14, valign: "top" });
 }
@@ -333,12 +333,12 @@ if (D.cache) {
   const [c1, c2] = D.cache.passes;
   card(s, 7.1, 3.85, 5.63, 1.95, C.background2, "cache-card");
   T(s, [
-    { text: "반복 질문 캐시 (같은 질의 2회)", options: { bold: true, color: HEX.dk2, breakLine: true } },
+    { text: "반복 질문 캐시 (같은 60건 2회, 실제 API)", options: { bold: true, color: HEX.dk2, breakLine: true } },
     { text: `2회차 적중 ${c2.cache_hits}/${c2.cache_lookups}, 지연 p50 ${sec(c1.latency_p50_ms)} → ${sec(c2.latency_p50_ms)}`, options: { fontSize: 16, bold: true, color: HEX.accent6, breakLine: true } },
     { text: "route·plan·임베딩만 캐시. 이 단계는 비용의 약 8%라 비용 효과는 작다. 모니터링·답변은 캐시하지 않음.", options: { fontSize: 12 } },
   ], { x: 7.4, y: 4.0, w: 5.1, h: 1.7, fontSize: 14, valign: "top" });
 }
-src(s, "results/concurrency_bench_latest.json · fault_bench_latest.json · cache_bench_latest.json", 6.1);
+src(s, "동시성·장애 주입은 공용 키 한도 소진 뒤 API 없이 측정 (results/concurrency_bench_simulated_latest.json · fault_bench_fake_latest.json). 캐시는 실제 API (cache_bench_latest.json)", 6.1);
 s.addNotes("원본은 노드가 async여도 LLM 호출이 동기라 동시 요청이 줄을 섭니다. 도구 하나가 죽으면 질의 전체가 실패합니다. 둘 다 고쳤습니다.");
 
 // ── 13. 평가자 검증 ──────────────────────────────────────────────────
@@ -359,10 +359,20 @@ if (hasLabels) {
   { ...TBL, x: 6.9, y: 1.5, w: 5.83, colW: [1.9, 1.3, 1.3, 1.33], fontSize: 13, rowH: 0.45, objectName: "kappa-table" });
   T(s, `사람 라벨 ${agree.n_compared}건 (base 답변, 지표별 블라인드). * 관대함 = 사람이 Fail로 본 답을 Judge가 Pass로 준 비율`,
     { x: 6.9, y: 4.35, w: 5.83, h: 0.7, fontSize: 11.5, color: C.accent3 });
-} else {
-  card(s, 6.9, 1.5, 5.83, 3.0, C.background2, "kappa-pending");
-  T(s, "사람 라벨과의 지표별 kappa는 라벨 입력 후 이 자리에 들어간다 (scripts/label.py → eval/agreement.py).",
-    { x: 7.2, y: 1.7, w: 5.2, h: 2.6, fontSize: 15, valign: "top" });
+} else if (D.claude_agreement && D.claude_agreement.metrics) {
+  const m = D.claude_agreement.metrics;
+  const kv = (k) => (m[k] && m[k].kappa != null ? m[k].kappa.toFixed(2) : "-");
+  const ag = (k) => (m[k] && m[k].agreement != null ? pct(m[k].agreement) : "-");
+  const len = (k) => (m[k] && m[k].leniency != null ? pct(m[k].leniency) : "-");
+  s.addTable([[hdr("지표"), hdr("일치율"), hdr("kappa"), hdr("Judge 관대도*")],
+    ["관련성", ag("relevance"), kv("relevance"), len("relevance")],
+    ["완전성", ag("completeness"), kv("completeness"), len("completeness")],
+    ["도메인 적합성", ag("domain_appropriateness"), kv("domain_appropriateness"), len("domain_appropriateness")],
+    ["명확성", ag("clarity"), kv("clarity"), len("clarity")],
+    [{ text: "종합 (3/4)", options: { bold: true } }, ag("overall"), kv("overall"), len("overall")]],
+  { ...TBL, x: 6.9, y: 1.5, w: 5.83, colW: [1.9, 1.2, 1.2, 1.53], fontSize: 13, rowH: 0.45, objectName: "claude-kappa-table" });
+  T(s, `평가 Judge vs 독립 평가자(Claude, Judge 판정을 가린 블라인드 채점) base 답변 ${D.claude_agreement.n_compared}건. 사람 라벨이 아니다. * 독립 평가자가 Fail로 본 답을 Judge가 Pass로 준 비율. 사람 표본 검증은 진행 중.`,
+    { x: 6.9, y: 4.3, w: 5.83, h: 1.0, fontSize: 11.5, color: C.accent3 });
 }
 T(s, `평가 Judge는 RAG 이후 ${pct(H.rag.pass_rate)} 이상에서 포화돼 구성 차이를 잘 보지 못했다. 그래서 Judge 무관 지표(정답 누락·혼입, 런북 어구 포함)로 결론을 냈다.`,
   { x: 0.6, y: 5.85, w: 12.1, h: 0.7, fontSize: 13.5 });
