@@ -1,10 +1,16 @@
 # 평가셋 — 한 번 라벨링하면 구성이 바뀌어도 수정하지 않는다.
 # 수정이 필요하면 version을 올리고 전 구성을 다시 돌린다.
-version: 2
+version: 3
+# v2 -> v3 변경: holdout 36건(Q25~Q60)을 추가했다. 기존 24건(Q01~Q24)은 문항을 그대로 두고 split: dev 필드만 붙였다.
+#   split 정의:
+#     dev     = v2의 24건(Q01~Q24). 개선 v2의 기준값 조정에만 사용한다.
+#     holdout = v3에서 추가한 36건(Q25~Q60). 개선 v2 구현 전에 고정했고 최종 보고에만 사용한다.
+#               조정(튜닝)에 쓰지 않는다. 문항은 측정 결과를 보기 전에 작성했다.
 # v1 -> v2 변경: v1은 rb_db_down 같은 임시(placeholder) 런북 id와 7건뿐이었다.
 #   v2는 베이스 코드(src/data/runbooks/)의 실제 런북 id 6종으로 교체하고 24건으로 확장했다.
 #   human_label을 매기기 전에 교체했으므로 무효가 된 라벨링 데이터는 없다.
 created: 2026-10-21
+updated: 2026-10-21
 threshold: 0.75         # 4지표 중 3개 이상 Pass (v1의 0.8은 4/4만 통과시키는 오류)
 
 # human_label: 본인이 직접 매긴 Pass/Fail. Judge 판정과의 일치율 계산에 쓴다.
@@ -15,6 +21,7 @@ threshold: 0.75         # 4지표 중 3개 이상 Pass (v1의 0.8은 4/4만 통�
 # design_note: normal 문항만. aligned = 증상과 일치하는 알람을 가진 시스템을 지목한 문항,
 #              paraphrased = 운영자가 자기 말로 증상을 풀어 쓴 문항.
 # category: normal | constrained | composite | unregistered | ambiguous
+# split: dev | holdout (위 v3 변경 설명 참조)
 
 queries:
   # ---------- normal (12) : 런북 6종 x 2건 ----------
@@ -25,6 +32,7 @@ queries:
     must_include: ["커넥션 풀", "failover"]
     design_note: "aligned"
     human_label: null
+    split: dev
 
   - id: Q02
     category: normal
@@ -33,6 +41,7 @@ queries:
     must_include: ["failover", "리플리케이션"]
     design_note: "paraphrased"
     human_label: null
+    split: dev
 
   - id: Q03
     category: normal
@@ -41,6 +50,7 @@ queries:
     must_include: ["커넥션 풀", "타임아웃"]
     design_note: "aligned"
     human_label: null
+    split: dev
 
   - id: Q04
     category: normal
@@ -49,6 +59,7 @@ queries:
     must_include: ["로드밸런서", "읽기 복제본"]
     design_note: "paraphrased"
     human_label: null
+    split: dev
 
   - id: Q05
     category: normal
@@ -57,6 +68,7 @@ queries:
     must_include: ["임시 파일", "로테이션"]
     design_note: "aligned"
     human_label: null
+    split: dev
 
   - id: Q06
     category: normal
@@ -65,6 +77,7 @@ queries:
     must_include: ["로그 레벨", "볼륨"]
     design_note: "paraphrased"
     human_label: null
+    split: dev
 
   - id: Q07
     category: normal
@@ -73,6 +86,7 @@ queries:
     must_include: ["오토스케일링", "롤백"]
     design_note: "aligned"
     human_label: null
+    split: dev
 
   - id: Q08
     category: normal
@@ -81,6 +95,7 @@ queries:
     must_include: ["롤백", "배치 작업 중복"]
     design_note: "paraphrased"
     human_label: null
+    split: dev
 
   - id: Q09
     category: normal
@@ -89,6 +104,7 @@ queries:
     must_include: ["재시작", "힙 덤프"]
     design_note: "aligned"
     human_label: null
+    split: dev
 
   - id: Q10
     category: normal
@@ -97,6 +113,7 @@ queries:
     must_include: ["재시작", "롤백"]
     design_note: "paraphrased"
     human_label: null
+    split: dev
 
   - id: Q11
     category: normal
@@ -105,6 +122,7 @@ queries:
     must_include: ["DNS", "헬스체크"]
     design_note: "aligned"
     human_label: null
+    split: dev
 
   - id: Q12
     category: normal
@@ -113,6 +131,7 @@ queries:
     must_include: ["보안그룹", "우회"]
     design_note: "paraphrased"
     human_label: null
+    split: dev
 
   # ---------- constrained (3) : 정상 장애 + 형식/길이 제약 ----------
   - id: Q13
@@ -122,6 +141,7 @@ queries:
     must_include: []
     note: "길이 제약 준수 여부가 clarity 판정 대상. 강의 1:49:32 예시와 동일 패턴."
     human_label: null
+    split: dev
 
   - id: Q14
     category: constrained
@@ -130,6 +150,7 @@ queries:
     must_include: ["롤백"]
     note: "표 형식 제약 준수 여부가 clarity 판정 대상."
     human_label: null
+    split: dev
 
   - id: Q15
     category: constrained
@@ -138,6 +159,7 @@ queries:
     must_include: []
     note: "줄 수 제약 준수 여부가 clarity 판정 대상."
     human_label: null
+    split: dev
 
   # ---------- composite (3) : 동시 증상, 런북 2건 ----------
   - id: Q16
@@ -147,6 +169,7 @@ queries:
     must_include: []
     note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@k = 1.0. 베이스는 런북 1건만 검색하므로 구조적 한계가 드러나는 문항."
     human_label: null
+    split: dev
 
   - id: Q17
     category: composite
@@ -155,6 +178,7 @@ queries:
     must_include: []
     note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@k = 1.0."
     human_label: null
+    split: dev
 
   - id: Q18
     category: composite
@@ -163,6 +187,7 @@ queries:
     must_include: []
     note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@k = 1.0."
     human_label: null
+    split: dev
 
   # ---------- unregistered (3) : 등록되지 않은 시스템/장애 유형 ----------
   - id: Q19
@@ -173,6 +198,7 @@ queries:
     expect_behavior: "등록된 런북·모니터링에 없음을 밝히고 근거 없는 원인·수치를 만들지 않는다"
     note: "근거 없는 원인 확정을 하면 completeness Fail이어야 한다. 등록 시스템인 gateway-service/payments-service와 혼동하지 않는지도 본다."
     human_label: null
+    split: dev
 
   - id: Q20
     category: unregistered
@@ -181,6 +207,7 @@ queries:
     must_include: []
     expect_behavior: "등록된 런북·모니터링에 없음을 밝히고 근거 없는 원인·수치를 만들지 않는다"
     human_label: null
+    split: dev
 
   - id: Q21
     category: unregistered
@@ -189,6 +216,7 @@ queries:
     must_include: []
     expect_behavior: "등록된 런북·모니터링에 없음을 밝히고 근거 없는 원인·수치를 만들지 않는다"
     human_label: null
+    split: dev
 
   # ---------- ambiguous (3) : 모호한 요청 ----------
   - id: Q22
@@ -198,6 +226,7 @@ queries:
     must_include: []
     expect_behavior: "대상 시스템·증상을 되묻거나, 확인한 범위를 명시한다"
     human_label: null
+    split: dev
 
   - id: Q23
     category: ambiguous
@@ -206,6 +235,7 @@ queries:
     must_include: []
     expect_behavior: "대상 시스템·증상을 되묻거나, 확인한 범위를 명시한다"
     human_label: null
+    split: dev
 
   - id: Q24
     category: ambiguous
@@ -214,3 +244,337 @@ queries:
     must_include: []
     expect_behavior: "대상 시스템·증상을 되묻거나, 확인한 범위를 명시한다"
     human_label: null
+    split: dev
+
+  # =====================================================================
+  # holdout (36) : v3 추가분. 개선 v2 구현 전에 고정. 최종 보고에만 사용, 조정에 쓰지 않는다.
+  # =====================================================================
+
+  # ---------- holdout normal (18) : 런북 6종 x 3건 (aligned 9 / paraphrased 9) ----------
+  - id: Q25
+    category: normal
+    query: "primary DB 인스턴스가 크래시 났고 앱에서 쓰기 쿼리가 전부 실패합니다. 복구 절차를 알려주세요."
+    gold_runbooks: [db-down]
+    must_include: ["failover 노드", "커넥션 풀"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q26
+    category: normal
+    query: "주문 DB가 갑자기 연결이 안 되고 앱 로그에 connection refused만 쏟아집니다. 레플리카는 살아 있는 것 같은데 어디서부터 손대야 할까요?"
+    gold_runbooks: [db-down]
+    must_include: ["리플리케이션", "원인 분석"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  - id: Q27
+    category: normal
+    query: "새벽에 데이터베이스 마스터가 내려간 것 같다는 알림이 왔습니다. 다른 노드로 넘기는 건 어떤 기준으로 판단하나요?"
+    gold_runbooks: [db-down]
+    must_include: ["failover 노드"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  - id: Q28
+    category: normal
+    query: "payments-service 인스턴스들 CPU가 90%를 넘은 채 안 내려옵니다. 스케일 아웃부터 해야 하나요?"
+    gold_runbooks: [cpu-spike]
+    must_include: ["오토스케일링 그룹"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q29
+    category: normal
+    query: "payments-service-3 인스턴스가 응답이 느리고 CPU가 높다는 알람이 떴습니다. 확인할 것들을 순서대로 알려주세요."
+    gold_runbooks: [cpu-spike]
+    must_include: ["배치 작업 중복", "프로파일링"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q30
+    category: normal
+    query: "야간 정산 배치가 겹쳐서 돌았는지 서버 하나가 계속 풀로드예요. 지금 부하를 어떻게 줄이죠?"
+    gold_runbooks: [cpu-spike]
+    must_include: ["배치 작업 중복", "오토스케일링"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  - id: Q31
+    category: normal
+    query: "log-service에서 disk space low 알람이 떴습니다. 용량 확보 절차와 이후 조치를 알려주세요."
+    gold_runbooks: [disk-full]
+    must_include: ["오래된 백업", "보존 정책"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q32
+    category: normal
+    query: "앱 서버에서 No space left on device 에러가 나기 시작했어요. 뭘 지우고 뭘 늘려야 할지 감이 안 옵니다."
+    gold_runbooks: [disk-full]
+    must_include: ["볼륨", "임시 파일"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  - id: Q33
+    category: normal
+    query: "어떤 애플리케이션이 디버그 로그를 엄청 쓰는지 하루 만에 저장공간이 20GB나 줄었습니다. 재발하지 않게 하려면 어떻게 하나요?"
+    gold_runbooks: [disk-full]
+    must_include: ["로그 레벨", "로테이션"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  - id: Q34
+    category: normal
+    query: "auth-service 커넥션 풀 사용률이 92%까지 올라갔고 p95가 계속 1초를 넘습니다. 어디부터 조치할까요?"
+    gold_runbooks: [high-latency]
+    must_include: ["풀 크기", "타임아웃"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q35
+    category: normal
+    query: "auth-service p95 지연이 임계치를 넘은 채 5분째 안 내려옵니다. 트래픽을 어떻게 분산해야 하나요?"
+    gold_runbooks: [high-latency]
+    must_include: ["읽기 복제본", "캐시 계층"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q36
+    category: normal
+    query: "특정 서버 한 대에서만 요청이 유난히 오래 걸리는 것 같아요. 나머지는 멀쩡합니다. 어떻게 처리하죠?"
+    gold_runbooks: [high-latency]
+    must_include: ["로드밸런서", "일시 제외"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  - id: Q37
+    category: normal
+    query: "cache-service 힙 사용량이 계속 우상향이고 메모리 알람이 떴습니다. 당장 할 일과 원인 파악 방법을 알려주세요."
+    gold_runbooks: [memory-leak]
+    must_include: ["힙 덤프", "재시작"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q38
+    category: normal
+    query: "cache-service 메모리가 89%인데 몇 시간째 내려가질 않습니다. 누수인지 어떻게 확인하고 재발은 어떻게 막죠?"
+    gold_runbooks: [memory-leak]
+    must_include: ["프로파일링", "컨테이너 메모리 상한선"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q39
+    category: normal
+    query: "자바 서비스가 며칠에 한 번씩 OOMKilled 되면서 재기동됩니다. 근본 원인을 찾으려면 뭘 봐야 하나요?"
+    gold_runbooks: [memory-leak]
+    must_include: ["힙 덤프", "이벤트 리스너"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  - id: Q40
+    category: normal
+    query: "gateway-service 쪽 upstream timeout 알람이 안 꺼집니다. 네트워크 경로 점검 항목을 알려주세요."
+    gold_runbooks: [network-timeout]
+    must_include: ["보안그룹", "라우팅"]
+    design_note: "aligned"
+    human_label: null
+    split: holdout
+
+  - id: Q41
+    category: normal
+    query: "특정 가용영역에 있는 서버들끼리만 호출이 자꾸 끊깁니다. 다른 영역은 괜찮아요. 임시로 돌려놓는 방법이 있나요?"
+    gold_runbooks: [network-timeout]
+    must_include: ["우회", "가용영역"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  - id: Q42
+    category: normal
+    query: "배포한 지 얼마 안 됐는데 내부 API가 정상 응답까지 타임아웃으로 처리됩니다. 클라이언트 설정 문제일 수도 있나요?"
+    gold_runbooks: [network-timeout]
+    must_include: ["타임아웃 값", "재시도 정책"]
+    design_note: "paraphrased"
+    human_label: null
+    split: holdout
+
+  # ---------- holdout constrained (5) : 정상 장애 + 형식/길이 제약 ----------
+  - id: Q43
+    category: constrained
+    query: "cache-service 메모리 누수 의심 상황 대응을 2줄로만 알려주세요."
+    gold_runbooks: [memory-leak]
+    must_include: ["재시작"]
+    note: "줄 수 제약 준수 여부가 clarity 판정 대상."
+    human_label: null
+    split: holdout
+
+  - id: Q44
+    category: constrained
+    query: "gateway-service 504 타임아웃 확인 절차를 번호 없이 한 문장으로 설명해주세요."
+    gold_runbooks: [network-timeout]
+    must_include: ["DNS"]
+    note: "번호 매기기 금지 + 한 문장 제약 준수 여부가 clarity 판정 대상."
+    human_label: null
+    split: holdout
+
+  - id: Q45
+    category: constrained
+    query: "auth-service 응답 지연 대응을 체크리스트로 만들어주세요. 항목마다 체크박스(- [ ])로 써주세요."
+    gold_runbooks: [high-latency]
+    must_include: ["커넥션 풀"]
+    note: "체크리스트 형식 제약 준수 여부가 clarity 판정 대상."
+    human_label: null
+    split: holdout
+
+  - id: Q46
+    category: constrained
+    query: "DB 프라이머리 장애 시 첫 조치를 100자 이내로 알려주세요."
+    gold_runbooks: [db-down]
+    must_include: []
+    note: "글자 수 제약 준수 여부가 clarity 판정 대상."
+    human_label: null
+    split: holdout
+
+  - id: Q47
+    category: constrained
+    query: "로그 서버 디스크 부족 대응을 표로 정리해주세요. 열은 단계, 담당, 확인 방법으로 해주세요."
+    gold_runbooks: [disk-full]
+    must_include: ["로테이션"]
+    note: "표 형식·열 구성 제약 준수 여부가 clarity 판정 대상. 런북에 담당자 정보가 없으므로 담당 열을 지어내지 않고 처리하는지도 본다."
+    human_label: null
+    split: holdout
+
+  # ---------- holdout composite (5) : 동시 증상, 런북 2건 ----------
+  - id: Q48
+    category: composite
+    query: "DB 프라이머리가 죽었는데 그 여파로 auth-service 응답 지연도 심합니다. 두 문제를 같이 어떻게 대응하죠?"
+    gold_runbooks: [db-down, high-latency]
+    must_include: []
+    note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@k = 1.0."
+    human_label: null
+    split: holdout
+
+  - id: Q49
+    category: composite
+    query: "payments-service CPU가 계속 높고 같은 시점부터 cache-service 메모리도 꾸준히 오르고 있습니다. 둘 다 어떻게 대응해야 하나요?"
+    gold_runbooks: [cpu-spike, memory-leak]
+    must_include: []
+    note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@k = 1.0."
+    human_label: null
+    split: holdout
+
+  - id: Q50
+    category: composite
+    query: "gateway-service 쪽 호출이 타임아웃 나고 있는데 log-service 디스크도 95%입니다. 우선순위와 절차를 알려주세요."
+    gold_runbooks: [network-timeout, disk-full]
+    must_include: []
+    note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@k = 1.0."
+    human_label: null
+    split: holdout
+
+  - id: Q51
+    category: composite
+    query: "DB 연결이 한 번 끊긴 뒤부터 앱 인스턴스 메모리가 계속 오르고 DB 쪽도 아직 복구가 안 됐습니다. 두 가지를 같이 어떻게 처리하죠?"
+    gold_runbooks: [db-down, memory-leak]
+    must_include: []
+    note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@k = 1.0."
+    human_label: null
+    split: holdout
+
+  - id: Q52
+    category: composite
+    query: "배치 작업이 중복 실행돼서 CPU가 90%를 넘었고, 그 배치가 쓴 로그 때문에 디스크도 거의 찼습니다. 같이 정리하려면 어떻게 하죠?"
+    gold_runbooks: [cpu-spike, disk-full]
+    must_include: []
+    note: "복합 장애. 런북 2건을 모두 끌어와야 Recall@k = 1.0."
+    human_label: null
+    split: holdout
+
+  # ---------- holdout unregistered (4) : 등록되지 않은 시스템/장애 유형 ----------
+  - id: Q53
+    category: unregistered
+    query: "CI/CD 파이프라인에서 배포 단계가 계속 실패합니다. 어디부터 확인해야 하나요?"
+    gold_runbooks: []
+    must_include: []
+    expect_behavior: "등록된 런북·모니터링에 없음을 밝히고 근거 없는 원인·수치를 만들지 않는다"
+    human_label: null
+    split: holdout
+
+  - id: Q54
+    category: unregistered
+    query: "이메일 발송 큐에 메일이 수천 건 쌓여서 고객 알림이 안 나가고 있어요. 어떻게 처리하죠?"
+    gold_runbooks: []
+    must_include: []
+    expect_behavior: "등록된 런북·모니터링에 없음을 밝히고 근거 없는 원인·수치를 만들지 않는다"
+    human_label: null
+    split: holdout
+
+  - id: Q55
+    category: unregistered
+    query: "외부 지도 API 일일 쿼터를 초과해서 주소 검색 기능이 막혔습니다. 대응 절차 알려주세요."
+    gold_runbooks: []
+    must_include: []
+    expect_behavior: "등록된 런북·모니터링에 없음을 밝히고 근거 없는 원인·수치를 만들지 않는다"
+    human_label: null
+    split: holdout
+
+  - id: Q56
+    category: unregistered
+    query: "도메인 등록 기간이 만료돼서 사이트가 열리지 않습니다. 갱신 절차가 어떻게 되나요?"
+    gold_runbooks: []
+    must_include: []
+    expect_behavior: "등록된 런북·모니터링에 없음을 밝히고 근거 없는 원인·수치를 만들지 않는다"
+    human_label: null
+    split: holdout
+
+  # ---------- holdout ambiguous (4) : 모호한 요청 ----------
+  - id: Q57
+    category: ambiguous
+    query: "앱이 이상하게 동작하는데 확인 좀 부탁드려요."
+    gold_runbooks: []
+    must_include: []
+    expect_behavior: "대상 시스템·증상을 되묻거나, 확인한 범위를 명시한다"
+    human_label: null
+    split: holdout
+
+  - id: Q58
+    category: ambiguous
+    query: "고객 몇 분이 서비스가 불안정하다고 하시는데 원인을 모르겠습니다."
+    gold_runbooks: []
+    must_include: []
+    expect_behavior: "대상 시스템·증상을 되묻거나, 확인한 범위를 명시한다"
+    human_label: null
+    split: holdout
+
+  - id: Q59
+    category: ambiguous
+    query: "방금 전부터 평소와 뭔가 다른데 어떻게 해야 하죠?"
+    gold_runbooks: []
+    must_include: []
+    expect_behavior: "대상 시스템·증상을 되묻거나, 확인한 범위를 명시한다"
+    human_label: null
+    split: holdout
+
+  - id: Q60
+    category: ambiguous
+    query: "서비스가 안 된다는 연락이 왔는데 일단 뭐부터 보면 될까요?"
+    gold_runbooks: []
+    must_include: []
+    expect_behavior: "대상 시스템·증상을 되묻거나, 확인한 범위를 명시한다"
+    human_label: null
+    split: holdout
