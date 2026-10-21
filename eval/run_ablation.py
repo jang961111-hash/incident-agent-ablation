@@ -97,26 +97,36 @@ def run_config(cfg_path: Path, queries: list[dict], threshold: float, use_judge:
         from eval.judge import Judge
         judge = Judge(model=EVAL_JUDGE_MODEL, threshold=threshold)
 
+    import src.adapter as adapter_mod
+
     jobs = [(rep, q) for rep in range(1, reps + 1) for q in queries]
     rows, lock = [], threading.Lock()
-    with ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(_evaluate_one, q, rep, cfg, run_once, judge): (rep, q["id"]) for rep, q in jobs}
-        for f in as_completed(futs):
-            row = f.result()
-            with lock:
-                rows.append(row)
-                if "error" in row:
-                    print(f"  r{row['rep']} {row['id']}  ERROR {row['error'][:120]}", flush=True)
-                else:
-                    jtxt = (f"judge={row['judge_score']:.2f} {'PASS' if row['judge_passed'] else 'FAIL'}"
-                            if row["judge_passed"] is not None else "judge=n/a")
-                    print(f"  r{row['rep']} {row['id']}  {row['route']:8}  ret={row['retrieved'][:2]}  {jtxt}  "
-                          f"rw={row['rewrites']}  {row['latency_ms']:.0f}ms  ${row['cost_usd']:.4f}"
-                          f"  [{len(rows)}/{len(jobs)}]", flush=True)
-                if save:   # 중간 저장 — 도중에 끊겨도 앞선 결과를 잃지 않는다
-                    RESULTS.mkdir(exist_ok=True)
-                    (RESULTS / f"{name}_partial.json").write_text(
-                        json.dumps({"config": cfg, "rows": rows}, ensure_ascii=False))
+
+    def run_rep(rep: int):
+        # 반복마다 캐시를 비운다 — 각 반복을 처음 실행(cold)으로 재야 공정하다.
+        # (v2 1차 실측에서 2회차에 앞 반복의 캐시가 적중해 비용·지연이 유리하게 섞인 문제 수정)
+        adapter_mod._CACHES.clear()
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            futs = [ex.submit(_evaluate_one, q, r, cfg, run_once, judge) for r, q in jobs if r == rep]
+            for f in as_completed(futs):
+                yield f
+
+    for f in (f for rep in range(1, reps + 1) for f in run_rep(rep)):
+        row = f.result()
+        with lock:
+            rows.append(row)
+            if "error" in row:
+                print(f"  r{row['rep']} {row['id']}  ERROR {row['error'][:120]}", flush=True)
+            else:
+                jtxt = (f"judge={row['judge_score']:.2f} {'PASS' if row['judge_passed'] else 'FAIL'}"
+                        if row["judge_passed"] is not None else "judge=n/a")
+                print(f"  r{row['rep']} {row['id']}  {row['route']:8}  ret={row['retrieved'][:2]}  {jtxt}  "
+                      f"rw={row['rewrites']}  {row['latency_ms']:.0f}ms  ${row['cost_usd']:.4f}"
+                      f"  [{len(rows)}/{len(jobs)}]", flush=True)
+            if save:   # 중간 저장 — 도중에 끊겨도 앞선 결과를 잃지 않는다
+                RESULTS.mkdir(exist_ok=True)
+                (RESULTS / f"{name}_partial.json").write_text(
+                    json.dumps({"config": cfg, "rows": rows}, ensure_ascii=False))
     rows.sort(key=lambda r: (r["rep"], r["id"]))
 
     summary = aggregate(name, rows, reps)

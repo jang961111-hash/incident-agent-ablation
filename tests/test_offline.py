@@ -86,3 +86,18 @@ def test_summary_metrics_shape():
     assert s["latency_p50_ms"] == 200.0
     assert s["recall@1"] == 0.5 and s["recall@1|incident"] == 1.0
     assert s["fed_recall"] == 0.5 and s["fed_precision"] == 1.0
+
+
+def test_cache_does_not_leak_across_reps(tmp_path, monkeypatch):
+    """반복마다 캐시를 비워야 한다 — 앞 반복의 캐시가 다음 반복 비용·지연을 낮추면 안 된다."""
+    import eval.run_ablation as ra
+    monkeypatch.setattr(ra, "RESULTS", tmp_path)
+    qs = [{"id": "T1", "query": QUERY, "gold_runbooks": ["disk-full"], "split": "dev",
+           "category": "normal"}]
+    p = tmp_path / "c.yaml"
+    c = cfg("rag_judge_cost")
+    c["runbook_selection"] = "rag"
+    p.write_text(yaml.safe_dump(c, allow_unicode=True))
+    s = ra.run_config(p, qs, 0.75, use_judge=False, save=False, backend="fake", reps=2, workers=1)
+    hits = [r["cache_hits"] for r in s["per_rep"]]
+    assert hits == [0, 0], f"반복 간 캐시 적중 {hits}"
