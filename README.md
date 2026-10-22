@@ -341,7 +341,7 @@ p95 지연 행: 동일 부하·동시 실행 조건(7구성 동시, workers 2, h
 - **반복과 유의성**: 7구성 x 3회, 반복 간 95% CI와 질문 단위 paired bootstrap(2,000회). 반복마다 캐시를 비워 모든 회차를 같은 조건(cold)으로 쟀다.
 - **지표 축 분리**: 검색(맞는 매뉴얼 누락·엉뚱한 매뉴얼 혼입, Recall@k), 답변(평가 Judge 4지표, 매뉴얼 핵심 문구 포함), 운영(건당 비용, 지연, 동시성, 장애 주입).
 - **편향 검증**: 알림 문구대로 묻는 질문과 자기 말로 묻는 질문, dev와 holdout을 나눠 봤다.
-- 자세한 분석: [docs/06_결과분석.md](docs/06_결과분석.md) · 방법: [docs/05_보고서_방법.md](docs/05_보고서_방법.md) · 전체 표: [docs/04_결과표.md](docs/04_결과표.md) · 발표: [5분용 8장](deck/incident-agent-ablation_5min.pptx) · [Canva판](https://www.canva.com/d/xUF8JQy7dweWq_R) · [전체 18장](deck/incident-agent-ablation.pptx) · [발표 대본](docs/발표_대본.md) · 조사 근거: [docs/research/](docs/research/00_요약_실태현황.md)
+- 자세한 분석: [docs/06_결과분석.md](docs/06_결과분석.md) · 방법: [docs/05_보고서_방법.md](docs/05_보고서_방법.md) · 전체 표: [docs/04_결과표.md](docs/04_결과표.md) · 발표: [5분용 8장](deck/incident-agent-ablation_5min.pptx) · [Canva판](https://www.canva.com/d/wt4hDIP_W8S7Ifb) · [전체 18장](deck/incident-agent-ablation.pptx) · [발표 대본](docs/발표_대본.md) · 조사 근거: [docs/research/](docs/research/00_요약_실태현황.md)
 
 ### 직접 돌려 보기
 
