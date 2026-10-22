@@ -172,6 +172,7 @@ for cat,items in QA:
 open('docs/발표/발표스크립트_최종.md','w').write("\n".join(md)+"\n")
 # html
 def fmt(l):
+    """대본 한 줄을 HTML div 로 바꾼다. **굵게** 는 <b>, (쉼) 표시는 강조 span, '(시간' 으로 시작하면 안내 줄로."""
     e=html.escape(l); e=re.sub(r'\*\*(.+?)\*\*',r'<b>\1</b>',e)
     e=re.sub(r'\((쉼|1초 쉼)\)',r'<span class="pause">(\1)</span>',e)
     if l.startswith('(시간'): return f'<div class="hint">{e}</div>'

@@ -20,6 +20,7 @@ DIM, BOLD, RESET = "\033[90m", "\033[1m", "\033[0m"
 
 
 def width(s: str) -> int:
+    """터미널 표시 폭. 동아시아 전각 문자(한글 등)는 2칸, 나머지는 1칸으로 센다."""
     return sum(2 if unicodedata.east_asian_width(ch) in "WF" else 1 for ch in s)
 
 
@@ -36,6 +37,11 @@ def fit(s: str, w: int) -> str:
 
 
 def parse(text: str):
+    """PROGRESS.md 본문에서 (갱신 시각, 단계 표 행, 작업 로그, 사용자 할 일) 을 뽑는다.
+
+    '## 단계' 절의 번호로 시작하는 표 행은 4칸으로 맞추고, '## 작업 로그' 절의 '- ' 줄과
+    '## 병헌' 으로 시작하는 절의 번호 목록을 모은다.
+    """
     steps, logs, todo, section = [], [], [], None
     updated = re.search(r"갱신:\s*(.+)", text)
     for line in text.splitlines():
@@ -53,10 +59,11 @@ def parse(text: str):
 
 
 def render() -> str:
+    """PROGRESS.md 를 읽어 진행 현황, 마감까지 남은 시간, 최근 로그, 할 일을 색 있는 문자열로 그린다. 폭은 최대 110칸."""
     cols = min(shutil.get_terminal_size((100, 30)).columns, 110)
     updated, steps, logs, todo = parse(SRC.read_text(encoding="utf-8"))
     left = DEADLINE - datetime.now()
-    h, m = divmod(max(int(left.total_seconds()), 0) // 60, 60)
+    h, m = divmod(max(int(left.total_seconds()), 0) // 60, 60)   # 마감이 지나면 0시간 0분
     done = sum(1 for s in steps if s[2] == "완료")
 
     lines = [f"{BOLD}과제1 Ablation{RESET}  {done}/{len(steps)} 완료"

@@ -20,12 +20,17 @@ TAGS = ("a:rPr", "a:defRPr", "a:endParaRPr")
 
 
 def fix(xml: str) -> str:
+    """XML 한 파일의 lang 을 ko-KR 로 바꾸고, 대상 run 속성 태그마다 latin, ea 글꼴을 채운다.
+
+    자기 닫힘 태그는 글꼴 자식을 붙여 열고, 열린 태그는 body 가 빠진 글꼴만 더한다.
+    """
     xml = xml.replace('lang="en-US"', 'lang="ko-KR"')
     for tag in TAGS:
         # 자기 닫힘 → 글꼴 자식을 붙여 연다
         xml = re.sub(rf"<{tag}([^>]*?)/>", rf'<{tag}\1><a:latin typeface="{F}"/><a:ea typeface="{F}"/></{tag}>', xml)
 
         def body(m):
+            """열린 태그 하나의 안쪽에 latin 이 없으면 붙이고, ea 가 없으면 첫 latin 바로 뒤에 넣는다. 기존 latin 값은 바꾸지 않는다."""
             attrs, inner = m.group(1), m.group(2)
             if "<a:latin" not in inner:
                 inner += f'<a:latin typeface="{F}"/>'
@@ -41,6 +46,7 @@ n = 0
 with zipfile.ZipFile(a.pptx) as zin, zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zout:
     for it in zin.infolist():
         d = zin.read(it.filename)
+        # 슬라이드, 레이아웃, 마스터 XML 만 고치고 나머지 파일(이미지 등)은 그대로 복사한다
         if re.match(r"ppt/(slides/slide|slideLayouts/slideLayout|slideMasters/slideMaster)\d+\.xml$", it.filename):
             d = fix(d.decode()).encode()
             n += 1

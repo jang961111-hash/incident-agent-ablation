@@ -39,6 +39,7 @@ def dw(s: str) -> int:
 
 
 def wrap(text: str, w: int) -> list[str]:
+    """표시 폭 w 를 넘지 않게 글자 단위로 줄을 나눈다. 원문의 줄바꿈은 유지한다."""
     out = []
     for para in text.splitlines() or [""]:
         line = ""
@@ -52,6 +53,7 @@ def wrap(text: str, w: int) -> list[str]:
 
 
 def run(name: str, query: str) -> dict:
+    """eval/configs/<name>.yaml 구성으로 질의 1건을 실행해 adapter 결과 dict 를 돌려준다."""
     from src.adapter import run_once
     cfg = yaml.safe_load((ROOT / f"eval/configs/{name}.yaml").read_text())
     return run_once(query, cfg)
@@ -87,6 +89,7 @@ NOTES = {
 
 
 def _font_path() -> str:
+    """한글 글꼴 파일 경로. 맥, 리눅스 기본 위치를 먼저 보고 없으면 matplotlib 에 찾게 한다."""
     for p in ("/System/Library/Fonts/AppleSDGothicNeo.ttc",
               "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"):
         if Path(p).exists():
@@ -104,6 +107,11 @@ def _runbook_titles(context: str) -> list[str]:
 
 
 def _steps(key: str, answer: str) -> tuple[list[list[str]], bool]:
+    """그림에 넣을 답 단계 목록과 '요약 사용 여부'를 돌려준다.
+
+    SUMMARY 조각이 모두 원문 답의 부분 문자열이면 그 조각을 쓰고, 하나라도 없으면 원문 줄을 번호만 떼고 쓴다.
+    요약이 원문에 없는 말을 만들어 넣지 않게 하는 장치다.
+    """
     frags = SUMMARY.get(key)
     if frags and all(f in answer for step in frags for f in step):
         return frags, True
@@ -112,12 +120,17 @@ def _steps(key: str, answer: str) -> tuple[list[list[str]], bool]:
 
 
 def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "final") -> None:
+    """저장된 demo JSON(D)으로 두 구성을 나란히 비교한 PNG 를 out 에 그린다. src 는 그림 아래 출처 표기용 경로.
+
+    column 을 draw=False 로 한 번 불러 두 열의 높이를 재고, 그 높이로 캔버스를 만든 뒤 다시 그린다.
+    """
     from PIL import Image, ImageDraw, ImageFont
 
     fp = _font_path()
     bold_idx, reg_idx = (6, 0) if fp.endswith("AppleSDGothicNeo.ttc") else (0, 0)
 
     def F(size, bold=False):
+        """크기 size 의 글꼴. bold 면 굵은 글꼴 index 를 쓴다 (AppleSDGothicNeo.ttc 는 6, 그 외 0)."""
         return ImageFont.truetype(fp, size, index=bold_idx if bold else reg_idx)
 
     SURF, INK, INK2, LINE = "#fcfcfb", "#111111", "#45443f", "#dcdad3"
@@ -131,6 +144,7 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
     gold = set(D.get("gold") or [])
 
     def text_w(s, f):
+        """글꼴 f 로 그렸을 때 문자열 s 의 픽셀 폭."""
         return f.getlength(s)
 
     def wrap_runs(runs, width, f_reg, f_bold):
@@ -156,6 +170,7 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
         return lines
 
     def draw_icon(d, cx, cy, r, ok, col):
+        """(cx, cy) 중심 반지름 r 의 흰 원 안에 ok 면 체크, 아니면 X 를 col 색으로 그린다."""
         d.ellipse([cx - r, cy - r, cx + r, cy + r], fill="white")
         lw = max(4, r // 4)
         if ok:
@@ -167,6 +182,7 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
             d.line([(cx - k, cy + k), (cx + k, cy - k)], fill=col, width=lw)
 
     def chip(d, x, y, label, sub, fg, bg, f1, f2, draw=True):
+        """(x, y) 에 '라벨 + 보조 문구' 둥근 칩을 그리고 (폭, 높이) 를 돌려준다. draw=False 면 크기만 잰다."""
         w = 24 + text_w(label, f1) + (14 + text_w(sub, f2) if sub else 0) + 24
         h = 56
         if draw:
@@ -179,6 +195,11 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
     cost = {k: D[k]["cost_usd"] for k in (left, right)}
 
     def column(d, key, name, x, y0, height=None, draw=True):
+        """구성 key 의 결과 열(판정 배지, 고른 매뉴얼, 한 줄 해석, 숫자 3칸, 답 요약)을 그리고 열 높이를 돌려준다.
+
+        draw=False 면 아무것도 그리지 않고 높이만 계산한다 (render_png 의 1차 측정용).
+        판정은 정답이 있으면 '넣은 매뉴얼에 정답이 있는가', 없으면 '아무것도 넣지 않았는가'로 정한다.
+        """
         r = D[key]
         fed = r["fed_runbooks"]
         # 정답 매뉴얼이 없는 질문은 아무것도 넣지 않아야 맞다
@@ -201,7 +222,7 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
                    font=F(46, True), fill="white", anchor="lm")
         y += bh + 20
         # 고른 매뉴얼 칩 (매뉴얼 제목은 context 에서 읽음)
-        titles = _runbook_titles(r.get("context", ""))
+        titles = _runbook_titles(r.get("context", ""))   # context 의 런북 순서가 fed 순서와 같다고 가정하고 i 번째 제목을 쓴다
         cx = ix
         for i, rb in enumerate(fed):
             if rb in gold:
@@ -225,6 +246,7 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
         stats = [("걸린 시간", f"{r['latency_ms'] / 1000:.1f}초", None),
                  ("비용", f"${r['cost_usd']:.5f}", None),
                  ("재작성", f"{r['rewrites']}회", None)]
+        # 오른쪽 구성이 더 싸면 비용 비율을 붙인다. 정수에 0.15 이내로 가까우면 정수, 아니면 소수 1자리이고 2배 이상일 때만 표시
         if key == right and cost[left] > 0 and cost[right] < cost[left]:
             ratio = cost[left] / cost[right]
             frac = f"{round(ratio)}" if abs(ratio - round(ratio)) < 0.15 else f"{ratio:.1f}"
@@ -282,6 +304,7 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
     names = {left: "원본 (base)" if left == "base" else left, right: "최종 (final)" if right == "final" else right}
     ch = max(column(probe, k, names[k], 0, 0, draw=False) for k in (left, right))
 
+    # 2차: 잰 높이로 캔버스를 만들고 실제로 그린다
     top_title, top_q = M, M + 92
     qh = 120
     col_y = top_q + qh + 40
@@ -311,6 +334,10 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
 
 
 def main():
+    """CLI 진입점. --render 면 저장된 JSON 으로 그림만 그린다.
+
+    아니면 질문(또는 --id)을 두 구성에 동시에 넣어 터미널에 나란히 출력하고 results/raw/demo_<시각>.json 에 남긴다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("query", nargs="?")
     ap.add_argument("--id")

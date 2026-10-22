@@ -20,6 +20,7 @@ T975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776}
 
 
 def pct(vals, q):
+    """선형 보간 백분위 (eval/run_ablation._pct 와 같은 정의). 빈 목록이면 IndexError 가 난다."""
     s = sorted(vals)
     k = (len(s) - 1) * q
     lo, hi = int(k), min(int(k) + 1, len(s) - 1)
@@ -27,6 +28,10 @@ def pct(vals, q):
 
 
 def main():
+    """CLI 진입점. 구성별 <구성><tag>_latest.json 의 지연, 오류, 재시도, 타임아웃을 표로 집계해 results/ 에 md 로 저장한다.
+
+    stats_holdout<tag>.json 이 있으면 구성 간 지연 차이 표를 덧붙인다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--tag", default="_latctl")
     a = ap.parse_args()
@@ -46,6 +51,7 @@ def main():
         rep_means = [statistics.fmean([r["latency_ms"] / 1000 for r in ok if r.get("rep") == k]) for k in reps]
         m = statistics.fmean(rep_means)
         half = T975.get(len(rep_means) - 1, 2.0) * statistics.stdev(rep_means) / len(rep_means) ** 0.5 if len(rep_means) > 1 else float("nan")
+        # 반복마다 백분위를 구한 뒤 반복 평균 (run_ablation 요약과 같은 정의)
         rp = lambda q: statistics.fmean(pct([r["latency_ms"] / 1000 for r in ok if r.get("rep") == k], q) for k in reps)
         lines.append(f"| {n} | {len(rows)} | {len(rows) - len(ok)} | {retries} | {tout} | {rp(.5):.1f} | {rp(.95):.1f} | "
                      f"{statistics.fmean(lat):.1f} ± {statistics.stdev(lat):.1f} | {m:.1f} [{m - half:.1f}, {m + half:.1f}] |")

@@ -20,14 +20,17 @@ ORDER = ["base", "rag", "judge", "rag_judge", "rag_judge_cost", "rag_judge_v2", 
 
 
 def js(p):
+    """results/ 아래 상대 경로 p 의 JSON 을 읽는다."""
     return json.loads((R / p).read_text())
 
 
 def pct(v):
+    """비율을 정수 반올림 퍼센트 문자열로 (예: 0.734 → '73%')."""
     return f"{round(v * 100)}%"
 
 
 def pp(v):
+    """비율 차이를 부호 붙은 정수 %p 문자열로 (예: -0.21 → '-21%p')."""
     return f"{round(v * 100):+d}%p"
 
 
@@ -41,15 +44,18 @@ STL = {(p["a"], p["b"]): p for p in js("stats_holdout_latctl.json")["pairs"]}
 
 
 def rows(n, split="holdout"):
+    """구성 n 의 결과 행 중 split 에 속하고 오류가 아닌 행만 돌려준다."""
     return [r for r in js(f"{n}_latest.json")["rows"] if r.get("split") == split and "error" not in r]
 
 
 def denom_miss(n):
+    """누락률 분모의 회당 개수: 장애 경로로 처리되고 정답 런북이 있는 행 수를 반복 수 3 으로 나눈다."""
     rs = rows(n)
     return sum(1 for r in rs if r["route"] == "incident" and r["gold"]) / 3
 
 
 def denom_wrong(n):
+    """혼입률 분모의 회당 개수: 장애 경로로 처리된 행 수를 반복 수 3 으로 나눈다."""
     return sum(1 for r in rows(n) if r["route"] == "incident") / 3
 
 
@@ -59,6 +65,7 @@ C = []   # (id, 표시값, 의미, 분모, 데이터셋, 환경, 결과 파일, 
 
 
 def add(*a):
+    """주장 1건을 C 에 추가한다. 인자 순서는 C 정의 옆 주석의 열 순서(id, 표시값, 의미, 분모, ...)와 같다."""
     C.append(dict(zip(["id", "값", "의미", "분모", "데이터셋", "환경", "결과 파일", "재현 명령"], a)))
 
 

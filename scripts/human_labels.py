@@ -20,15 +20,18 @@ ROOT = Path(__file__).resolve().parent.parent
 R = ROOT / "results"
 METRICS = ["relevance", "completeness", "domain_appropriateness", "clarity"]
 KO = {"relevance": "관련성", "completeness": "완전성", "domain_appropriateness": "도메인 적합성", "clarity": "명확성"}
+# 기본 열 + 한국어 지표 열. KO_COLS 는 항상 비어 있지 않아 조건식은 늘 앞쪽(목록 합)이 된다
 COLS = ["key", "id", "config", "category", "question", "evidence", "answer"] + KO_COLS if (KO_COLS := [KO[m] for m in METRICS]) else []
 
 
 def rows_for(cfg):
+    """구성 cfg 의 결과에서 holdout, 1회차, 오류 아님인 행을 {id: 행} 으로 돌려준다."""
     return {r["id"]: r for r in json.loads((R / f"{cfg}_latest.json").read_text())["rows"]
             if r.get("split") == "holdout" and r.get("rep") == 1 and "error" not in r}
 
 
 def make():
+    """base, final 의 holdout 1회차 답으로 채점용 CSV 2개(전체, 층화 표본)를 만든다. Judge 판정은 CSV 에 넣지 않는다."""
     data = {c: rows_for(c) for c in ("base", "final")}
     out, meta = [], []
     for c in ("base", "final"):
@@ -52,6 +55,7 @@ def make():
             fails, passes = [m for m in pool if not m[3]], [m for m in pool if m[3]]
             rnd.shuffle(fails)
             rnd.shuffle(passes)
+            # 불합격, 합격을 번갈아 끼우고 남는 쪽을 뒤에 붙인다. 앞에서 k개를 잘라도 두 판정이 섞인다
             mixed = [x for pair in zip(fails, passes) for x in pair] + fails[len(passes):] + passes[len(fails):]
             pick += [m[0] for m in mixed[:k]]
     sample = [o for o in out if o["key"] in set(pick)]
@@ -65,6 +69,7 @@ def make():
 
 
 def kappa(pairs):
+    """(사람, Judge) bool 짝의 Cohen's kappa. 짝이 없거나 우연 일치 확률이 1(양쪽 모두 한 값만)이면 None."""
     n = len(pairs)
     if not n:
         return None
@@ -75,11 +80,16 @@ def kappa(pairs):
 
 
 def val(s):
+    """CSV 칸의 사람 판정을 bool 로. p, pass, 1, o, 통과 는 True, f, fail, 0, x, 실패 는 False, 그 외(빈 칸)는 None."""
     s = (s or "").strip().lower()
     return True if s in ("p", "pass", "1", "o", "통과") else False if s in ("f", "fail", "0", "x", "실패") else None
 
 
 def score(path):
+    """채운 CSV(path)를 결과 파일의 평가 Judge 판정과 비교해 지표별, 종합 일치율과 kappa 를 계산하고 저장한다.
+
+    종합은 사람 4지표가 모두 채워진 행만 쓰고, 4개 중 3개 이상 통과를 사람의 종합 통과로 본다.
+    """
     labels = list(csv.DictReader(open(path, encoding="utf-8-sig")))
     data = {c: rows_for(c) for c in ("base", "final")}
     per = {m: [] for m in METRICS}

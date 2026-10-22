@@ -50,6 +50,7 @@ def _scalar(v: str) -> str:
 
 
 def format_labels(labels: dict, source_config: str = "base") -> str:
+    """라벨 dict 를 HEADER 주석이 붙은 YAML 문자열로 만든다. id 순으로 한 건을 한 줄 매핑으로 쓴다."""
     lines = [HEADER.rstrip("\n"), f"source_config: {source_config}", "labels:"]
     for qid in sorted(labels):
         e = labels[qid]
@@ -76,6 +77,10 @@ def save_labels(path: Path, labels: dict, source_config: str = "base") -> None:
 
 
 def make_entry(verdicts: dict, answer: str, now: datetime | None = None) -> dict:
+    """지표별 판정으로 라벨 1건을 만든다. overall, 답 해시(answer_sha), 매긴 시각을 함께 넣는다.
+
+    answer_sha 는 나중에 답이 바뀌었는지 확인하는 데 쓴다 (eval/agreement.py 가 다른 답에 매긴 라벨을 비교에서 뺀다).
+    """
     e = {m: verdicts[m] for m in METRICS}
     e["overall"] = overall_label(verdicts)
     e["answer_sha"] = answer_sha(answer)
@@ -84,6 +89,7 @@ def make_entry(verdicts: dict, answer: str, now: datetime | None = None) -> dict
 
 
 def wrap(s: str, indent: str = "    ") -> str:
+    """여러 줄 문자열을 줄마다 96자 폭으로 감싸고 indent 를 붙인다. 빈 줄은 indent 만 남긴다."""
     return "\n".join(textwrap.fill(line, 96, initial_indent=indent, subsequent_indent=indent)
                      or indent for line in s.splitlines())
 
@@ -104,6 +110,7 @@ def select_rows(rows: list[dict], queries: dict, labels: dict,
 
 
 def ask(prompt: str, valid: str, input_fn=input) -> str:
+    """빈 입력이 아니고 valid 문자열 안에 들어 있는 입력(부분 문자열 검사)이 나올 때까지 다시 묻는다. 테스트에서 입력을 흉내 낼 수 있게 input_fn 을 받는다."""
     while True:
         k = input_fn(prompt).strip().lower()
         if k and k in valid:
@@ -112,6 +119,10 @@ def ask(prompt: str, valid: str, input_fn=input) -> str:
 
 def main(argv=None, input_fn=input, *, base_path: Path = BASE, labels_path: Path = LABELS_PATH,
          queries_path: Path = QY):
+    """CLI 진입점. 라벨 대상 base 답변을 하나씩 보여 주고 4지표 판정을 받아 건마다 저장한다.
+
+    경로와 input_fn 을 인자로 바꿀 수 있어 테스트가 실제 파일과 키보드 없이 돌릴 수 있다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", choices=["dev", "holdout"])
     ap.add_argument("--only", help="쉼표로 구분한 id (예: Q01,Q02)")

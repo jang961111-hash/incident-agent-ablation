@@ -16,6 +16,7 @@ ORDER = ["base", "rag", "judge", "rag_judge", "rag_judge_cost", "rag_judge_v2", 
 
 
 def load(p):
+    """JSON 파일을 읽는다. 파일이 없으면 None (선택 결과 파일이 아직 없을 수 있어서)."""
     return json.loads(p.read_text()) if p.exists() else None
 
 
@@ -51,6 +52,7 @@ except Exception as e:
 out["calibrate"] = (load(R / "calibrate_rag.json") or {}).get("best")
 out["cache"] = load(R / "cache_bench_latest.json")
 # 캐시 대상 단계(route, plan, 임베딩)가 final cold 비용에서 차지하는 비중 — 캐시 비용 절감의 상한
+# src/ext/meter.py 의 PRICE 와 같은 단가를 따로 적어 둔 것이다. 단가가 바뀌면 두 곳을 함께 고쳐야 한다
 _P = {"gpt-4o-mini": (0.00015, 0.0006), "gpt-4o": (0.0025, 0.01), "text-embedding-3-small": (0.00002, 0)}
 _tot = _cache = 0.0
 for _r in load(R / "final_latest.json")["rows"]:

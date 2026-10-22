@@ -27,14 +27,21 @@ HISTORY = re.compile(r"처음 측정|철회|부하 조건이 달라|처음 보�
 
 
 def norm(t: str) -> str:
+    """비교용 정규화: 유니코드 마이너스(−)를 '-' 로, 공백과 천 단위 쉼표를 없앤다."""
     return t.replace("−", "-").replace(" ", "").replace(",", "")
 
 
 def tokens(text: str) -> list[str]:
+    """문장에서 NUM 패턴(단위 붙은 수치)을 모두 찾아 정규화한 목록으로 돌려준다."""
     return [norm(m.group(0)) for m in NUM.finditer(text)]
 
 
 def allowed() -> set[str]:
+    """문서에 써도 되는 수치 집합을 만든다.
+
+    CONST, CLAIMS.md, README AUTO 구간, 최신 latctl 요약, 구성별 결과 파일과 stats, 동시성, 캐시 벤치 값을 모은다.
+    마지막에 부호를 뗀 값도 넣는다. 문서가 '84% 줄었다' 처럼 부호 없이 쓰는 경우가 있어서다.
+    """
     a = set(map(norm, CONST))
     a |= set(tokens((ROOT / "CLAIMS.md").read_text()))
     readme = (ROOT / "README.md").read_text()
@@ -58,7 +65,7 @@ def allowed() -> set[str]:
         for m in ("pass", "hit1", "must", "miss", "wrong"):
             if p[m]:
                 a.add(f"{round(p[m]['diff'] * 100):+d}%p")
-        if p["cost"]:
+        if p["cost"]:   # 비용 차이는 문서 표기처럼 '+$0.0012' 꼴로 맞춘다
             a.add(norm(f"{p['cost']['diff']:+.4f}".replace("+", "+$").replace("-", "-$")))
     cr = json.loads((R / "concurrency_bench_latest.json").read_text())["runs"]
     a |= {f"{r['wall_ms'] / 1000:.1f}초" for r in cr}
@@ -69,6 +76,7 @@ def allowed() -> set[str]:
 
 
 def deck_text() -> str:
+    """markitdown 으로 pptx 2종을 텍스트로 바꿔 이어 붙인다. CLI, python -m 순서로 시도하고 둘 다 실패하면 빈 문자열."""
     for cmd in (["markitdown"], [str(ROOT / ".venv/bin/python"), "-m", "markitdown"]):
         try:
             return "\n".join(subprocess.run(cmd + [str(ROOT / f"deck/{f}")], capture_output=True, text=True, check=True).stdout
@@ -79,6 +87,11 @@ def deck_text() -> str:
 
 
 def main(argv=None):
+    """CLI 진입점. 대상 문서의 줄마다 수치를 뽑아 허용 집합에 없는 것을 '확인 필요'로 출력한다.
+
+    HISTORY 패턴에 걸리는 줄과 AUTO:latency_old 구간은 일부러 남긴 옛 수치라 건너뛴다.
+    확인 필요가 있거나 --strict 에서 읽지 못한 문서가 있으면 exit 1.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--show", action="store_true")
     ap.add_argument("--strict", action="store_true",

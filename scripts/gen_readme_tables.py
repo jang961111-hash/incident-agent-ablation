@@ -26,10 +26,12 @@ def lab(p):
 
 
 def pct(v):
+    """비율을 정수 반올림 퍼센트 문자열로."""
     return f"{round(v * 100)}%"
 
 
 def holdout_table() -> str:
+    """holdout 기준 구성별 품질, 비용, p95 지연 표(마크다운). LATCTL 이면 지연 행만 같은 부하 재측정 값으로 바꾼다."""
     H = {n: json.loads((R / f"{n}_latest.json").read_text())["summary"]["by_split"]["holdout"]["mean"] for n in ORDER}
     X = load_all("holdout")
     rows = [("맞는 매뉴얼 누락률 ↓", lambda n: pct(X[n]["miss_runbook_rate"])),
@@ -50,12 +52,17 @@ def holdout_table() -> str:
 
 
 def contrib_table() -> str:
+    """stats_holdout.json 의 짝 비교로 기여도 표를 만든다. 유의한 칸은 굵게 하고 ★ 를 붙인다.
+
+    LATCTL 이면 지연 열만 stats_holdout_latctl.json 값으로 바꾼다.
+    """
     st = json.loads((R / "stats_holdout.json").read_text())["pairs"]
     if LATCTL:   # 지연만 같은 부하 재측정 값으로 바꾼다 (품질, 비용은 원 측정)
         lat = {(q["a"], q["b"]): q["latency"] for q in json.loads((R / "stats_holdout_latctl.json").read_text())["pairs"]}
         st = [{**q, "latency": lat[(q["a"], q["b"])]} for q in st]
 
     def c(r, k):
+        """짝 비교 결과 1칸. 비용은 $ 차이, 지연은 초 차이, 나머지는 %p 차이와 95% 구간."""
         if not r:
             return "-"
         if k == "cost":
@@ -76,6 +83,7 @@ def contrib_table() -> str:
 
 
 def tamper_table() -> str:
+    """tamper_latest.json 요약으로 조작 유형별 검출 수 표를 만든다. Judge 결과가 있으면 Judge 열과 '둘 중 하나' 열을 더한다."""
     t = json.loads((R / "tamper_latest.json").read_text())["summary"]
     ko = {"num": "근거에 없는 수치", "name": "없는 시스템명", "both": "둘 다", "original": "원본 답 (잘못 막은 수 = 오탐)"}
     j = "judge" in t["num"]
@@ -102,6 +110,7 @@ def old_latency_table() -> str:
 
 
 def main():
+    """README.md 의 AUTO 구간 4개를 표 생성 함수 결과로 바꿔 쓴다. 구간이 정확히 1개씩 없으면 assert 로 멈춘다."""
     p = ROOT / "README.md"
     s = p.read_text()
     for name, fn in (("holdout", holdout_table), ("contrib", contrib_table), ("latency_old", old_latency_table), ("tamper", tamper_table)):

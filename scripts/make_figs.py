@@ -37,6 +37,7 @@ X = load_all("holdout")
 
 
 def frame(ax, title, sub):
+    """그림 공통 꾸밈: 왼쪽 정렬 제목, 부제, 위, 오른쪽, 왼쪽 축선 숨김, 옅은 가로 격자."""
     ax.set_title(title, loc="left", fontsize=15, color=INK, pad=26, fontweight="bold")
     ax.text(0, 1.02, sub, transform=ax.transAxes, fontsize=10.5, color=INK2, va="bottom")
     for s in ("top", "right", "left"):
@@ -47,6 +48,7 @@ def frame(ax, title, sub):
 
 
 def bars(name, title, sub, vals, fmt, colors, ylim=None):
+    """ORDER 순서의 구성별 막대그래프를 그리고 막대 위에 fmt(값)을 적어 OUT/name 에 저장한다."""
     fig, ax = plt.subplots(figsize=(9, 4.6))
     xs = range(len(ORDER))
     b = ax.bar(xs, vals, width=0.58, color=colors, edgecolor=SURF, linewidth=2)
@@ -64,6 +66,7 @@ def bars(name, title, sub, vals, fmt, colors, ylim=None):
 
 
 def color_by(good):
+    """막대 색 목록: base 는 주황, good 에 든 구성은 파랑, 나머지는 회색."""
     return [ORANGE if n == "base" else (BLUE if n in good else GRAY) for n in ORDER]
 
 
