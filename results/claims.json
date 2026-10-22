@@ -460,6 +460,56 @@
   "재현 명령": "python -m eval.cache_bench --config eval/configs/final.yaml"
  },
  {
+  "id": "tamper_num",
+  "값": "코드 28/28 · Judge 16/28 · 둘 중 하나 28/28",
+  "의미": "조작 테스트: 근거에 없는 수치을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
+  "분모": "holdout final 1회차 장애 답 28개",
+  "데이터셋": "holdout",
+  "환경": "실제 모델 (OpenAI) 답 + 인위 조작",
+  "결과 파일": "results/tamper_latest.json",
+  "재현 명령": "python -m eval.tamper_test --judge"
+ },
+ {
+  "id": "tamper_name",
+  "값": "코드 0/29 · Judge 21/29 · 둘 중 하나 21/29",
+  "의미": "조작 테스트: 없는 시스템명을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
+  "분모": "holdout final 1회차 장애 답 29개",
+  "데이터셋": "holdout",
+  "환경": "실제 모델 (OpenAI) 답 + 인위 조작",
+  "결과 파일": "results/tamper_latest.json",
+  "재현 명령": "python -m eval.tamper_test --judge"
+ },
+ {
+  "id": "tamper_both",
+  "값": "코드 28/28 · Judge 27/28 · 둘 중 하나 28/28",
+  "의미": "조작 테스트: 수치+시스템명을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
+  "분모": "holdout final 1회차 장애 답 28개",
+  "데이터셋": "holdout",
+  "환경": "실제 모델 (OpenAI) 답 + 인위 조작",
+  "결과 파일": "results/tamper_latest.json",
+  "재현 명령": "python -m eval.tamper_test --judge"
+ },
+ {
+  "id": "tamper_original",
+  "값": "코드 0/29 · Judge 6/29 · 둘 중 하나 6/29",
+  "의미": "조작 테스트: 원본 답 (오탐)을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
+  "분모": "holdout final 1회차 장애 답 29개",
+  "데이터셋": "holdout",
+  "환경": "실제 모델 (OpenAI) 답 + 인위 조작",
+  "결과 파일": "results/tamper_latest.json",
+  "재현 명령": "python -m eval.tamper_test --judge"
+ },
+ {
+  "id": "tamper_cost",
+  "값": "$0.03 (114회)",
+  "의미": "조작 테스트 Judge 호출 비용 (공개 단가 x 실측 토큰)",
+  "분모": "-",
+  "데이터셋": "holdout",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/tamper_latest.json",
+  "재현 명령": "python -m eval.tamper_test --judge"
+ },
+ {
   "id": "min_score",
   "값": "0.3236",
   "의미": "v2 최소 유사도 기준",

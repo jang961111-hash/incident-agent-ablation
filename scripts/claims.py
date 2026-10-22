@@ -205,6 +205,19 @@ cbp = js("cache_bench_latest.json")["passes"]
 add("cache_cost", f"${cbp[0]['cost_usd']:.4f} → ${cbp[1]['cost_usd']:.4f}", "캐시 벤치 1회차 → 2회차 총비용", "60문제", "dev + holdout",
     REAL, "results/cache_bench_latest.json", "python -m eval.cache_bench --config eval/configs/final.yaml")
 
+# ── 근거 검증 조작 테스트 (실제 모델 답에 조작을 가함) ──
+tp = js("tamper_latest.json")
+ts_ = tp["summary"]
+_cmd = "python -m eval.tamper_test --judge"
+for k, lab in [("num", "근거에 없는 수치"), ("name", "없는 시스템명"), ("both", "수치+시스템명"), ("original", "원본 답 (오탐)")]:
+    x = ts_[k]
+    val = f"코드 {x['code']}/{x['n']}" + (f" · Judge {x['judge']}/{x['n']} · 둘 중 하나 {x['either']}/{x['n']}" if "judge" in x else "")
+    add(f"tamper_{k}", val, f"조작 테스트: {lab}을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
+        f"holdout final 1회차 장애 답 {x['n']}개", "holdout", REAL + " 답 + 인위 조작", "results/tamper_latest.json", _cmd)
+if tp.get("judge"):
+    add("tamper_cost", f"${tp['judge']['cost_usd']:.2f} ({tp['judge']['calls']}회)", "조작 테스트 Judge 호출 비용 (공개 단가 x 실측 토큰)",
+        "-", "holdout", REAL, "results/tamper_latest.json", _cmd)
+
 # ── RAG 기준값 ──
 cal = js("calibrate_rag.json")["best"]
 add("min_score", f"{cal['min_score']}", "v2 최소 유사도 기준", "dev 질문만으로 보정", "dev", REAL + " (임베딩)", "results/calibrate_rag.json", "python -m eval.calibrate_rag")

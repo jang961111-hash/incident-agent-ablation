@@ -70,6 +70,17 @@ def contrib_table() -> str:
     return head + "\n" + "\n".join(lines) + tail
 
 
+def tamper_table() -> str:
+    t = json.loads((R / "tamper_latest.json").read_text())["summary"]
+    ko = {"num": "근거에 없는 수치", "name": "없는 시스템명", "both": "둘 다", "original": "원본 답 (잘못 막은 수 = 오탐)"}
+    j = "judge" in t["num"]
+    out = ["| 조작 | 코드 검증이 잡음 |" + (" Judge가 잡음 | 둘 중 하나라도 |" if j else ""), "|---|---|" + ("---|---|" if j else "")]
+    for k in ("num", "name", "both", "original"):
+        x = t[k]
+        out.append(f"| {ko[k]} | {x['code']}/{x['n']} |" + (f" {x['judge']}/{x['n']} | {x['either']}/{x['n']} |" if j else ""))
+    return "\n".join(out)
+
+
 def old_latency_table() -> str:
     """처음 측정한 지연 (부하 조건이 달라 직접 비교 불가). 지우지 않고 부록에 남긴다."""
     H = {n: json.loads((R / f"{n}_latest.json").read_text())["summary"]["by_split"]["holdout"]["mean"] for n in ORDER}
@@ -88,7 +99,7 @@ def old_latency_table() -> str:
 def main():
     p = ROOT / "README.md"
     s = p.read_text()
-    for name, fn in (("holdout", holdout_table), ("contrib", contrib_table), ("latency_old", old_latency_table)):
+    for name, fn in (("holdout", holdout_table), ("contrib", contrib_table), ("latency_old", old_latency_table), ("tamper", tamper_table)):
         s, n = re.subn(rf"(<!-- AUTO:{name} -->).*?(<!-- /AUTO:{name} -->)",
                        lambda m: m.group(1) + "\n" + fn() + "\n" + m.group(2), s, flags=re.S)
         assert n == 1, f"README 에 AUTO:{name} 구간이 없음"

@@ -50,6 +50,11 @@
 | rater_clarity | 일치 95%, kappa 0.37, 관대 67% | 지표별 평가 Judge vs Claude: 명확성 | 원본 답 60개 | dev + holdout | AI 평가자 (사람 아님) | `eval/claude_labels.yaml` | `python -m eval.agreement --labels eval/claude_labels.yaml` |
 | cacheable_share | 21% | final 비용 중 캐시 대상 단계(route·plan·임베딩) 비중 = 캐시로 줄일 수 있는 비용의 상한 | final 180회 전체 호출 | dev + holdout | 실제 모델 (OpenAI) | `results/final_latest.json` | `python deck/data.py` |
 | cache_cost | $0.0272 → $0.0233 | 캐시 벤치 1회차 → 2회차 총비용 | 60문제 | dev + holdout | 실제 모델 (OpenAI) | `results/cache_bench_latest.json` | `python -m eval.cache_bench --config eval/configs/final.yaml` |
+| tamper_num | 코드 28/28 · Judge 16/28 · 둘 중 하나 28/28 | 조작 테스트: 근거에 없는 수치을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려) | holdout final 1회차 장애 답 28개 | holdout | 실제 모델 (OpenAI) 답 + 인위 조작 | `results/tamper_latest.json` | `python -m eval.tamper_test --judge` |
+| tamper_name | 코드 0/29 · Judge 21/29 · 둘 중 하나 21/29 | 조작 테스트: 없는 시스템명을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려) | holdout final 1회차 장애 답 29개 | holdout | 실제 모델 (OpenAI) 답 + 인위 조작 | `results/tamper_latest.json` | `python -m eval.tamper_test --judge` |
+| tamper_both | 코드 28/28 · Judge 27/28 · 둘 중 하나 28/28 | 조작 테스트: 수치+시스템명을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려) | holdout final 1회차 장애 답 28개 | holdout | 실제 모델 (OpenAI) 답 + 인위 조작 | `results/tamper_latest.json` | `python -m eval.tamper_test --judge` |
+| tamper_original | 코드 0/29 · Judge 6/29 · 둘 중 하나 6/29 | 조작 테스트: 원본 답 (오탐)을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려) | holdout final 1회차 장애 답 29개 | holdout | 실제 모델 (OpenAI) 답 + 인위 조작 | `results/tamper_latest.json` | `python -m eval.tamper_test --judge` |
+| tamper_cost | $0.03 (114회) | 조작 테스트 Judge 호출 비용 (공개 단가 x 실측 토큰) | - | holdout | 실제 모델 (OpenAI) | `results/tamper_latest.json` | `python -m eval.tamper_test --judge` |
 | min_score | 0.3236 | v2 최소 유사도 기준 | dev 질문만으로 보정 | dev | 실제 모델 (OpenAI) (임베딩) | `results/calibrate_rag.json` | `python -m eval.calibrate_rag` |
 | min_score_gap | 0.0023 | dev에서 맞는 매뉴얼이 있는 질문과 없는 질문의 유사도 점수 차이 (경계값이 얇다는 뜻) | dev 질문 | dev | 실제 모델 (OpenAI) (임베딩) | `results/calibrate_rag.json` | `python -m eval.calibrate_rag` |
 | ext_uptime | 54% | 최근 중대 장애 비용 10만 달러 초과 응답 (Uptime Institute 2025) | - | - | 외부 출처 | `docs/research/03_논문_근거.md` | `-` |
