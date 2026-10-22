@@ -283,7 +283,7 @@ s.addNotes("왼쪽은 RAG를 켜는 순간 떨어지고, 오른쪽은 v2의 최�
 
 // ── 9. B/A 2: 기여도 분해 ────────────────────────────────────────────
 s = slide("CONTENT", "Before/After");
-s.addText("Before/After 2: 개선별 기여도 — 같은 질의끼리 짝지어 비교했다", { placeholder: "title" });
+s.addText("Before/After 2: 개선별 기여도\n같은 질의끼리 짝지어 비교했다", { placeholder: "title" });
 const cellOf = (r, k, u) => {
   if (!r) return { text: "-" };
   const v = u === "$" ? `${r.diff >= 0 ? "+" : ""}${r.diff.toFixed(4)}` : u === "s" ? `${r.diff >= 0 ? "+" : ""}${r.diff.toFixed(1)}초`
@@ -304,7 +304,7 @@ s.addNotes("이 표가 핵심입니다. RAG 행에 품질 별표가 몰려 있�
 
 // ── 10. 트레이드오프 한 장 ───────────────────────────────────────────
 s = slide("CONTENT", "Before/After");
-s.addText("Before/After 3: 품질을 얻은 대가 — 트레이드오프 한 장", { placeholder: "title" });
+s.addText("Before/After 3: 품질을 얻은 대가\n트레이드오프 한 장", { placeholder: "title" });
 const trow = (n) => [{ text: LABEL[n], options: { bold: n === "final" || n === "base" } },
   pct(X[n].miss_runbook_rate), pct(X[n].wrong_runbook_rate), pct(H[n].must_phrase_rate), pct(H[n].pass_rate),
   usd(X[n].cost_per_incident, 5), sec(H[n].latency_p95_ms), H[n].rewrites_total.toFixed(1)];
@@ -344,7 +344,7 @@ if (D.concurrency) {
   s.addChart(pres.charts.BAR, [
     { name: "동기 (원본 방식)", labels: ns.map((n) => `동시 ${n}건`), values: wall(false) },
     { name: "비동기 I/O", labels: ns.map((n) => `동시 ${n}건`), values: wall(true) },
-  ], { x: 0.6, y: 1.4, w: 6.2, h: 4.4, barDir: "col", ...chartBase(D.concurrency.backend === "fake_slow" ? "동시 N건 처리 시간 (초) — 모의 LLM, 호출당 0.5초 동기 지연" : "동시 N건 처리에 걸린 시간 (초)", [HEX.accent3, HEX.accent6]),
+  ], { x: 0.6, y: 1.4, w: 6.2, h: 4.4, barDir: "col", ...chartBase(D.concurrency.backend === "fake_slow" ? "동시 N건 처리 시간 (초): 모의 LLM, 호출당 0.5초 동기 지연" : "동시 N건 처리에 걸린 시간 (초)", [HEX.accent3, HEX.accent6]),
     showLegend: true, legendPos: "b", legendFontFace: FONT, legendFontSize: 11,
     dataLabelFormatCode: "0.0", valAxisMinVal: 0, objectName: "chart-conc" });
 } else {
