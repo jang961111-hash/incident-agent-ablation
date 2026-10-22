@@ -329,6 +329,22 @@ p95 지연 행: 동일 부하·동시 실행 조건(7구성 동시, workers 2, h
 
 ### 직접 돌려 보기
 
+**이 숫자는 이 명령으로 다시 나온다** (전체 52개 수치의 분모·데이터셋·실제/모의 구분은 [CLAIMS.md](CLAIMS.md))
+
+| 수치 | 명령 | API |
+|---|---|---|
+| 품질·비용 표, 기여도 표 | `python -m eval.extra_metrics` · `python -m eval.stats` (저장된 결과에서 계산) | 없음 |
+| 지연 (동일 부하) | `scripts/run_latency_ctrl.sh` → `python -m eval.stats --tag _latctl` · `scripts/latency_summary.py` | 측정에만 필요 |
+| 평가자 대조 (Claude) | `python -m eval.agreement --labels eval/claude_labels.yaml` | 없음 |
+| 동시성·장애 주입 (실제 / 모의) | `python -m eval.concurrency_bench` · `python -m eval.fault_bench` (`--backend fake_slow` / `fake` 는 모의) | 실제만 |
+| 문서 수치 대조 | `scripts/claims.py` → `scripts/check_claims.py` (README·대본·시트·덱의 수치를 CLAIMS와 대조) | 없음 |
+
+```bash
+make reproduce-offline                 # API 없이: 테스트 + 통계·표·그림·CLAIMS 재계산 + 문서 수치 대조
+make reproduce-offline-bench           # API 없이: 모의 LLM 동시성·장애 주입 벤치
+make reproduce-full CONFIRM=yes        # 실제 API (약 $13): 7구성 본 측정 + 지연 재측정 + 위 전부
+```
+
 ```bash
 uv venv .venv --python 3.12
 uv pip install --python .venv/bin/python -r requirements.txt
