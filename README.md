@@ -11,6 +11,10 @@ AI Agent Mini-Project 선택과제 1 (Base AI Agent 개선) · 2026-10-22
 
 <sub>원본 → 최종 구성. 앞의 셋은 holdout 36문제 x 3회 평균, 뒤의 둘은 실제 API 별도 벤치(1회 측정).</sub>
 
+<p align="center"><img src="docs/figures/gpt_infographic.png" width="520" alt="한 장 요약 인포그래픽"></p>
+
+<sub>한 장 요약 그림은 ChatGPT로 그렸고, 그림 속 숫자는 모두 `results/` 실측값을 그대로 넣었다.</sub>
+
 **목차** — [1. 문제와 구현](#1-문제-개선-및-신규-구현-사항) · [2. 기술 요소](#2-적용-기술-요소) · [3. 구현 결과](#3-구현-결과) · [4. 교훈](#4-교훈) · [부록](#부록)
 
 ---
@@ -29,6 +33,10 @@ AI Agent Mini-Project 선택과제 1 (Base AI Agent 개선) · 2026-10-22
 | 사고 유형별 대처 매뉴얼 6권 | 런북 6개 |
 | 비서의 답안을 채점하는 AI 조교 | 평가 Judge (gpt-4o) |
 | 조교가 제대로 채점하는지 보는 검수자 | 독립 평가자 (Claude). 사람 표본 채점은 예정 |
+
+<p align="center"><img src="docs/figures/gpt_webtoon.png" width="520" alt="4컷 웹툰: 새벽 당직, 스위치 켜기, 맞는 매뉴얼, 채점관 검사"></p>
+
+<sub>4컷 요약 — ① 원본은 DB 다운 질문에 응답 지연 매뉴얼로 답한다 ② 고친 부분을 하나씩 켜고 효과를 잰다 ③ 질문 뜻으로 찾자 맞는 매뉴얼이 나온다 ④ 채점하는 AI도 검사한다. ChatGPT로 그림.</sub>
 
 ![AI 비서가 하는 일과 바꾼 곳](docs/figures/fig1_flow.png)
 

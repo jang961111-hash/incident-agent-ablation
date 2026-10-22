@@ -107,6 +107,19 @@ s.addText([
 ], { placeholder: "body" });
 s.addNotes("개선을 많이 붙인 게 아니라, 어떤 개선이 실제로 효과였는지를 통계로 분리했고, 채점한 AI 평가자가 얼마나 관대한지도 다른 평가자와 대조해 쟀습니다.");
 
+// ── 1-1. 한 장 요약 (ChatGPT 그림, 수치는 results/ 실측) ─────────────────
+s = slide("CONTENT", "요약");
+s.addText("한 장 요약: 무엇을 고쳤고, 무엇이 효과였나", { placeholder: "title" });
+{
+  const FIG = path.join(__dirname, "..", "docs", "figures");
+  const h = 4.85, wW = h, iW = h * 1122 / 1402, gap = 0.45;
+  const x0 = (13.333 - (wW + gap + iW)) / 2;
+  s.addImage({ path: path.join(FIG, "gpt_webtoon.png"), x: x0, y: 1.35, w: wW, h, altText: "4컷 웹툰: 새벽 당직, 스위치 켜기, 맞는 매뉴얼, 채점관 검사", objectName: "summary-webtoon" });
+  s.addImage({ path: path.join(FIG, "gpt_infographic.png"), x: x0 + wW + gap, y: 1.35, w: iW, h, altText: "결과 숫자 5개 인포그래픽", objectName: "summary-infographic" });
+}
+src(s, "그림은 ChatGPT로 생성 · 그림 속 숫자는 results/*_latest.json, 실제 API 벤치 실측값", 6.4);
+s.addNotes("새벽 당직자가 DB가 죽었다고 물어도 원본은 응답 지연 매뉴얼을 꺼냈습니다. 고친 부분을 하나씩 켜고 끄며 효과를 쟀고, 채점하는 AI도 검사했습니다. 결과 숫자는 오른쪽 다섯 개입니다.");
+
 // ── 2. 결론 ──────────────────────────────────────────────────────────
 s = slide("CONTENT", "요약");
 s.addText("결론: 조치 정확도는 RAG가, 비용은 캐스케이드가 낮췄다", { placeholder: "title" });
