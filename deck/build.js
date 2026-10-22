@@ -120,6 +120,22 @@ s.addText("한 장 요약: 무엇을 고쳤고, 무엇이 효과였나", { place
 src(s, "그림은 ChatGPT로 생성 · 그림 속 숫자는 results/*_latest.json, 실제 API 벤치 실측값", 6.4);
 s.addNotes("새벽 당직자가 DB가 죽었다고 물어도 원본은 응답 지연 매뉴얼을 꺼냈습니다. 고친 부분을 하나씩 켜고 끄며 효과를 쟀고, 채점하는 AI도 검사했습니다. 결과 숫자는 오른쪽 다섯 개입니다.");
 
+// ── 1-2. 실태 현황 (docs/research/, 2026-10-22 조사) ─────────────────────
+s = slide("CONTENT", "요약");
+s.addText("실태 현황: 시장은 AI SRE로 가는데, 효과를 잰 곳은 드물다", { placeholder: "title" });
+stat(s, 0.6, 1.4, 3.85, "54%", "최근 중대 장애 비용이 10만 달러를 넘었다는 응답 (Uptime Institute 2025). 절차 미준수 장애도 늘었다", C.accent1, "stat-outage", 2.3);
+stat(s, 4.74, 1.4, 3.85, "5개", "국외 정식 출시 AI SRE: PagerDuty·Datadog·Azure·AWS·Grafana. 국내도 SK AX·삼성계정·롯데ON·현대오토에버·GS리테일", C.accent2, "stat-market", 2.3);
+stat(s, 8.88, 1.4, 3.85, "0건", "조사 범위의 국내 공개 사례 중 고정 평가셋·Ablation 공개. 국외 수치도 대부분 '최대 몇 %' 업체 주장", C.accent6, "stat-gap", 2.3);
+card(s, 0.6, 3.95, 12.1, 2.35, C.background2, "landscape-evidence");
+T(s, [
+  { text: "현업 구조는 우리와 같다: 런북 근거 + MCP 도구 연동 + 조치 전 사람 승인", options: { bold: true, breakLine: true } },
+  { text: "Datadog: 기능 하나가 일부 조사는 개선하고 다른 조사는 나쁘게 만든 사례 공개 → 부품을 하나씩 켜고 끄며 재야 하는 이유", options: { bullet: true, breakLine: true } },
+  { text: "연구: SOP를 넣자 RCA 정확도 35.5% → 64.0% (Flow-of-Action, WWW'25) · 외부 피드백 없는 자기교정은 효과 없음 (Huang 외, ICLR'24)", options: { bullet: true, breakLine: true } },
+  { text: "국내 연구: RCA 에이전트 실패 1위는 데이터 해석 환각 71.2% (오케스트로·한양대, ASPLOS'26 AIOps 워크숍)", options: { bullet: true } },
+], { x: 0.9, y: 4.1, w: 11.5, h: 2.1, fontSize: 14, valign: "top", paraSpaceAfter: 4 });
+src(s, "출처 전체: docs/research/00_요약_실태현황.md (국외 18개 제품·국내 19건·논문 38건, 2026-10-22 확인, 업체 수치는 업체 주장)", 6.45);
+s.addNotes("시장은 이미 AI SRE로 가고 있고 구조도 우리와 같습니다. 그런데 공개된 수치는 대부분 업체 주장이고, 효과를 부품별로 잰 공개 사례는 찾지 못했습니다. 이 과제는 그 빈칸을 채웠습니다.");
+
 // ── 2. 결론 ──────────────────────────────────────────────────────────
 s = slide("CONTENT", "요약");
 s.addText("결론: 조치 정확도는 RAG가, 비용은 캐스케이드가 낮췄다", { placeholder: "title" });
