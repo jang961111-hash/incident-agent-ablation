@@ -42,30 +42,44 @@ AI Agent Mini-Project 선택과제 1 (Base AI Agent 개선) · 2026-10-22
 
 ### 1.2 실태 현황 — 시장·연구·현업 도구 (2026-10-22 조사)
 
-국외 서비스·국내 현황·논문·현업 MCP를 따로 조사하고 ChatGPT 웹 검색으로 교차 확인했다. 공식 문서·논문·보도로 확인한 것만 적었고 업체 수치는 **[업체 주장]** 으로 표시했다. 전체 표와 출처는 [docs/research/](docs/research/00_요약_실태현황.md)에 있다.
+국외 서비스·국내 현황·논문·현업 MCP를 따로 조사하고 ChatGPT 웹 검색으로 교차 확인했다. 공식 문서·보도·논문 초록 기준으로 확인한 것만 적었고(논문 본문 수치까지 대조하지는 않음), 업체 수치는 **[업체 주장]** 으로 표시했다. 전체 표와 출처는 [docs/research/](docs/research/00_요약_실태현황.md)에 있다.
 
-**① 장애는 비싸고, 절차를 못 지키는 게 원인이 된다.** 응답자 54%가 최근 중대 장애 비용이 10만 달러를 넘었다고 답했고, 절차 미준수 장애가 늘었다 (Uptime Institute, *Annual Outage Analysis 2025*). 국내는 2022 카카오 장애 뒤 정부가 장애 탐지·전파·복구의 자동화를 요구했고, 2025-07-08 시행 전자정부법 개정으로 행정 시스템을 1~4등급으로 관리한다.
+**① 장애는 비싸다.** 응답자 54%가 최근 중대 장애 비용이 10만 달러를 넘었다고 답했다. 같은 보고서에서 직원이 절차를 따르지 않아 생긴 장애도 늘었다 (Uptime Institute, *Annual Outage Analysis 2025*). 국내는 2022 카카오 장애 뒤 정부가 카카오에 장애 탐지·전파·복구 과정 재점검과 자동화 도입 등을 행정지도했고, 2025-07-08 시행 전자정부법 개정으로 행정 시스템을 1~4등급으로 관리한다.
 
-**② 시장은 'AI SRE'로 이동 중이고, 구조는 우리와 같다.**
+**② 시장은 'AI SRE'로 움직이고 있다. 다만 제품마다 구조가 다르다.**
 
-| 구분 | 확인한 사례 | 공통점 |
-|---|---|---|
-| 국외 정식 출시 | PagerDuty SRE Agent(2025-10), Datadog Bits AI SRE(2025-12), Azure SRE Agent(2026-03), AWS DevOps Agent(2026-03), Grafana Assistant Investigations(2026-07) | 알림 → 텔레메트리·과거 장애·**런북**을 근거로 조사, 공식 **MCP** 서버, 조치 전 **사람 승인** |
-| 국내 기업 | SK AX AXgenticWire NPO(탐지·분석·영향도·조치 에이전트, MCP 빌더), 삼성계정 Agentic AIOps(Datadog MCP, 실행권은 사람), 롯데ON Tech Assistant(알람 → 매뉴얼 KB 검색 → Slack), 현대오토에버 ErrorWatcher(**LangGraph + runbooks RAG**), GS리테일(Bedrock + MCP, 인시던트 분석 30분 → 약 2분 **[업체 공개 사례]**) | 국내 현업도 LangGraph·런북 RAG·MCP·사람 승인으로 모이고 있다 |
+| 국외 정식 출시 (확인한 5개) | 근거로 쓰는 것 | MCP | 조치 방식 |
+|---|---|---|---|
+| PagerDuty SRE Agent (GA 2025-10-30) | 과거 인시던트·지식베이스 (런북 언급 없음) | MCP 서버 GA | 조치 단계 추천 |
+| Datadog Bits AI SRE (GA 발표 2025-12-02) | 런북·텔레메트리 | MCP 서버 GA (에이전트 연결은 명시 없음) | 가설 검증 후 결론 전달 |
+| Azure SRE Agent (GA 2026-03-11, Azure Updates 공지 기준) | 승인된 런북·skills, 모니터링, 과거 조사 | 커넥터로 연결 | 완화책 제안, 설정하면 실행 (Review/Autonomous 모드) |
+| AWS DevOps Agent (GA 2026-03-31) | 런북을 담은 agent skills, 텔레메트리·코드·과거 인시던트 | 원격 MCP 연결 (문서) | 완화 계획 제공 |
+| Grafana Assistant Investigations (2026-07) | 메트릭·로그·트레이스, rules·skills | 연결 가능 | 조사 보고서 작성 |
 
-**③ 그런데 '효과를 어떻게 쟀는지'는 비어 있다.** 공개 수치는 대부분 "최대 몇 %" 업체 주장이나 PoC, 장애 1건 사례다. 국내 공개 사례 중 고정 평가셋이나 Ablation을 공개한 곳은 찾지 못했다. 반면 Datadog은 기능 하나(알림 서비스명을 초기 맥락에 넣기)가 일부 조사는 개선하고 다른 조사는 **나쁘게 만든** 사례를 공개했다. 부품을 하나씩 켜고 끄며 재야 하는 이유다.
-
-**④ 연구도 우리 결과와 같은 방향이다.**
-
-| 우리 결과 | 근거 |
+| 국내 사례 | 특징 |
 |---|---|
-| 런북 RAG로 누락 56% → 9% | Flow-of-Action(WWW'25): 표준 절차(SOP)를 넣자 RCA 정확도 35.5% → 64.0% · Nissist(ECAI'24): 트러블슈팅 가이드 검색 |
-| 파이프라인 안 LLM Judge는 품질 향상 미확인 | Huang 외(ICLR'24): 외부 피드백 없는 자기교정은 효과 없음 · Kamoi 외(TACL'24): 믿을 만한 외부 신호가 있을 때만 효과 |
-| 평가 Judge가 후했다 (불합격 답 59%를 합격) | Thakur 외(2025): 판정기 관대함 편향, 퍼센트 일치율 대신 kappa 필요 |
-| 캐스케이드로 비용 절감 | FrugalGPT(TMLR'24) · 현업 ServiceNow AIOps LEAP도 GPT-4o mini / GPT-4o 두 트랙 |
-| 국내 연구 | 오케스트로·한양대(ASPLOS'26 AIOps 워크숍): RCA 에이전트 실패 1위는 데이터 해석 환각 71.2% → LLM 자기 검수보다 **코드 기반 사실 확인(우리 factcheck)과 도구 재조회**가 맞는 방향 |
+| SK AX AXgenticWire NPO | 탐지·분석·영향도·조치 4개 에이전트, 모니터링 연동용 MCP 빌더. 대신증권 IT운영 7년 계약(2026-04 발표) |
+| 삼성계정 Agentic AIOps | Datadog MCP 서버를 직접 만들고 과거 RCA를 벡터검색. 실행권은 사람이 가진다 |
+| 롯데ON Tech Assistant | 알람이 울리면 매뉴얼 KB를 검색해 원인 후보와 조치를 Slack으로 보낸다 |
+| 현대오토에버 ErrorWatcher | **LangGraph + runbooks 폴더 RAG**. 해커톤 PoC, 모의 모니터링 데이터 |
+| GS리테일 AIOps Agent | Bedrock 자체 루프 + MCP 도구 7개 이상. RCA 문서 작성·상태 변경까지 자동. 인시던트 분석 30분 이상 → 약 2분 **[업체 공개 사례]** |
 
-**⑤ 현업에 붙인다면** — research·replan_check 노드는 Prometheus·Grafana·Datadog·Confluence·GitHub 같은 **읽기 전용 공식 MCP**로 바꿔 끼우고, Slack·PagerDuty에 쓰는 write 노드에만 쓰기 권한과 **사람 승인**(LangGraph `interrupt`)을 붙인다 ([04_현업_MCP.md](docs/research/04_현업_MCP.md)).
+- 공통으로 보이는 것: 런북·과거 장애 같은 절차 지식을 근거로 쓰는 제품이 많고(Datadog·Azure·AWS·롯데ON·ErrorWatcher), 외부 도구는 MCP로 붙인다. 실행을 맡기는 정도는 제품마다 다르다(삼성계정은 사람이 실행, GS리테일은 자동, Azure는 모드 선택).
+- 우리 에이전트는 조치를 **제안만** 하고 실행하지 않는다.
+
+**③ 공개된 '효과 측정'은 드물다.** 공개 수치는 대부분 "최대 몇 %" 업체 주장이나 PoC, 장애 1건 사례다. 조사한 범위의 국내 기업·제품 공개 사례에서는 고정 평가셋이나 Ablation을 공개한 곳을 찾지 못했다(학계에는 통제 실험 연구가 있다, ④ 국내 연구). Datadog은 기능 하나(알림 서비스명을 초기 맥락에 넣기)가 무관한 신호를 끌어와 다른 조사를 **나쁘게 만든** 사례를 공개했다. 부품을 하나씩 켜고 끄며 재야 하는 이유다. 이 과제는 합성 평가셋 60문제와 AI 평가자라는 한계 안에서, 부품별 기여를 분리해 보였다.
+
+**④ 연구와 비교하면**
+
+| 우리 결과 | 같은 방향의 근거 | 주의할 점 |
+|---|---|---|
+| 런북 RAG로 누락 56% → 9% | Flow-of-Action(WWW'25 Industry): SOP 기반 멀티에이전트가 ReAct 대비 RCA 정확도 35.5% → 64.0% · Nissist(ECAI'24): 트러블슈팅 가이드 검색 | SOP만 뺀 비교는 아니다. 우리 원본은 키워드 규칙이라 수치 직접 비교는 안 된다 |
+| 파이프라인 안 LLM Judge는 품질 향상 미확인 | Huang 외(ICLR'24): 추론 과제에서 외부 피드백 없는 자기교정은 효과가 없거나 해롭다 · Kamoi 외(TACL'24): 믿을 만한 외부 신호가 있을 때만 효과 | 우리 과제(보고서 재작성)와 과제가 다르다. Self-Refine(NeurIPS'23)은 약 20%p 개선을 보고했다 |
+| 독립 평가자(Claude)가 불합격으로 본 답의 59%를 평가 Judge가 합격 | Thakur 외(2025): 판정기 관대함 편향, 퍼센트 일치율 대신 kappa 필요 | Zheng 외(NeurIPS'23)는 GPT-4 판정기의 사람 일치율 80% 이상을 보고했다. 우리 평가자는 사람이 아니다 |
+| 캐스케이드로 비용 절감 | FrugalGPT(TMLR'24) 저가 → 고가 캐스케이드 · 현업 ServiceNow AIOps LEAP는 Small·Large 모델 트랙을 고르게 한다 | ServiceNow 문서에 승격 방식은 없다 |
+| 국내 연구 | 오케스트로·한양대(ASPLOS'26 AIOps 워크숍, 보도 기준): RCA 에이전트 실패 1위는 데이터 해석 환각 71.2%, 구조 개선이 프롬프트 수정보다 효과 | 우리 해석(가설): LLM 자기 검수보다 코드 기반 사실 확인(factcheck)·도구 재조회가 다음 방향. factcheck 단독 효과는 따로 재지 않았다 |
+
+**⑤ 현업에 붙인다면** — research·replan_check 노드는 Prometheus·Grafana·Datadog·Confluence·GitHub 공식 MCP를 **읽기 전용으로 설정해** 바꿔 끼우고(서버에 쓰기 도구도 있어 토큰·플래그로 막아야 한다), Slack·PagerDuty에 쓰는 write 노드에만 쓰기 권한과 **사람 승인**(LangGraph `interrupt`)을 붙인다 ([04_현업_MCP.md](docs/research/04_현업_MCP.md)). 연결 테스트는 하지 않았다.
 
 ### 1.3 기존 시스템의 문제점 및 해결 과제
 
@@ -250,7 +264,7 @@ flowchart TD
 1. **증상 예시 문장 색인** — 런북 본문 외에 "이런 증상이면 이 런북" 예시를 색인해 질문과 문서의 표현 차이를 줄인다 (일반화 격차 대응).
 2. **재순위(reranker)와 투입 개수 조절** — 질문 속 증상 수에 맞춰 넣는 런북 수를 정해 혼입을 줄인다.
 3. **캐스케이드 승급 기준을 코드 지표로** — LLM Judge 대신 결정적 어구 대조로 비싼 모델 승급 여부를 정한다.
-4. **현업 MCP 연결** — 모니터링·런북을 읽기 전용 공식 MCP(Prometheus·Grafana·Confluence 등)로 바꾸고, 쓰기 도구는 사람 승인 뒤에만 실행한다 ([docs/research/04_현업_MCP.md](docs/research/04_현업_MCP.md)).
+4. **현업 MCP 연결** — 모니터링·런북을 읽기 전용으로 설정한 공식 MCP(Prometheus·Grafana·Confluence 등)로 바꾸고, 쓰기 도구는 사람 승인 뒤에만 실행한다 ([docs/research/04_현업_MCP.md](docs/research/04_현업_MCP.md)).
 5. **평가 확대** — 질의 수를 늘리고, 사람 라벨로 평가 Judge를 보정하고, 라우터 개선도 같은 Ablation 체계로 재측정한다.
 
 ### 4.3 수행 소감 및 느낀점
