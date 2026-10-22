@@ -1,4 +1,4 @@
-"""도구 부분 실패 허용 (research_tolerant_node) + 장애 주입 (FaultyMCP). LLM·네트워크 없음."""
+"""도구 부분 실패 허용 (research_tolerant_node) + 장애 주입 (FaultyMCP). LLM, 네트워크 없음."""
 import asyncio
 from pathlib import Path
 

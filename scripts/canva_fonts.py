@@ -1,7 +1,7 @@
 """Canva로 가져갈 pptx 의 모든 글자에 한글 글꼴을 직접 적는다.
 
 Canva 는 테마 글꼴(+mn-lt)과 맥 전용 글꼴을 읽지 못해 한글 글상자가 겹쳐 보인다.
-슬라이드·레이아웃·마스터의 run 속성(rPr·defRPr·endParaRPr)에 latin·ea 글꼴과 lang=ko-KR 을 넣는다.
+슬라이드, 레이아웃, 마스터의 run 속성(rPr, defRPr, endParaRPr)에 latin, ea 글꼴과 lang=ko-KR 을 넣는다.
 이미 latin 이 있으면(예: Courier New 코드) 그대로 두고 ea 만 더한다.
 
     python3 scripts/canva_fonts.py deck/incident-agent-ablation_5min_canva.pptx [--font "Noto Sans KR"]

@@ -1,7 +1,7 @@
 """외부 블라인드 문항(eval/external/queries_external_v1.yaml)으로 base 와 final 을 같은 조건에서 돌린다.
 
 문항과 정답 라벨은 개발에 관여하지 않은 AI(Gemini)가 만들었고, 실행 전에 커밋으로 고정했다 (fa943a3).
-기준값·프롬프트·코드는 본 실험과 같다. 결과는 좋든 나쁘든 그대로 싣는다 (재실행으로 고르지 않는다).
+기준값, 프롬프트, 코드는 본 실험과 같다. 결과는 좋든 나쁘든 그대로 싣는다 (재실행으로 고르지 않는다).
 
     python -m eval.external_blind --backend fake --reps 1      # 키 없이 배관 점검 (저장 안 함)
     python -m eval.external_blind --reps 3                     # 실제 API: 15문항 x 2구성 x 3회 + 평가 Judge
@@ -102,7 +102,7 @@ def to_md(s: dict) -> str:
         return f"{t[0] * 100:.0f}% ({t[1]:.0f}/{t[2]})" if t[2] else "-"
     b, f = s["configs"]["base"], s["configs"]["final"]
     lines = ["# 외부 블라인드 문항 결과 (Gemini 작성 15문항)", "",
-             f"문항: `{s['source']}` (실행 전 고정 커밋 {s['frozen_commit']}). 실행 수 base {b['runs']} · final {f['runs']}, 오류 base {b['errors']} · final {f['errors']}.", "",
+             f"문항: `{s['source']}` (실행 전 고정 커밋 {s['frozen_commit']}). 실행 수 base {b['runs']}, final {f['runs']}, 오류 base {b['errors']}, final {f['errors']}.", "",
              "| 지표 | base | final | 차이 (final − base, 95% CI) |", "|---|---|---|---|"]
     names = {"miss": "맞는 매뉴얼 누락 ↓", "wrong": "엉뚱한 매뉴얼 혼입 ↓", "hit1": "정답 매뉴얼 1위",
              "abstain_ok": "매뉴얼 없는 문항에서 넣지 않음", "judge_pass": "평가 Judge(gpt-4o) 합격"}
@@ -114,12 +114,12 @@ def to_md(s: dict) -> str:
     lines.append(f"| 질의당 비용 | ${b['cost_per_query']:.5f} | ${f['cost_per_query']:.5f} | {pc['diff']:+.5f}{' ★' if pc['significant'] else ''} |")
     lines.append(f"| 지연 중앙값 | {b['latency_median_s']:.1f}초 | {f['latency_median_s']:.1f}초 | {pl['diff']:+.1f}초{' ★' if pl['significant'] else ''} |")
     lines += ["", "★ = 질문 단위 paired bootstrap 95% CI 가 0을 포함하지 않음. 15문항이라 구간이 넓다.", "",
-              "| 문항 | base 누락·혼입 | final 누락·혼입 |", "|---|---|---|"]
+              "| 문항 | base 누락, 혼입 | final 누락, 혼입 |", "|---|---|---|"]
     for i, d in s["by_query"].items():
         def mi(x):
             if not x:
                 return "-"
-            return f"{'-' if 'miss' not in x else round(x['miss'], 2)} · {round(x['wrong'], 2)}"
+            return f"{'-' if 'miss' not in x else round(x['miss'], 2)}, {round(x['wrong'], 2)}"
         lines.append(f"| {i} | {mi(d['base'])} | {mi(d['final'])} |")
     return "\n".join(lines) + "\n"
 

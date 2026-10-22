@@ -119,7 +119,7 @@ def test_facts_from_collected_format():
     assert "무시" not in out
 
 
-# --- 평가 Judge (eval.judge.Judge) — 3/4 규칙·파싱 오류 분리 -----------------
+# --- 평가 Judge (eval.judge.Judge) — 3/4 규칙, 파싱 오류 분리 -----------------
 
 def eval_judge(content: str, threshold: float = 0.75) -> EJ.Judge:
     j = EJ.Judge.__new__(EJ.Judge)

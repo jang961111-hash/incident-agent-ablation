@@ -7,9 +7,9 @@
     python -m eval.fault_bench               # rate 0.3, dev+holdout 정상 질의
     python -m eval.fault_bench --seed 11 --tag _seed11   # 고장 위치를 바꿔 반복 측정
 
-변형 3개: base(원본 research) · final_no_tolerance(final 에서 tolerant_research 만 끔) · final.
+변형 3개: base(원본 research), final_no_tolerance(final 에서 tolerant_research 만 끔), final.
 가운데 변형이 있어야 '완주율 차이가 tolerant_research 덕'임을 다른 개선과 분리해 말할 수 있다.
-질의: normal·composite 카테고리 (dev+holdout). 완주 여부만 재고 답 품질은 평가하지 않는다.
+질의: normal, composite 카테고리 (dev+holdout). 완주 여부만 재고 답 품질은 평가하지 않는다.
 주입 방식은 src/ext/faults.py(FaultyMCP), 켜는 곳은 cfg["fault_injection"] → src/adapter.py.
 결과: results/fault_bench[_fake][<tag>]_<YYYYMMDD_HHMM>.json 과 _latest.json
 """
@@ -50,7 +50,7 @@ def main():
     for name, cfg in variants.items():
         cfg = copy.deepcopy(cfg)
         cfg["fault_injection"] = {"tool": "get_monitoring_status", "rate": args.rate, "seed": args.seed}
-        cfg.setdefault("cost", {})["cache"] = False   # 모든 변형이 질의마다 route·plan 을 새로 부르게 (base 와 같은 조건)
+        cfg.setdefault("cost", {})["cache"] = False   # 모든 변형이 질의마다 route, plan 을 새로 부르게 (base 와 같은 조건)
         if args.backend:
             cfg["backend"] = args.backend
             cfg["fake_force_incident"] = args.backend == "fake"   # fake 라우터의 판정과 무관하게 모두 장애 경로로 (도구 호출이 일어나야 주입이 된다)

@@ -1,7 +1,7 @@
 """수치 일관성 게이트 — 문서 수치 ↔ CLAIMS ↔ results/ 가 서로 맞는지 오프라인으로 확인한다.
 
 CLAUDE.md 1번: 모든 Before/After 숫자는 results/ 실행 결과에서 나온다.
-  1) scripts/claims.py 를 다시 돌리면 커밋된 CLAIMS.md · results/claims.json 과 글자 하나까지 같아야 한다
+  1) scripts/claims.py 를 다시 돌리면 커밋된 CLAIMS.md, results/claims.json 과 글자 하나까지 같아야 한다
      (파일은 쓰지 않는다 — write_text 를 가로채 비교만 한다).
   2) claims 가 쓰는 paired bootstrap 결과(stats_holdout*.json)도 seed 고정으로 그대로 재현돼야 한다.
   3) scripts/check_claims.py --strict 는 확인 필요 0건, 못 읽은 문서 0개로 exit 0 이어야 한다.

@@ -19,7 +19,7 @@ from .judge import FakeJudge
 
 
 class SlowFastLLM(FastLLM):
-    """원본 FastLLM 의 route·plan·analyze·chat 앞에 동기 지연을 넣은 것."""
+    """원본 FastLLM 의 route, plan, analyze, chat 앞에 동기 지연을 넣은 것."""
 
     def __init__(self, name, usd_per_1k_tokens, delay: float):
         super().__init__(name, usd_per_1k_tokens)

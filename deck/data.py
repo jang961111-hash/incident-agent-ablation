@@ -29,7 +29,7 @@ for n in ORDER:
 for sp in ("holdout", "dev", None):
     out[f"extra_{sp or 'all'}"] = extra(sp)
 out["stats_holdout"] = load(R / "stats_holdout.json")
-# 지연 통제 재측정(scripts/run_latency_ctrl.sh)이 있으면 지연만 그 값으로 바꾼다 (품질·비용은 원 측정)
+# 지연 통제 재측정(scripts/run_latency_ctrl.sh)이 있으면 지연만 그 값으로 바꾼다 (품질, 비용은 원 측정)
 _lat = load(R / "stats_holdout_latctl.json")
 out["latctl"] = bool(_lat) and all((R / f"{n}_latctl_latest.json").exists() for n in ORDER)
 if out["latctl"]:
@@ -50,7 +50,7 @@ except Exception as e:
     out["claude_agreement"] = {"error": str(e)}
 out["calibrate"] = (load(R / "calibrate_rag.json") or {}).get("best")
 out["cache"] = load(R / "cache_bench_latest.json")
-# 캐시 대상 단계(route·plan·임베딩)가 final cold 비용에서 차지하는 비중 — 캐시 비용 절감의 상한
+# 캐시 대상 단계(route, plan, 임베딩)가 final cold 비용에서 차지하는 비중 — 캐시 비용 절감의 상한
 _P = {"gpt-4o-mini": (0.00015, 0.0006), "gpt-4o": (0.0025, 0.01), "text-embedding-3-small": (0.00002, 0)}
 _tot = _cache = 0.0
 for _r in load(R / "final_latest.json")["rows"]:

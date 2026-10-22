@@ -1,5 +1,5 @@
 """개선판 그래프. 원본 agent/graph.py 의 노드 함수를 그대로 가져다 쓰고, config 플래그에
-따라 일부 노드만 교체한다. 그래프 연결 구조(엣지·조건 분기)는 원본과 같다.
+따라 일부 노드만 교체한다. 그래프 연결 구조(엣지, 조건 분기)는 원본과 같다.
 
 v1 (1차 실측)
   runbook_selection=rag      replan_check  키워드 규칙 → RAG 순위 (ext/rag.py)
@@ -12,15 +12,15 @@ v2 (1차 실측에서 찾은 약점 보완, 모두 플래그)
   judge.version=2            validate      근거 밖 요구 금지 + fixable 판정, 고칠 수 없으면 재작성 생략
   judge.factcheck            validate      답변 수치를 코드로 먼저 대조, 근거 없는 수치는 Judge 없이 반려
   runtime.tolerant_research  research      도구 일부 실패 시 성공한 결과는 살리고 실패를 근거에 명시
-  runtime.async_io           route·plan·write·validate  동기 LLM 호출을 스레드로 빼 이벤트 루프를 막지 않음
+  runtime.async_io           route, plan, write, validate  동기 LLM 호출을 스레드로 빼 이벤트 루프를 막지 않음
 
 base 구성은 이 파일을 쓰지 않고 원본 build_graph 를 그대로 호출한다 (src/adapter.py).
 
-입력: src/adapter.py 의 ExtDeps (cfg + 구성별로 만든 LLM·검색기·Judge).
-출력: 원본 AgentState 키 + ExtState 의 추가 키(rag_ranking·judge_history·notices·tool_failures 등).
-      adapter 가 이 추가 키를 결과 행(retrieved·judge_history·notices…)으로 옮긴다.
-교체 노드가 원본 노드와 같은 상태 키를 읽고 쓰기 때문에, 원본 라우팅 함수(_after_route·
-_after_replan_check·_after_validate)를 그대로 재사용한다. 즉 스위치를 모두 끈 build_graph_ext 는
+입력: src/adapter.py 의 ExtDeps (cfg + 구성별로 만든 LLM, 검색기, Judge).
+출력: 원본 AgentState 키 + ExtState 의 추가 키(rag_ranking, judge_history, notices, tool_failures 등).
+      adapter 가 이 추가 키를 결과 행(retrieved, judge_history, notices…)으로 옮긴다.
+교체 노드가 원본 노드와 같은 상태 키를 읽고 쓰기 때문에, 원본 라우팅 함수(_after_route,
+_after_replan_check, _after_validate)를 그대로 재사용한다. 즉 스위치를 모두 끈 build_graph_ext 는
 노드 구성이 원본 build_graph 와 같다.
 """
 from __future__ import annotations
@@ -51,7 +51,7 @@ class ExtState(AgentState, total=False):
     """원본 상태에 개선판만 쓰는 키를 더한 것 (total=False: 없어도 된다)."""
     started_at: float        # adapter 가 그래프 시작 시각(monotonic)을 넣는다 — Judge 시간 상한 기준
     rag_ranking: list
-    rag_fed: list            # ranking 중 margin·min_score 를 통과해 write 에 실제로 넣은 런북
+    rag_fed: list            # ranking 중 margin, min_score 를 통과해 write 에 실제로 넣은 런북
     judge_history: list
     notices: list
     tool_failures: int       # tolerant_research 가 흡수한 도구 실패 수
@@ -80,7 +80,7 @@ class ThreadedWriter:
     """write/chat 은 async 메서드지만 안에서 동기 httpx 를 부른다. 통째로 스레드에서 실행한다.
 
     asyncio.to_thread(asyncio.run, 코루틴): 작업 스레드에서 새 이벤트 루프로 코루틴을 끝까지 돌린다.
-    그 사이 메인 루프는 다른 질의의 노드를 처리할 수 있다. route·plan·analyze 같은 동기 메서드는
+    그 사이 메인 루프는 다른 질의의 노드를 처리할 수 있다. route, plan, analyze 같은 동기 메서드는
     __getattr__ 로 그대로 넘기고, 스레드로 빼는 일은 *_async 노드의 _call 이 맡는다.
     """
 
@@ -98,7 +98,7 @@ class ThreadedWriter:
         return await asyncio.to_thread(asyncio.run, self._inner.chat(*args, **kwargs))
 
 
-# --- route · plan (async_io 판) — 원본과 같은 로직, LLM 호출만 스레드로 ------------------
+# --- route, plan (async_io 판) — 원본과 같은 로직, LLM 호출만 스레드로 ------------------
 
 @traceable(name="route_node_async")
 async def route_node_async(state: ExtState, deps: ExtDeps) -> dict:
@@ -195,7 +195,7 @@ async def replan_check_rag_node(state: ExtState, deps: ExtDeps) -> dict:
         verdict = {"type": "ReplanCheck", "round": rounds, "is_sufficient": True}
         return {"events": state["events"] + [verdict]}
     rag = deps.cfg.get("rag", {})
-    # 1) 질의 임베딩으로 런북 순위 top_k (Recall@k·MRR 은 이 순위로 잰다)
+    # 1) 질의 임베딩으로 런북 순위 top_k (Recall@k, MRR 은 이 순위로 잰다)
     ranking = await _call(deps, deps.retriever.rank, state["query"], rag.get("top_k", 3))
     # 2) 1위 점수 - margin 이내만 투입 후보 (복합 장애면 2개, 단일이면 대개 1개)
     fed = select_feed(ranking, margin=rag.get("margin", 0.05))
@@ -205,7 +205,7 @@ async def replan_check_rag_node(state: ExtState, deps: ExtDeps) -> dict:
     min_score = rag.get("min_score")
     if min_score is not None:
         # 3) 절대 기준: 유사도가 rag.min_score 미만이면 '맞는 런북 없음'으로 본다. margin 은 1위와의
-        #    상대 거리라서, 1위 자체가 엉뚱한 경우(미등록·모호 질의)를 거르지 못한다.
+        #    상대 거리라서, 1위 자체가 엉뚱한 경우(미등록, 모호 질의)를 거르지 못한다.
         #    값은 dev 질의만으로 eval/calibrate_rag.py 가 정했고, 임베더마다 척도가 달라 구성마다 다르다.
         fed = [rid for rid, s in ranking if rid in fed and s >= min_score]
         if not fed:
@@ -319,15 +319,15 @@ async def validate_judge_node(state: ExtState, deps: ExtDeps) -> dict:
 
 
 def build_graph_ext(deps: ExtDeps):
-    """스위치에 따라 노드 함수만 고르고, 엣지·조건 분기는 원본 build_graph 와 같게 연결한다.
+    """스위치에 따라 노드 함수만 고르고, 엣지, 조건 분기는 원본 build_graph 와 같게 연결한다.
 
     스위치 → 교체 노드
-      runtime.async_io          route·plan → *_async, LLM 객체 → ThreadedWriter
+      runtime.async_io          route, plan → *_async, LLM 객체 → ThreadedWriter
       runtime.tolerant_research research → research_tolerant_node
       runbook_selection=rag     replan_check → replan_check_rag_node
       cost.model_tiering        write → write_cascade_node
       validator=judge           validate → validate_judge_node
-    chat_answer·gate·analysis·finalize 는 항상 원본 노드다.
+    chat_answer, gate, analysis, finalize 는 항상 원본 노드다.
     """
     cfg = deps.cfg
     rt = cfg.get("runtime", {})

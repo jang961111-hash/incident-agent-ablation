@@ -66,7 +66,7 @@ def test_unit_handles_zero_vector():
     assert rg._unit([3.0, 4.0]) == pytest.approx([0.6, 0.8])
 
 
-# --- RunbookRetriever: top-k·캐시 ------------------------------------------------
+# --- RunbookRetriever: top-k, 캐시 ------------------------------------------------
 
 def test_retriever_top_k_sorted_and_ids_are_runbooks():
     ret = rg.RunbookRetriever(RB, rg.LocalTfidfEmbedder(RB))
@@ -140,7 +140,7 @@ def test_ollama_embedder_cache_filename_sanitized(tmp_path):
     assert e.url == "http://127.0.0.1:11434/api/embed"
 
 
-# --- replan_check_rag_node: min_score·margin·notices ------------------------------
+# --- replan_check_rag_node: min_score, margin, notices ------------------------------
 
 class FixedRetriever:
     def __init__(self, ranking):

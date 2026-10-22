@@ -10,7 +10,7 @@
     python -m eval.stats --tag _latctl   # 지연 통제 재측정 (results/*_latctl_latest.json)
 
 입력: results/<구성><tag>_latest.json 의 rows. 출력: results/stats_<split><tag>.json (+ 표 출력).
-이 파일의 pairs 가 README 기여도 표·fig6·CLAIMS 의 '짝지은 차이'의 출처다.
+이 파일의 pairs 가 README 기여도 표, fig6, CLAIMS 의 '짝지은 차이'의 출처다.
 질의마다 두 구성 모두 값이 있어야 짝이 되므로, 지표마다 n(공통 질의 수)이 다를 수 있다.
 """
 from __future__ import annotations
@@ -45,7 +45,7 @@ def _per_query(rows: list[dict]) -> dict:
       miss     장애 경로 + 정답 있는 질의에서, 넣은 런북에 정답이 하나도 없음
       wrong    장애 경로 질의에서, 정답 아닌 런북이 섞임 (정답 없는 질의에 런북을 넣은 것 포함)
       cost     질의 비용(USD), latency 지연(초)
-    miss·wrong 의 정의는 eval/extra_metrics.py 의 _miss·_wrong 과 같다.
+    miss, wrong 의 정의는 eval/extra_metrics.py 의 _miss, _wrong 과 같다.
     """
     by = {}
     for r in rows:
@@ -84,7 +84,7 @@ def bootstrap(a: dict, b: dict, metric: str, n: int = 2000, seed: int = 0) -> di
     diffs = [b[q][metric] - a[q][metric] for q in ids]
     rnd = random.Random(seed)
     boots = sorted(statistics.fmean(rnd.choices(diffs, k=len(diffs))) for _ in range(n))
-    lo, hi = boots[int(0.025 * n)], boots[int(0.975 * n) - 1]   # n=2000 → 정렬된 boots[50]·boots[1949]
+    lo, hi = boots[int(0.025 * n)], boots[int(0.975 * n) - 1]   # n=2000 → 정렬된 boots[50], boots[1949]
     return {"n": len(ids), "diff": statistics.fmean(diffs), "lo": lo, "hi": hi,
             "significant": lo > 0 or hi < 0}
 

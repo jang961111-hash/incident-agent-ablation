@@ -10,7 +10,7 @@ LLM Judge 를 부르기 전에 코드로 먼저 거른다 (judge.factcheck=true)
 
 쓰는 곳
   - src/ext/graph_ext.py validate_judge_node: judge.factcheck=true 일 때 Judge 앞단 필터
-  - eval/run_ablation.py: 모든 구성의 답에 적용 → unsupported_numbers · unsupported_answer_rate
+  - eval/run_ablation.py: 모든 구성의 답에 적용 → unsupported_numbers, unsupported_answer_rate
   - eval/tamper_test.py: 수치 조작을 코드가 잡는지 시험
 한계: 값만 보고 '무슨 값인지'(CPU 인지 메모리인지)는 보지 않는다. 근거의 다른 항목 값과 우연히
 같으면 통과한다. 시스템 이름 같은 비수치 환각은 잡지 못한다 (그쪽은 Judge 몫).
@@ -19,9 +19,9 @@ from __future__ import annotations
 
 import re
 
-# 측정값으로 볼 단위. s·ms 는 단어 경계(\b)를 둬 'sql'·'msg' 같은 영단어 앞부분을 잡지 않는다
+# 측정값으로 볼 단위. s, ms 는 단어 경계(\b)를 둬 'sql', 'msg' 같은 영단어 앞부분을 잡지 않는다
 _UNIT = r"(?:%|퍼센트|초|s\b|ms\b|분|시간|GB|MB|KB|건|대|회|배|개)"
-# (?<![\w.]) : 'v2.4'·'1.2.3' 처럼 글자나 점에 붙은 숫자(버전·식별자)는 측정값이 아니다
+# (?<![\w.]) : 'v2.4', '1.2.3' 처럼 글자나 점에 붙은 숫자(버전, 식별자)는 측정값이 아니다
 _NUM_UNIT = re.compile(rf"(?<![\w.])(\d+(?:\.\d+)?)\s*{_UNIT}")
 _DECIMAL = re.compile(r"(?<![\w.])(\d+\.\d+)(?![\w.])")
 # 줄 머리의 절차 번호 '1)' '2.' '③' — 측정값이 아니므로 먼저 떼어 낸다

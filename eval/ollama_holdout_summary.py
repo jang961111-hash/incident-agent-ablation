@@ -1,12 +1,12 @@
 """로컬 Ollama holdout 실행(eval/ollama_holdout.py) 결과를 본문과 같은 코드 지표로 요약한다. 재실행 없음.
 
-지표 정의는 본문과 같다 (eval/extra_metrics.py · eval/stats.py).
+지표 정의는 본문과 같다 (eval/extra_metrics.py, eval/stats.py).
   맞는 매뉴얼 누락(miss)   장애 경로 + 정답 런북 있는 질문 중, 넣은 런북에 정답이 하나도 없는 비율
   엉뚱한 매뉴얼 혼입(wrong) 장애 경로 질문 중, 정답 아닌 런북이 섞인 비율 (정답 없는 질문에 런북을 넣은 것 포함)
   매뉴얼 핵심 문구 포함    must_include 어구 포함률 (대소문자 무시 문자열 포함, 하한 지표)
   완료                     오류 없이 빈 답이 아닌 답을 낸 비율
-  지연                     그래프 실행 시간(latency_ms) 중앙값·p95
-  파이프라인 Judge         qwen3:8b Judge 기록 — 첫 판정 통과, 가드 없이 최종 통과, 가드(재시도·시간 상한) 종료
+  지연                     그래프 실행 시간(latency_ms) 중앙값, p95
+  파이프라인 Judge         qwen3:8b Judge 기록 — 첫 판정 통과, 가드 없이 최종 통과, 가드(재시도, 시간 상한) 종료
 짝지은 차이는 질문 단위 paired bootstrap 95% CI (eval/stats.py 의 bootstrap, 2,000회, seed 0). 1회 실행이라 실행 간 변동은 못 본다.
 
     python -m eval.ollama_holdout_summary --a base_local --b final_local_bge
@@ -43,7 +43,7 @@ def latest(cfg: str) -> Path:
 
 
 def summarize(rows: list[dict]) -> dict:
-    """한 구성 rows → 분자·분모를 함께 남긴 요약 (1회 실행이라 비율보다 'n/m' 을 보여 주려고)."""
+    """한 구성 rows → 분자, 분모를 함께 남긴 요약 (1회 실행이라 비율보다 'n/m' 을 보여 주려고)."""
     ok = [r for r in rows if "error" not in r]
     inc = [r for r in ok if r["route"] == "incident"]
     inc_gold = [r for r in inc if r["gold"]]
@@ -86,7 +86,7 @@ def summarize(rows: list[dict]) -> dict:
 
 
 def main():
-    """두 구성(a=기준, b=비교)의 요약과 질문 단위 paired bootstrap 차이를 json·md 로 쓴다."""
+    """두 구성(a=기준, b=비교)의 요약과 질문 단위 paired bootstrap 차이를 json, md 로 쓴다."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--a", default="base_local")
     ap.add_argument("--b", default="final_local_bge")
@@ -127,8 +127,8 @@ def main():
              f"| 정답 매뉴얼 1위 (Hit@1) | {A['hit1_n']}/{A['hit1_den']} | {B['hit1_n']}/{B['hit1_den']} | {ci(diffs['hit1'])} |",
              f"| 매뉴얼 핵심 문구 포함 | {pct(A['must_phrase_rate'])} | {pct(B['must_phrase_rate'])} | {ci(diffs['must'])} |",
              f"| 핵심 문구 전부 포함 | {A['must_all_n']}/{A['must_den']} | {B['must_all_n']}/{B['must_den']} | |",
-             f"| 지연 중앙값 · p95 | {A['latency_median_s']:.1f}초 · {A['latency_p95_s']:.1f}초 | {B['latency_median_s']:.1f}초 · {B['latency_p95_s']:.1f}초 | {ci(diffs['latency'], 1, '초', 1)} |",
-             f"| 재작성 (질문 수 · 총 횟수) | {A['rewritten_n']} · {A['rewrites_total']} | {B['rewritten_n']} · {B['rewrites_total']} | |",
+             f"| 지연 중앙값, p95 | {A['latency_median_s']:.1f}초, {A['latency_p95_s']:.1f}초 | {B['latency_median_s']:.1f}초, {B['latency_p95_s']:.1f}초 | {ci(diffs['latency'], 1, '초', 1)} |",
+             f"| 재작성 (질문 수, 총 횟수) | {A['rewritten_n']}, {A['rewrites_total']} | {B['rewritten_n']}, {B['rewrites_total']} | |",
              f"| 파이프라인 Judge 첫 판정 통과 | - | {B['judge_first_pass_n']}/{B['judge_judged_n']} | |",
              f"| 파이프라인 Judge 최종 통과 (가드 없이) | - | {B['judge_final_pass_n']}/{B['judge_judged_n']} | |",
              f"| 가드로 종료 | - | {', '.join(f'{k} {v}' for k, v in B['judge_guard'].items()) or '없음'} | |",

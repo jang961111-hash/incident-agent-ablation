@@ -1,18 +1,18 @@
 """모의 LLM 서버 장애 주입 벤치 (모의 환경, API 비용 0).
 
-로컬 모의 OpenAI 서버(chat completions·embeddings)를 띄우고 응답을 일부러 망가뜨려,
-지금 구조의 파이프라인이 죽는지·부분 결과로 답하는지·재시도와 타임아웃 상한이 지연을 어떻게 바꾸는지 잰다.
+로컬 모의 OpenAI 서버(chat completions, embeddings)를 띄우고 응답을 일부러 망가뜨려,
+지금 구조의 파이프라인이 죽는지, 부분 결과로 답하는지, 재시도와 타임아웃 상한이 지연을 어떻게 바꾸는지 잰다.
 원본 코드는 고치지 않는다. 이 프로세스 안에서만 API 주소를 모의 서버로 바꾸고, 임베딩 캐시는 임시 폴더를 쓴다.
 실제 키는 쓰지 않는다(가짜 키로 덮어씀). 답 내용은 고정 문장이라 품질은 재지 않는다.
 
-시나리오: normal(지연 0.3초) · slow(지연 2초) · e503(30% 503) · badjson(JSON 요청의 30%에 깨진 JSON) ·
+시나리오: normal(지연 0.3초), slow(지연 2초), e503(30% 503), badjson(JSON 요청의 30%에 깨진 JSON),
          hang(15% 요청이 65초 멈춤 → 클라이언트 60초 타임아웃 후 재시도)
-    python -m eval.mock_llm_bench            # 결과: results/mock_llm_bench_<YYYYMMDD_HHMM>.json·.md, _latest.json
+    python -m eval.mock_llm_bench            # 결과: results/mock_llm_bench_<YYYYMMDD_HHMM>.json, .md, _latest.json
 
-바꿔 끼우는 것: agent.openai_llm.OPENAI_URL · ext.meter.OPENAI_URL(채팅), ext.rag.EMBED_URL(임베딩),
-src.adapter.CACHE_DIR(임시 폴더). 그래서 클라이언트 쪽 정책(src/ext/meter.post_with_retry 의 재시도·
+바꿔 끼우는 것: agent.openai_llm.OPENAI_URL, ext.meter.OPENAI_URL(채팅), ext.rag.EMBED_URL(임베딩),
+src.adapter.CACHE_DIR(임시 폴더). 그래서 클라이언트 쪽 정책(src/ext/meter.post_with_retry 의 재시도,
 60초 타임아웃, adapter 의 HARD_TIMEOUT_S, Judge 의 깨진 JSON 처리)이 그대로 시험된다.
-무작위는 Random(7) 하나를 시나리오·구성마다 다시 seed 해, base 와 final 이 같은 순서의 주입을 받게 한다
+무작위는 Random(7) 하나를 시나리오, 구성마다 다시 seed 해, base 와 final 이 같은 순서의 주입을 받게 한다
 (다만 4개 스레드가 동시에 뽑으므로 어느 요청이 맞을지는 실행마다 조금 다를 수 있다).
 """
 from __future__ import annotations
@@ -58,7 +58,7 @@ def _roll(p):
 
 
 class H(BaseHTTPRequestHandler):
-    """모의 OpenAI 서버. /embeddings 는 해시 벡터를 즉시, chat 은 지연·멈춤·503·깨진 JSON 을 시나리오대로."""
+    """모의 OpenAI 서버. /embeddings 는 해시 벡터를 즉시, chat 은 지연, 멈춤, 503, 깨진 JSON 을 시나리오대로."""
 
     def log_message(self, *a):
         pass
@@ -111,7 +111,7 @@ class H(BaseHTTPRequestHandler):
 
 
 def main():
-    """시나리오 5개 x 구성 2개(base·final)를 4개 스레드로 실행하고 완주·지연·재시도·주입 수를 남긴다."""
+    """시나리오 5개 x 구성 2개(base, final)를 4개 스레드로 실행하고 완주, 지연, 재시도, 주입 수를 남긴다."""
     srv = ThreadingHTTPServer(("127.0.0.1", 0), H)   # 포트 0 = 빈 포트 자동 선택
     port = srv.server_address[1]
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -132,7 +132,7 @@ def main():
     scenarios = [("normal", {"delay": 0.3}, 8), ("slow", {"delay": 2.0}, 8), ("e503", {"delay": 0.3, "p503": 0.3}, 8),
                  ("badjson", {"delay": 0.3, "pbad": 0.3}, 8), ("hang", {"delay": 0.3, "phang": 0.15}, 4)]
     out = {"environment": "모의 환경 (로컬 모의 OpenAI 서버, API 비용 0, 답 품질 미측정)", "queries": [q["id"] for q in qs],
-           "client_policy": "post_with_retry: 429·5xx·타임아웃 재시도 최대 7회, 요청당 60초 타임아웃 / adapter HARD_TIMEOUT 300초",
+           "client_policy": "post_with_retry: 429, 5xx, 타임아웃 재시도 최대 7회, 요청당 60초 타임아웃 / adapter HARD_TIMEOUT 300초",
            "results": {}}
     for sname, conf, nq in scenarios:
         for cname in ("base", "final"):

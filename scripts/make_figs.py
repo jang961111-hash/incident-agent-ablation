@@ -2,7 +2,7 @@
 
     .venv/bin/python scripts/make_figs.py
 
-색: 파랑 = 개선(강조), 주황 = 문제·원본, 회색 = 나머지. 글자는 무채색. 값은 막대 위에 직접 표시.
+색: 파랑 = 개선(강조), 주황 = 문제, 원본, 회색 = 나머지. 글자는 무채색. 값은 막대 위에 직접 표시.
 """
 import json
 import sys
@@ -73,8 +73,8 @@ ax.set_xlim(0, 10)
 ax.set_ylim(0, 3.4)
 ax.axis("off")
 steps = [("질문 받기", "당직자 질문", GRAY), ("상황판 확인", "모니터링 수치", GRAY),
-         ("매뉴얼 고르기", "RAG로 교체 · v2", BLUE), ("답변 쓰기", "저가 초안 먼저", BLUE),
-         ("답변 검사", "AI 채점관 · v2", BLUE)]
+         ("매뉴얼 고르기", "RAG로 교체, v2", BLUE), ("답변 쓰기", "저가 초안 먼저", BLUE),
+         ("답변 검사", "AI 채점관, v2", BLUE)]
 for i, (h, s, c) in enumerate(steps):
     x = 0.15 + i * 1.98
     ax.add_patch(FancyBboxPatch((x, 1.15), 1.7, 1.25, boxstyle="round,pad=0.02,rounding_size=0.12",
@@ -105,28 +105,28 @@ ax.set_yticks([])
 ax.set_ylim(0, 1.15)
 ax.legend(frameon=False, loc="upper right", fontsize=10.5)
 frame(ax, "원본은 '알림 문구 그대로' 물을 때 주로 맞는 매뉴얼을 찾는다",
-      "맞는 매뉴얼을 1순위로 고른 비율 · 조정에 안 쓴 holdout 정상 질의, 3회 평균")
+      "맞는 매뉴얼을 1순위로 고른 비율, 조정에 안 쓴 holdout 정상 질의, 3회 평균")
 fig.tight_layout()
 fig.savefig(OUT / "fig2_bias.png", dpi=180)
 plt.close(fig)
 
 # 3. 정답 런북 누락 / 4. 무관 런북 혼입
 bars("fig3_miss.png", "맞는 매뉴얼을 놓치는 비율: RAG가 크게 줄였다",
-     "정답 런북을 근거에 못 넣은 비율 (낮을수록 좋음) · holdout, 3회 평균",
+     "정답 런북을 근거에 못 넣은 비율 (낮을수록 좋음), holdout, 3회 평균",
      [X[n]["miss_runbook_rate"] for n in ORDER], lambda v: f"{round(v * 100)}%",
      color_by({"rag", "rag_judge", "rag_judge_cost", "rag_judge_v2", "final"}), (0, 0.7))
 bars("fig4_wrong.png", "엉뚱한 매뉴얼이 섞이는 비율: v2 보완이 줄였다",
-     "질문과 무관한 런북이 근거에 섞인 비율 (낮을수록 좋음) · holdout, 3회 평균",
+     "질문과 무관한 런북이 근거에 섞인 비율 (낮을수록 좋음), holdout, 3회 평균",
      [X[n]["wrong_runbook_rate"] for n in ORDER], lambda v: f"{round(v * 100)}%",
      color_by({"rag_judge_v2", "final"}), (0, 0.8))
 
 # 5. 비용
 bars("fig5_cost.png", "장애 1건 처리 비용: 최종 구성이 가장 싸다",
-     "OpenAI 공개 단가 x 실측 토큰 (USD, 추정) · holdout, 3회 평균",
+     "OpenAI 공개 단가 x 실측 토큰 (USD, 추정), holdout, 3회 평균",
      [X[n]["cost_per_incident"] for n in ORDER], lambda v: f"${v:.4f}",
      color_by({"rag_judge_cost", "final"}), None)
 
-# 6. 기여도 — 같은 질문끼리 비교한 차이와 95% 신뢰구간 (정답 누락 · 엉뚱한 매뉴얼 혼입)
+# 6. 기여도 — 같은 질문끼리 비교한 차이와 95% 신뢰구간 (정답 누락, 엉뚱한 매뉴얼 혼입)
 st = json.loads((R / "stats_holdout.json").read_text())["pairs"]
 fig, axes = plt.subplots(1, 2, figsize=(12, 5.6), sharey=True)
 ys = list(range(len(st)))[::-1]
@@ -156,13 +156,13 @@ for ax, key, ptitle in ((axes[0], "miss", "① 맞는 매뉴얼 누락"), (axes[
     ax.set_xlim(*XL)
     ax.set_ylim(-0.6, len(st) - 0.1)
     ax.set_title(ptitle, loc="left", fontsize=14, color=INK, fontweight="bold", pad=10)
-    ax.set_xlabel("변화 (%p) · 왼쪽일수록 좋아짐", fontsize=11.5)
+    ax.set_xlabel("변화 (%p), 왼쪽일수록 좋아짐", fontsize=11.5)
     for sp in ("top", "right", "left"):
         ax.spines[sp].set_visible(False)
     ax.tick_params(left=False, labelsize=11)
     ax.xaxis.grid(True, color=GRID, lw=0.8)
     ax.set_axisbelow(True)
-axes[0].set_yticks(ys, [p["label"] for p in st], fontsize=13, color=INK)
+axes[0].set_yticks(ys, [p["label"].replace("·", ", ") for p in st], fontsize=13, color=INK)
 fig.suptitle("어떤 개선이 효과였나: 같은 질문끼리 짝지어 비교", x=0.01, ha="left", fontsize=16, color=INK, fontweight="bold")
 fig.text(0.01, 0.905, "점 = 평균 변화, 막대 = 95% 신뢰구간(진짜 효과가 있을 법한 범위). "
          "막대가 0선에 닿지 않으면 '효과 확인'. holdout 36문제 × 3회", fontsize=11, color=INK2)
@@ -182,7 +182,7 @@ ax.set_xticks(ns, [f"동시 {n}건" for n in ns])
 ax.set_xlim(0.5, ns[-1] + 1.8)
 ax.set_ylabel("모두 끝날 때까지 걸린 시간 (초)")
 ax.legend(frameon=False, loc="upper left", fontsize=10.5)
-frame(ax, "장애 질문이 한꺼번에 몰려도 버틴다", "동시 요청 N건 처리 시간 · 실제 OpenAI API, 최종 구성(캐시 끔)")
+frame(ax, "장애 질문이 한꺼번에 몰려도 버틴다", "동시 요청 N건 처리 시간, 실제 OpenAI API, 최종 구성(캐시 끔)")
 fig.tight_layout()
 fig.savefig(OUT / "fig7_concurrency.png", dpi=180)
 plt.close(fig)
@@ -199,7 +199,7 @@ for i, (k, _) in enumerate(names):
 ax.set_xticks(range(3), [n for _, n in names])
 ax.set_yticks([])
 ax.set_ylim(0, 1.15)
-frame(ax, "도구 하나가 고장나도 끝까지 답한다", "모니터링 호출 30%를 일부러 실패시켰을 때, 고장을 맞은 질문 중 답을 끝낸 수 · 실제 API")
+frame(ax, "도구 하나가 고장나도 끝까지 답한다", "모니터링 호출 30%를 일부러 실패시켰을 때, 고장을 맞은 질문 중 답을 끝낸 수, 실제 API")
 fig.tight_layout()
 fig.savefig(OUT / "fig8_fault.png", dpi=180)
 plt.close(fig)
@@ -223,7 +223,7 @@ fig.tight_layout()
 fig.savefig(OUT / "fig9_judge.png", dpi=180)
 plt.close(fig)
 
-# 10·11. 실행 결과 화면 — 같은 질문에 원본과 최종이 낸 답 (results/demo/*.json, 실제 API 1회 실행 기록)
+# 10, 11. 실행 결과 화면 — 같은 질문에 원본과 최종이 낸 답 (results/demo/*.json, 실제 API 1회 실행 기록)
 # 그리는 코드는 scripts/demo_side_by_side.py 의 render_png 하나뿐이다 (--render 로도 같은 그림).
 sys.path.insert(0, str(ROOT / "scripts"))
 from demo_side_by_side import render_png  # noqa: E402

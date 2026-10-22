@@ -58,7 +58,7 @@ def run(name: str, query: str) -> dict:
 
 
 # ── README 그림 (fig10) ─────────────────────────────────────────────────
-# 저장된 demo JSON 만 읽는다. 숫자·매뉴얼명은 모두 JSON 값에서 계산한다.
+# 저장된 demo JSON 만 읽는다. 숫자, 매뉴얼명은 모두 JSON 값에서 계산한다.
 # 답 요약은 원문에서 "단어를 잘라내기만" 한다: 아래 조각은 모두 원문 답의 부분 문자열이어야 하고
 # (render 시 검사), 하나라도 원문에 없으면 그 구성은 원문 전체를 그대로 보여준다.
 SUMMARY = {
@@ -302,9 +302,9 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
         d.text((gx + gw / 2, top_q + qh / 2), g, font=F(32, True), fill=THEME[True][0], anchor="mm")
     for i, k in enumerate((left, right)):
         column(d, k, names[k], M + i * (CW + GAP), col_y, height=ch)
-    foot = f"출처: {src} · scripts/demo_side_by_side.py (실제 API, 1회 실행)"
+    foot = f"출처: {src}, scripts/demo_side_by_side.py (실제 API, 1회 실행)"
     if cost[right] > 0:
-        foot += f" · 비용 비율 {cost[left]:.5f} ÷ {cost[right]:.5f} = {cost[left] / cost[right]:.1f}"
+        foot += f", 비용 비율 {cost[left]:.5f} ÷ {cost[right]:.5f} = {cost[left] / cost[right]:.1f}"
     d.text((M, H - 60), foot, font=F(28), fill=INK2)
     out.parent.mkdir(parents=True, exist_ok=True)
     img.save(out, optimize=True)

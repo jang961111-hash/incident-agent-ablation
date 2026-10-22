@@ -4,7 +4,7 @@
     .venv/bin/python scripts/label.py --split holdout    # queries.yaml 의 split 으로 거름
     .venv/bin/python scripts/label.py --only Q01,Q02
 
-판정이 흔들리지 않도록 Judge 판정·점수는 보여주지 않는다 (블라인드).
+판정이 흔들리지 않도록 Judge 판정, 점수는 보여주지 않는다 (블라인드).
 지표 4개(relevance / completeness / domain_appropriateness / clarity)를 하나씩 묻고,
 overall 은 4개 중 3개 이상 Pass 면 Pass (Judge 임계치 0.75 와 같은 규칙).
 
@@ -37,10 +37,10 @@ HEADER = "# 사람 라벨 — base 답변 기준, 지표별 Pass/Fail. 한 번 �
 KO_NAME = {"relevance": "관련성", "completeness": "완전성",
            "domain_appropriateness": "도메인 적합성", "clarity": "명확성"}
 CRITERIA = {
-    "relevance": "묻는 것에 답했나 · 미등록이면 없다고 밝혔나",
-    "completeness": "근거에 없는 수치·사실을 지어내지 않았고, 근거의 핵심 사실이 들어갔나",
-    "domain_appropriateness": "질문에 맞는 런북 절차를 반영했나 · 무관한 절차를 섞지 않았나",
-    "clarity": "요청한 형식·길이를 지켰고 체계적인가",
+    "relevance": "묻는 것에 답했나, 미등록이면 없다고 밝혔나",
+    "completeness": "근거에 없는 수치, 사실을 지어내지 않았고, 근거의 핵심 사실이 들어갔나",
+    "domain_appropriateness": "질문에 맞는 런북 절차를 반영했나, 무관한 절차를 섞지 않았나",
+    "clarity": "요청한 형식, 길이를 지켰고 체계적인가",
 }
 
 
@@ -90,7 +90,7 @@ def wrap(s: str, indent: str = "    ") -> str:
 
 def select_rows(rows: list[dict], queries: dict, labels: dict,
                 split: str | None = None, only: set[str] | None = None) -> list[dict]:
-    """라벨 대상 행. rep 필드가 있으면 rep==1, 오류 행·이미 라벨 있는 건 제외."""
+    """라벨 대상 행. rep 필드가 있으면 rep==1, 오류 행, 이미 라벨 있는 건 제외."""
     out = []
     for r in rows:
         if "error" in r or r.get("rep", 1) != 1 or r["id"] in labels:

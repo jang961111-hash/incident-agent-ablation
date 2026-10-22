@@ -11,10 +11,10 @@ Day2 Validator 강의 내용 기준:
 두 조건을 모두 둔다 (먼저 닿는 쪽에서 종료).
 
 역할: 이 파일은 '평가용' Judge 다. eval/run_ablation.py 가 모든 구성의 최종 답을 같은 모델
-(EVAL_JUDGE_MODEL, 기본 gpt-4o)·같은 프롬프트로 채점한다. 재작성을 시키지 않고 점수만 매긴다.
-파이프라인 안에서 답을 반려·재작성시키는 Judge 는 src/ext/judge.py(gpt-4o-mini)와
+(EVAL_JUDGE_MODEL, 기본 gpt-4o), 같은 프롬프트로 채점한다. 재작성을 시키지 않고 점수만 매긴다.
+파이프라인 안에서 답을 반려, 재작성시키는 Judge 는 src/ext/judge.py(gpt-4o-mini)와
 src/ext/graph_ext.py validate_judge_node 이며, 실제 루프 가드도 그쪽에 있다.
-아래 RetryGuard 는 같은 가드 규칙(2회·120초)을 독립적으로 표현한 것으로, 현재 tests/ 에서만 쓴다.
+아래 RetryGuard 는 같은 가드 규칙(2회, 120초)을 독립적으로 표현한 것으로, 현재 tests/ 에서만 쓴다.
 """
 from __future__ import annotations
 
@@ -71,7 +71,7 @@ class Judge:
     def __init__(self, model: str = "gpt-4o", threshold: float = 0.75,
                  temperature: float = 0.0):
         self.threshold = threshold
-        # max_retries=6: 429·일시 오류는 클라이언트가 재시도 — 평가 Judge 오류로 행이 빠지는 것을 줄인다
+        # max_retries=6: 429, 일시 오류는 클라이언트가 재시도 — 평가 Judge 오류로 행이 빠지는 것을 줄인다
         self.llm = ChatOpenAI(model=model, temperature=temperature, max_retries=6).bind(
             response_format={"type": "json_object"})
         self.chain = JUDGE_PROMPT | self.llm

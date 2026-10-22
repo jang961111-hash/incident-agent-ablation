@@ -38,7 +38,7 @@ class FaultyMCP:
     def _hit(self, arguments: dict) -> bool:
         """결정적 추첨: sha1(seed|질의|인자) 를 0~9999 로 접어 rate*10000 미만이면 실패.
 
-        random 을 쓰지 않는 것은 실행 순서·스레드와 무관하게 base 와 개선판이 '같은 호출'에서
+        random 을 쓰지 않는 것은 실행 순서, 스레드와 무관하게 base 와 개선판이 '같은 호출'에서
         실패를 맞아야 비교가 공정하기 때문이다. 인자를 정렬해 dict 순서 차이도 없앤다.
         """
         key = f"{self.seed}|{self.query}|{sorted(arguments.items())}".encode()

@@ -6,13 +6,13 @@
     python -m eval.run_ablation --config eval/configs/rag.yaml --ids Q01,Q16 --no-save
 
 평가용 Judge 는 구성과 무관하게 EVAL_JUDGE_MODEL(기본 gpt-4o)로 고정한다. 파이프라인 안의
-Validator(rag_judge 이후 gpt-4o-mini)와 같은 모델·같은 기준으로 채점하면, Validator 기준에
+Validator(rag_judge 이후 gpt-4o-mini)와 같은 모델, 같은 기준으로 채점하면, Validator 기준에
 맞춰 고친 답이 자동으로 높은 점수를 받는 순환이 생긴다.
 
 흐름: eval/queries.yaml(고정 평가셋) x eval/configs/<구성>.yaml → src/adapter.run_once(질의 1건)
-      → 평가 Judge(eval/judge.py) + 결정적 지표(must_include·factcheck) → 행(row)
-      → aggregate(반복별·split별 요약, 반복 간 95% CI) → results/<구성>_latest.json
-후속: eval/stats.py(질의 단위 bootstrap), eval/extra_metrics.py(누락·혼입·건당 비용),
+      → 평가 Judge(eval/judge.py) + 결정적 지표(must_include, factcheck) → 행(row)
+      → aggregate(반복별, split별 요약, 반복 간 95% CI) → results/<구성>_latest.json
+후속: eval/stats.py(질의 단위 bootstrap), eval/extra_metrics.py(누락, 혼입, 건당 비용),
       eval/report.py(표), scripts/claims.py(CLAIMS.md) 가 모두 이 결과 파일만 읽는다.
 --backend fake 나 판정 없는 실행은 _latest 를 덮지 않도록 저장 규칙을 main() 에 둔다.
 """
@@ -62,7 +62,7 @@ def _evaluate_one(q: dict, rep: int, cfg: dict, run_once, judge) -> dict:
             jverd, jreason, jscore, jpass = jr.verdicts, jr.reasons, jr.score, jr.passed
         except Exception as e:
             jerr = repr(e)
-    # Judge 와 무관한 결정적 지표: 정답 런북 핵심 어구 포함(대소문자 무시) · 근거 없는 수치
+    # Judge 와 무관한 결정적 지표: 정답 런북 핵심 어구 포함(대소문자 무시), 근거 없는 수치
     need = q.get("must_include") or []
     ans = out["answer"].lower()
     fc = factcheck(out["answer"], out.get("context", ""))
@@ -120,7 +120,7 @@ def run_config(cfg_path: Path, queries: list[dict], threshold: float, use_judge:
 
     def run_rep(rep: int):
         # 반복마다 캐시를 비운다 — 각 반복을 처음 실행(cold)으로 재야 공정하다.
-        # (v2 1차 실측에서 2회차에 앞 반복의 캐시가 적중해 비용·지연이 유리하게 섞인 문제 수정)
+        # (v2 1차 실측에서 2회차에 앞 반복의 캐시가 적중해 비용, 지연이 유리하게 섞인 문제 수정)
         adapter_mod._CACHES.clear()
         with ThreadPoolExecutor(max_workers=workers) as ex:
             futs = [ex.submit(_evaluate_one, q, r, cfg, run_once, judge) for r, q in jobs if r == rep]
@@ -165,7 +165,7 @@ _T95 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571}
 
 
 def _agg(per_rep: list[dict]) -> dict:
-    """반복별 summary 들의 평균·표준편차·95% 신뢰구간 반폭 (t 분포)."""
+    """반복별 summary 들의 평균, 표준편차, 95% 신뢰구간 반폭 (t 분포)."""
     out = {}
     keys = {k for s in per_rep for k, v in s.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}
     for k in keys:
@@ -180,7 +180,7 @@ def _agg(per_rep: list[dict]) -> dict:
 
 
 def aggregate(name: str, rows: list[dict], reps: int) -> dict:
-    """반복별·split 별 summary 를 만들고, 전체 평균을 최상위 키로 둔다 (report 호환)."""
+    """반복별, split 별 summary 를 만들고, 전체 평균을 최상위 키로 둔다 (report 호환)."""
     def summarize(sub):
         """행 묶음 1개(반복 1회분 또는 그 split) → 지표 dict."""
         ok = [r for r in sub if "error" not in r]
@@ -224,9 +224,9 @@ def _pct(values: list[float], p: float) -> float:
 
 
 def build_summary(name: str, rows: list[dict], retrieval_records: list[dict]) -> dict:
-    """평가 Judge 지표·통과율, 지연 백분위, 비용·토큰·캐시, 검색 지표를 한 dict 로.
+    """평가 Judge 지표, 통과율, 지연 백분위, 비용, 토큰, 캐시, 검색 지표를 한 dict 로.
 
-    Judge 판정 불가(ParseError·호출 오류, judge_passed=None) 행은 통과율 분모에서 뺀다 (n_judged 로 공개).
+    Judge 판정 불가(ParseError, 호출 오류, judge_passed=None) 행은 통과율 분모에서 뺀다 (n_judged 로 공개).
     retrieval_records 는 정답 런북이 있는 질의만 — 정답이 없는 질의는 Recall 이 정의되지 않는다.
     """
     ok = [r for r in rows if "error" not in r]
@@ -287,7 +287,7 @@ def main():
     ap.add_argument("--no-judge", action="store_true", help="평가용 Judge 생략 (배관 점검용)")
     ap.add_argument("--no-save", action="store_true")
     ap.add_argument("--backend", choices=["openai", "fake"], help="fake = 키 없이 배관 점검")
-    ap.add_argument("--reps", type=int, default=1, help="반복 횟수 (평균·표준편차·95%% CI)")
+    ap.add_argument("--reps", type=int, default=1, help="반복 횟수 (평균, 표준편차, 95%% CI)")
     ap.add_argument("--workers", type=int, default=1, help="질의 병렬 실행 수")
     ap.add_argument("--split", choices=["dev", "holdout"], help="해당 split 만 실행")
     ap.add_argument("--tag", default="", help="결과 파일 이름 뒤에 붙일 접미사")
@@ -301,7 +301,7 @@ def main():
         queries = [q for q in queries if q.get("split") == args.split]
     kw = dict(use_judge=not args.no_judge, backend=args.backend, reps=args.reps,
               workers=args.workers, tag=args.tag,
-              # 저장 조건: --no-save·--ids(일부 실행)·fake 백엔드는 저장 안 함. 판정 없는(--no-judge) 결과는
+              # 저장 조건: --no-save, --ids(일부 실행), fake 백엔드는 저장 안 함. 판정 없는(--no-judge) 결과는
               # --tag 를 붙여 별도 파일로만 저장 — 본 측정 <구성>_latest.json 을 덮지 않게 한다
               save=(not args.no_save and not args.ids and (not args.no_judge or bool(args.tag))
                     and args.backend != "fake"))   # 판정 없는 결과는 --tag 를 붙여 별도 파일로만 저장 (_latest 보호)

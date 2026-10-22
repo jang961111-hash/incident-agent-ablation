@@ -1,7 +1,7 @@
 """로컬 Ollama 로 holdout 36건 전체를 구성별 1회 실행한다 (API 비용 0, 데이터 외부 전송 없음). 정량 비교 대상 아님.
 
 eval/ollama_demo.py 와 같은 방식으로 프로세스 안에서만 OpenAI 호환 주소를 Ollama 로 바꿔 끼운다
-(원본·ext 코드 수정 없음, 모델 전부 qwen3:8b, 생각 출력 끔, 요청 타임아웃 300초, 단가 0).
+(원본, ext 코드 수정 없음, 모델 전부 qwen3:8b, 생각 출력 끔, 요청 타임아웃 300초, 단가 0).
 행 형식은 eval/run_ablation.py 의 _evaluate_one 과 같다. 다만 평가용 Judge(gpt-4o)는 부르지 않는다
 (judge_passed = None). 파이프라인 안의 Judge 기록은 pipeline_judge 에 남는다.
 
@@ -17,7 +17,7 @@ eval/ollama_demo.py 와 같은 방식으로 프로세스 안에서만 OpenAI 호
 왜 자식 프로세스인가: 로컬 모델이 멈추면 스레드로는 강제 종료할 수 없다. 질의마다 spawn 한 프로세스에서
 돌리고, QUERY_TIMEOUT_S 가 지나면 terminate 해 다음 질의로 넘어간다. adapter 의 HARD_TIMEOUT_S(300초,
 그래프 실행 구간만)보다 길어서, 그래프가 300초에 걸리면 자식 안에서 _evaluate_one 이 오류 행을 먼저 만들어 보낸다.
-요약·짝지은 비교는 eval/ollama_holdout_summary.py 가 한다.
+요약, 짝지은 비교는 eval/ollama_holdout_summary.py 가 한다.
 """
 from __future__ import annotations
 
@@ -77,7 +77,7 @@ def _child(q: dict, cfg: dict, model: str, conn):
 
 
 def run_query(q: dict, cfg: dict, model: str) -> dict:
-    """질의 1건을 자식 프로세스로 실행. 시간 초과·비정상 종료면 run_ablation 과 같은 형식의 오류 행."""
+    """질의 1건을 자식 프로세스로 실행. 시간 초과, 비정상 종료면 run_ablation 과 같은 형식의 오류 행."""
     ctx = mp.get_context("spawn")
     rx, tx = ctx.Pipe(duplex=False)
     p = ctx.Process(target=_child, args=(q, cfg, model, tx), daemon=False)

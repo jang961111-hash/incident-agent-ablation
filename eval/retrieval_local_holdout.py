@@ -1,10 +1,10 @@
 """로컬 임베더 3종(local, local-tfidf, ollama:bge-m3)의 holdout 검색 품질 — 평가만, 튜닝 아님. LLM 호출 없음.
 
-기준값(min_score·margin)은 dev 24건 보정 결과(results/calibrate_rag_local_bge_latest.json)를 그대로 쓴다.
+기준값(min_score, margin)은 dev 24건 보정 결과(results/calibrate_rag_local_bge_latest.json)를 그대로 쓴다.
 holdout 36건은 여기서 처음 읽고, 결과를 보고 기준값을 바꾸지 않는다.
 
 지표 (파이프라인 라우팅은 거치지 않은 검색 단독 값)
-  hit@1 · recall@3 · mrr   정답 런북이 있는 holdout 질문(28건) 기준
+  hit@1, recall@3, mrr   정답 런북이 있는 holdout 질문(28건) 기준
   balanced_acc             '매뉴얼이 있는 질문인가' 판정 = 1위 점수 >= min_score. (gold 있음 통과율 + gold 없음 걸러짐 비율) / 2
   miss_rate                정답 있는 질문 중, 넣은 런북(top3 → margin → min_score)에 정답이 하나도 없는 비율
   wrong_rate               전체 36건 중, 넣은 런북에 정답 아닌 런북이 섞인 비율 (정답 없는 질문에 런북을 넣은 것 포함)
@@ -45,7 +45,7 @@ def _embedder(name: str):
 
 
 def evaluate(name: str, min_score: float, margin: float, qs: list[dict]) -> dict:
-    """임베더 1개를 dev 에서 정한 기준값 그대로 holdout 에 적용해 검색 지표·투입 결과를 낸다."""
+    """임베더 1개를 dev 에서 정한 기준값 그대로 holdout 에 적용해 검색 지표, 투입 결과를 낸다."""
     ret = RunbookRetriever(ROOT / "src/data/runbooks", _embedder(name))
     rows = []
     for q in qs:
@@ -84,7 +84,7 @@ def main():
     for name, c in cal["candidates"].items():
         res[name] = evaluate(name, c["best"]["min_score"], c["margin"]["pick"], qs)
     out = {"split": "holdout", "n": len(qs),
-           "note": "검색 단독 평가 (LLM·라우팅 없음). 기준값은 dev 보정값 그대로 — holdout 으로 튜닝하지 않음.",
+           "note": "검색 단독 평가 (LLM, 라우팅 없음). 기준값은 dev 보정값 그대로 — holdout 으로 튜닝하지 않음.",
            "thresholds_from": f"results/{CAL.name}", "dev_pick": cal["pick"], "embedders": res}
     ts = f"{datetime.now():%Y%m%d_%H%M}"
     p = ROOT / f"results/retrieval_local_holdout_{ts}.json"

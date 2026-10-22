@@ -1,4 +1,4 @@
-"""비용 계측·재시도·질의 캐시·캐스케이드 (src/ext/meter.py, write_cascade_node). HTTP 는 목."""
+"""비용 계측, 재시도, 질의 캐시, 캐스케이드 (src/ext/meter.py, write_cascade_node). HTTP 는 목."""
 import asyncio
 import json
 import math
@@ -11,7 +11,7 @@ from ext import graph_ext as G
 from ext import meter as em
 
 
-# --- PRICE · Meter ----------------------------------------------------------------
+# --- PRICE, Meter ----------------------------------------------------------------
 
 def test_price_table_models_and_order():
     assert set(em.PRICE) == {"gpt-4o-mini", "gpt-4o", "text-embedding-3-small"}

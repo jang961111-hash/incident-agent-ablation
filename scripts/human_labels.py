@@ -61,7 +61,7 @@ def make():
         w = csv.DictWriter(f, fieldnames=COLS)
         w.writeheader()
         w.writerows(sample)
-    print(f"{full.relative_to(ROOT)}: {len(out)}행 · {sp.relative_to(ROOT)}: {len(sample)}행 (층화: 구성 10+10, 유형 {want})")
+    print(f"{full.relative_to(ROOT)}: {len(out)}행, {sp.relative_to(ROOT)}: {len(sample)}행 (층화: 구성 10+10, 유형 {want})")
 
 
 def kappa(pairs):
@@ -94,7 +94,7 @@ def score(path):
             jv = j == "Pass"
             per[m].append((hv[m], jv))
             if hv[m] != jv:
-                kinds[m]["Judge 관대 (사람 실패·Judge 통과)" if jv else "Judge 엄격 (사람 통과·Judge 실패)"] += 1
+                kinds[m]["Judge 관대 (사람 실패, Judge 통과)" if jv else "Judge 엄격 (사람 통과, Judge 실패)"] += 1
                 kinds["유형별"][row["category"]] += 1
         if all(hv[m] is not None for m in METRICS) and r.get("judge_passed") is not None:
             overall.append((sum(hv.values()) >= 3, bool(r["judge_passed"])))

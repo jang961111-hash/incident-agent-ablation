@@ -3,17 +3,17 @@
 원본은 사용자 질의를 보지 않고, 조사한 시스템의 알림 문구에서 키워드 하나를 찾아 런북
 1개를 고른다. 여기서는 질의 문장을 임베딩해 런북 6개와 코사인 유사도로 순위를 매긴다.
 
-- ranking: 상위 top_k 순위. Recall@k·MRR 계산 대상.
+- ranking: 상위 top_k 순위. Recall@k, MRR 계산 대상.
 - fed: write 에 실제로 넣는 런북. 1위 점수에서 margin 이내인 것만 넣는다. 복합 장애면
   2개가 들어가고, 단일 장애면 대개 1개만 들어간다. margin 은 측정 결과를 보기 전에 정한 값이며
   평가셋으로 튜닝하지 않는다.
 - min_score(v2): 1위 점수 자체가 이 값보다 낮으면 아무 런북도 넣지 않는다 (graph_ext 에서 적용).
   margin 과 달리 dev 24건만으로 eval/calibrate_rag.py 가 정했고, 임베더마다 점수 척도가 달라
-  구성 파일마다 값이 다르다 (final.yaml · final_local*.yaml 의 rag.min_score 참고).
+  구성 파일마다 값이 다르다 (final.yaml, final_local*.yaml 의 rag.min_score 참고).
 
 켜는 스위치: runbook_selection=rag (검색기 생성은 src/adapter.py, 노드는 graph_ext.replan_check_rag_node).
-임베더: rag.embedding — text-embedding-3-small(OpenAI, 본 실측) · local(LocalNgram, 오프라인 테스트) ·
-local-tfidf · ollama:<모델> (로컬 Ollama 데모). 모두 같은 embed(texts, persist) 인터페이스를 따른다.
+임베더: rag.embedding — text-embedding-3-small(OpenAI, 본 실측), local(LocalNgram, 오프라인 테스트),
+local-tfidf, ollama:<모델> (로컬 Ollama 데모). 모두 같은 embed(texts, persist) 인터페이스를 따른다.
 """
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ class OpenAIEmbedder:
 
 
 class LocalNgramEmbedder:
-    """API 없이 도는 글자 2·3-gram 해시 임베딩. 오프라인 테스트 전용 — 실측에는 쓰지 않는다."""
+    """API 없이 도는 글자 2, 3-gram 해시 임베딩. 오프라인 테스트 전용 — 실측에는 쓰지 않는다."""
 
     name = "local-ngram"
 
@@ -89,11 +89,11 @@ class LocalNgramEmbedder:
 
 
 class LocalTfidfEmbedder:
-    """API 없이 도는 글자 2·3-gram TF-IDF 임베딩 (rag.embedding: local-tfidf). 로컬 Ollama 데모용.
+    """API 없이 도는 글자 2, 3-gram TF-IDF 임베딩 (rag.embedding: local-tfidf). 로컬 Ollama 데모용.
 
-    LocalNgram 은 모든 런북에 흔한 어구(확인·상태·점검)가 점수를 좌우해 dev 정답 1위가 18건 중 11건뿐이었다.
+    LocalNgram 은 모든 런북에 흔한 어구(확인, 상태, 점검)가 점수를 좌우해 dev 정답 1위가 18건 중 11건뿐이었다.
     여기서는 런북 6개에서 문서 빈도(IDF)를 구해 흔한 어구의 무게를 낮추고, 런북에 없는 어구는 질의에서 뺀다.
-    어휘·IDF 는 런북 본문에서만 만든다 (평가 질의는 보지 않는다).
+    어휘, IDF 는 런북 본문에서만 만든다 (평가 질의는 보지 않는다).
     """
 
     name = "local-tfidf"
@@ -132,7 +132,7 @@ class LocalTfidfEmbedder:
 class OllamaEmbedder:
     """로컬 Ollama 임베딩 모델 (rag.embedding: "ollama:<모델>", 예: ollama:bge-m3). 로컬 Ollama 데모용.
 
-    POST http://127.0.0.1:11434/api/embed {"model", "input": [...]} — API 키·외부 전송 없음, 비용 0.
+    POST http://127.0.0.1:11434/api/embed {"model", "input": [...]} — API 키, 외부 전송 없음, 비용 0.
     런북 색인(persist=True)만 .cache/emb_ollama_<모델>.json 에 남긴다 (OpenAI 캐시 파일과 이름이 다름).
     """
 

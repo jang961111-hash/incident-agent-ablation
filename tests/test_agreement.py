@@ -1,4 +1,4 @@
-"""사람 라벨 저장 + Judge 일치도 계산 테스트 (API·네트워크 없음)."""
+"""사람 라벨 저장 + Judge 일치도 계산 테스트 (API, 네트워크 없음)."""
 import importlib.util
 import json
 import math
@@ -138,12 +138,12 @@ def test_summary_counts_and_stale_exclusion(tmp_path):
     assert rel["leniency"] == 1.0 and rel["strictness"] == 0.0
     assert rel["disagree_ids"] == ["Q02"]
     comp = s["metrics"]["completeness"]
-    assert comp["agreement"] == 1.0 and comp["kappa"] is None   # 사람·Judge 모두 전부 Pass → kappa 정의 불가
+    assert comp["agreement"] == 1.0 and comp["kappa"] is None   # 사람, Judge 모두 전부 Pass → kappa 정의 불가
 
     # overall: 사람 Q02 = P,P,P (3개) → Pass, Judge Q02 = P,P,P,F → Pass → 일치
     assert s["metrics"]["overall"]["agreement"] == 1.0
 
-    assert len(s["disagreements"]) == 2   # Q02 relevance(관대), Q02 clarity(사람 P·Judge F → 엄격)
+    assert len(s["disagreements"]) == 2   # Q02 relevance(관대), Q02 clarity(사람 P, Judge F → 엄격)
     by = {(d["metric"], d["direction"]): d for d in s["disagreements"]}
     d = by[("relevance", ag.LENIENT)]
     assert (d["id"], d["category"], d["reason"]) == ("Q02", "constrained", "Q02-relevance-사유")
@@ -151,7 +151,7 @@ def test_summary_counts_and_stale_exclusion(tmp_path):
     assert s["by_category"]["constrained"] == {"n": 4, "disagree": 2, "lenient": 1, "strict": 1}
     assert s["by_metric_direction"]["relevance"][ag.LENIENT] == ["Q02"]
 
-    json.dumps(s, allow_nan=False)   # 덱·리포트 생성기에 넘길 수 있게 JSON 직렬화 가능
+    json.dumps(s, allow_nan=False)   # 덱, 리포트 생성기에 넘길 수 있게 JSON 직렬화 가능
 
 
 def test_render_plain_and_md(tmp_path):

@@ -12,24 +12,24 @@ latency_ms 는 그래프 실행 시간만 잰다 (MCP 기동 시간 제외).
 
 반환값 중 평가의 핵심 두 가지:
   retrieved  base 에서도 채운다. base 는 replan_check 가 키워드 규칙으로 고른 런북 1개,
-             rag 는 임베딩 순위 상위 top_k. 같은 Recall@k·MRR 로 비교하기 위함.
+             rag 는 임베딩 순위 상위 top_k. 같은 Recall@k, MRR 로 비교하기 위함.
   context    write 노드가 실제로 받은 '수집된 사실' 원문. 최종 답변이 아니다.
 
-위치: eval/*(run_ablation·cache_bench·fault_bench·mock_llm_bench·ollama_*)와
+위치: eval/*(run_ablation, cache_bench, fault_bench, mock_llm_bench, ollama_*)와
 scripts/demo_side_by_side.py 가 부르는 유일한 실행 경로. 원본 src/agent 는 import 만 하고 고치지 않는다.
 
 구성 파일(eval/configs/*.yaml)에서 읽는 스위치:
-  backend                openai(실제 API) · fake(키 없이 배관 점검) · fake_slow(동기 지연 모의)
+  backend                openai(실제 API), fake(키 없이 배관 점검), fake_slow(동기 지연 모의)
   runbook_selection      keyword | rag            → RunbookRetriever 주입 여부
   validator              rule | judge             → OpenAIJudge 주입 여부
   cost.model_tiering     캐스케이드용 저가 writer 주입 여부
-  cost.cache             QueryCache 사용 여부 (route·plan·질의 임베딩만 캐시)
+  cost.cache             QueryCache 사용 여부 (route, plan, 질의 임베딩만 캐시)
   rag.embedding          text-embedding-3-small | local | local-tfidf | ollama:<모델>
   fault_injection        있으면 MCP 를 FaultyMCP 로 감싼다 (eval/fault_bench.py 전용)
-네 스위치(runbook_selection·validator·model_tiering·cache)와 runtime.* 가 모두 꺼져 있으면
+네 스위치(runbook_selection, validator, model_tiering, cache)와 runtime.* 가 모두 꺼져 있으면
 원본 build_graph 를 그대로 쓴다 (_is_base). 그래야 base 가 '원본 동작 그대로'인 기준선이 된다.
 
-관련 파일: src/ext/graph_ext.py(개선 그래프), src/ext/meter.py(토큰·비용·캐시),
+관련 파일: src/ext/graph_ext.py(개선 그래프), src/ext/meter.py(토큰, 비용, 캐시),
 src/ext/rag.py, src/ext/judge.py, src/ext/faults.py, src/ext/slow_fake.py.
 """
 from __future__ import annotations
@@ -66,7 +66,7 @@ from ext.faults import FaultyMCP  # noqa: E402
 RUNBOOK_DIR = SRC / "data" / "runbooks"
 CACHE_DIR = ROOT / ".cache"
 NO_CONTEXT = "(수집된 근거 없음 — chat 경로로 답변)"
-# 질의 1건의 절대 상한. Judge 가드(2회·120초)는 Judge 호출 사이에서만 검사되므로,
+# 질의 1건의 절대 상한. Judge 가드(2회, 120초)는 Judge 호출 사이에서만 검사되므로,
 # API 지연이 길어지는 경우까지 막는 바깥 울타리다. 넘으면 오류로 기록한다.
 HARD_TIMEOUT_S = 300
 
@@ -87,13 +87,13 @@ def _cache_for(cfg: dict) -> QueryCache | None:
 
 
 def _build_deps(cfg: dict, mcp: MCPClient) -> ExtDeps:
-    """구성(cfg)에 맞는 LLM·Judge·임베더·검색기를 만들어 ExtDeps 하나로 묶는다.
+    """구성(cfg)에 맞는 LLM, Judge, 임베더, 검색기를 만들어 ExtDeps 하나로 묶는다.
 
     Args:
         cfg: eval/configs/*.yaml 을 읽은 dict.
         mcp: 시작된 MCP 클라이언트 (장애 주입 중이면 FaultyMCP 로 감싼 것).
     Returns:
-        ExtDeps. 꺼진 기능의 자리(retriever·judge·cheap_writer)는 None 이라,
+        ExtDeps. 꺼진 기능의 자리(retriever, judge, cheap_writer)는 None 이라,
         graph_ext 는 None 여부만 보고 원본 노드를 그대로 쓴다.
     """
     backend = cfg.get("backend", "openai")
@@ -124,7 +124,7 @@ def _build_deps(cfg: dict, mcp: MCPClient) -> ExtDeps:
         judge = OpenAIJudge(models.get("judge", "gpt-4o-mini"), 0.00015,
                             version=cfg.get("judge", {}).get("version", 1))
         emb_model = cfg.get("rag", {}).get("embedding", "text-embedding-3-small")
-        # rag.embedding 값으로 임베더를 고른다. local·local-tfidf·ollama:* 는 API 없이 도는 로컬 데모용
+        # rag.embedding 값으로 임베더를 고른다. local, local-tfidf, ollama:* 는 API 없이 도는 로컬 데모용
         embedder = (LocalNgramEmbedder() if emb_model == "local" else
                     LocalTfidfEmbedder(RUNBOOK_DIR) if emb_model == "local-tfidf" else
                     OllamaEmbedder(emb_model.split(":", 1)[1], CACHE_DIR) if emb_model.startswith("ollama:") else
@@ -143,7 +143,7 @@ def _build_deps(cfg: dict, mcp: MCPClient) -> ExtDeps:
 
 
 def _is_base(cfg: dict) -> bool:
-    """개선 스위치가 하나도 켜지지 않았는지. 참이면 원본 build_graph·원본 상태 키를 그대로 쓴다.
+    """개선 스위치가 하나도 켜지지 않았는지. 참이면 원본 build_graph, 원본 상태 키를 그대로 쓴다.
 
     fault_injection 은 여기서 보지 않는다. 장애 주입 실험에서도 base 는 원본 그래프로 돌아야
     '원본은 도구 하나가 실패하면 어떻게 되나'를 잴 수 있기 때문이다.

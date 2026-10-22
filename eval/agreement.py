@@ -8,8 +8,8 @@
 라벨을 매길 때 본 답변과 현재 답변이 다른 건(answer_sha 불일치)은 비교에서 빼고 따로 나열한다.
 
 라벨 파일: eval/human_labels.yaml(사람, scripts/label.py 로 작성) 또는 eval/claude_labels.yaml
-(독립 AI 평가자, --labels 로 지정). 지표마다 일치율·Cohen's kappa·관대도·엄격도를 낸다.
-쓰는 곳: eval/report.py(표 아래 한 줄), scripts/claims.py · deck/data.py(rater_* 수치).
+(독립 AI 평가자, --labels 로 지정). 지표마다 일치율, Cohen's kappa, 관대도, 엄격도를 낸다.
+쓰는 곳: eval/report.py(표 아래 한 줄), scripts/claims.py, deck/data.py(rater_* 수치).
 """
 from __future__ import annotations
 
@@ -30,8 +30,8 @@ METRICS = ("relevance", "completeness", "domain_appropriateness", "clarity")
 KEYS = METRICS + ("overall",)
 PASS_MIN = 3   # 4지표 중 3개 이상 Pass → overall Pass (Judge 임계치 0.75 와 같은 규칙)
 
-LENIENT = "Judge 관대(사람 Fail·Judge Pass)"
-STRICT = "Judge 엄격(사람 Pass·Judge Fail)"
+LENIENT = "Judge 관대(사람 Fail, Judge Pass)"
+STRICT = "Judge 엄격(사람 Pass, Judge Fail)"
 
 
 def answer_sha(answer: str) -> str:
@@ -135,7 +135,7 @@ def _reason(row: dict, metric: str) -> str:
 
 def summary_dict(config: str = "base", labels_path: Path | str | None = None,
                  results_dir: Path | str | None = None) -> dict:
-    """라벨 x results/<config>_latest.json(rep 1)의 평가 Judge 판정 → 지표별 일치도·불일치 목록.
+    """라벨 x results/<config>_latest.json(rep 1)의 평가 Judge 판정 → 지표별 일치도, 불일치 목록.
 
     labels_path 를 주지 않으면(=사람 라벨) eval/human_exclude.txt 의 id 를 뺀다. 라벨러가 가이드 예시 등으로
     Judge 판정을 이미 본 건이라 블라인드가 아니기 때문이다.
@@ -232,7 +232,7 @@ def render(s: dict, md: bool = False) -> str:
     out.append(h2("지표별 일치도"))
     out.append(tabulate(rows, tablefmt=fmt, headers=[
         "지표", "n", "일치율", "kappa", "P/P", "P/F", "F/P", "F/F", "관대도", "엄격도"]))
-    out.append("P/F = 사람 Pass·Judge Fail. 관대도 = P(Judge Pass | 사람 Fail), "
+    out.append("P/F = 사람 Pass, Judge Fail. 관대도 = P(Judge Pass | 사람 Fail), "
                "엄격도 = P(Judge Fail | 사람 Pass).")
     out.extend(f"kappa 비고 — {n}" for n in notes)
 

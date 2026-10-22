@@ -1,7 +1,7 @@
 """validate_judge_node (src/ext/graph_ext.py) — 3/4 합격 규칙, 수치 검증 선반려, 무한 루프 가드.
 
 CLAUDE.md: 재시도 2회 또는 총 2분 중 먼저 닿는 조건에서 종료. 둘 다 반드시 둔다.
-노드를 직접 호출한다 (그래프·MCP·LLM 없음).
+노드를 직접 호출한다 (그래프, MCP, LLM 없음).
 """
 import asyncio
 import time

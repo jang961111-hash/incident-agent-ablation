@@ -10,7 +10,7 @@
 
     python -m eval.tamper_test              # 코드 검증만 (API 없음, 비용 0)
     python -m eval.tamper_test --judge      # Judge 도 호출 (실제 API, 실행 전 비용 추정 출력)
-결과: results/tamper_<YYYYMMDD_HHMM>.json·.md, results/tamper_latest.json
+결과: results/tamper_<YYYYMMDD_HHMM>.json, .md, results/tamper_latest.json
 
 목적: '코드 검증과 Judge 중 무엇이 어떤 환각을 잡나'를 같은 답으로 나눠 본다. 수치 조작은 코드가,
 없는 시스템명은 Judge 가 맡는 식으로 서로 보완하는지 확인한다. original 은 조작하지 않은 답이라
@@ -31,13 +31,13 @@ sys.path.insert(0, str(ROOT))
 from ext.factcheck import _NUM_UNIT, _STEP, check, numbers_in  # noqa: E402
 
 R = ROOT / "results"
-FAKE_SYSTEM = "billing-ledger-9"   # 등록 시스템·런북 어디에도 없는 이름 (근거에 있으면 그 답은 건너뜀)
+FAKE_SYSTEM = "billing-ledger-9"   # 등록 시스템, 런북 어디에도 없는 이름 (근거에 있으면 그 답은 건너뜀)
 
 
 def tamper_number(answer: str, context: str) -> str | None:
     """답의 첫 측정값(절차 번호 뒤, 단위 붙은 값)을 근거 어디에도 ±0.5 안에 없는 값으로 바꾼다. 없으면 None.
 
-    factcheck 와 같은 정규식(_NUM_UNIT·_STEP)으로 찾으므로, 바꾼 값은 factcheck 가 '측정값'으로 보는 자리에 있다.
+    factcheck 와 같은 정규식(_NUM_UNIT, _STEP)으로 찾으므로, 바꾼 값은 factcheck 가 '측정값'으로 보는 자리에 있다.
     """
     ctx = numbers_in(context)
     lines = answer.splitlines()

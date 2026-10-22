@@ -2,8 +2,8 @@
 
 1. 다른 모듈을 import 하기 전에 트레이싱을 끄고 가짜 키를 넣는다.
    src/adapter.py 의 load_dotenv 는 override=False 라서, 여기서 먼저 넣은 값을 .env 가 덮지 않는다.
-2. 소켓 수준에서 외부 연결을 막는다 (루프백만 허용). httpx·requests·urllib 모두 이 아래를 지나므로
-   목(mock)을 빠뜨린 테스트가 있어도 OpenAI·LangSmith·Ollama 로 요청이 나가지 않고 바로 실패한다.
+2. 소켓 수준에서 외부 연결을 막는다 (루프백만 허용). httpx, requests, urllib 모두 이 아래를 지나므로
+   목(mock)을 빠뜨린 테스트가 있어도 OpenAI, LangSmith, Ollama 로 요청이 나가지 않고 바로 실패한다.
    MCP 서버는 stdio 서브프로세스라 영향이 없고, 모의 HTTP 서버(127.0.0.1)는 허용된다.
 """
 import os

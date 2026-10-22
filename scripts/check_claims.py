@@ -5,7 +5,7 @@
     .venv/bin/python scripts/check_claims.py --strict   # CI: 못 읽은 문서(덱 등)가 있어도 exit 1
 
 허용 값 = CLAIMS.md 의 값 + README AUTO 표(결과 파일에서 생성) + 구성별 표 값 + 지연 재측정 집계 + 설계 상수.
-허용 목록에 없는 수치는 '확인 필요'로 보고한다. 히스토리를 일부러 남긴 줄(철회·처음 측정·부록)은 빼고 본다.
+허용 목록에 없는 수치는 '확인 필요'로 보고한다. 히스토리를 일부러 남긴 줄(철회, 처음 측정, 부록)은 빼고 본다.
 """
 import argparse
 import json
@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 R = ROOT / "results"
 NUM = re.compile(r"[+\-−]?\$?\d[\d,]*(?:\.\d+)?\s?(?:%p|%|초|배)|\$\d+\.\d+")
-# 설계 상수·조건 (결과가 아니라 실험 조건이라 허용)
+# 설계 상수, 조건 (결과가 아니라 실험 조건이라 허용)
 CONST = {"30%", "-0.05", "0.05", "2.8%p", "100%", "0%", "0%p", "+0%p", "+0.0초", "120초", "300초", "60초", "1.0초", "2.4초", "2초",
          "92%", "90%", "83.6%", "63.8%", "50%", "30%", "20%p", "40%", "1%",
          "10초", "30초", "50초"}   # 마지막 줄: 대본의 말하기 시간 표기
@@ -42,7 +42,7 @@ def allowed() -> set[str]:
         a |= set(tokens(blk))
     for f in sorted(R.glob("latctl_summary_*.md"))[-1:]:
         a |= set(tokens(f.read_text()))
-    # 구성별 표 값 (덱 표·그림에 쓰임)
+    # 구성별 표 값 (덱 표, 그림에 쓰임)
     sys.path.insert(0, str(ROOT))
     from eval.extra_metrics import load_all
     X = load_all("holdout")
@@ -54,7 +54,7 @@ def allowed() -> set[str]:
         for k in ("must_phrase_rate", "pass_rate", "recall@1"):
             a.add(f"{round(h[k] * 100)}%")
         a.add(f"${X[n]['cost_per_incident']:.5f}")
-    for p in json.loads((R / "stats_holdout.json").read_text())["pairs"]:   # 덱 기여도 표의 Judge 통과·Recall 열
+    for p in json.loads((R / "stats_holdout.json").read_text())["pairs"]:   # 덱 기여도 표의 Judge 통과, Recall 열
         for m in ("pass", "hit1", "must", "miss", "wrong"):
             if p[m]:
                 a.add(f"{round(p[m]['diff'] * 100):+d}%p")

@@ -60,7 +60,7 @@ def render() -> str:
     done = sum(1 for s in steps if s[2] == "완료")
 
     lines = [f"{BOLD}과제1 Ablation{RESET}  {done}/{len(steps)} 완료"
-             f"   {DIM}갱신 {updated} · 마감까지 {h}시간 {m}분{RESET}", ""]
+             f"   {DIM}갱신 {updated}, 마감까지 {h}시간 {m}분{RESET}", ""]
     name_w = 24
     for num, name, status, memo in steps:
         tag = f"{C.get(status, '')}{fit(status, 4)}{RESET}"

@@ -9,7 +9,7 @@ must_include 는 평가셋 v2 작성 때(측정 전) 정답 런북 본문에서 
 
     python -m eval.answer_metrics
 
-참고: 같은 지표(must_phrase_rate·must_all_rate)를 eval/run_ablation.py 가 실행 때 행마다 계산해
+참고: 같은 지표(must_phrase_rate, must_all_rate)를 eval/run_ablation.py 가 실행 때 행마다 계산해
 요약에 넣는다. 이 파일은 저장된 결과로 질의별 'n/m' 표를 다시 뽑아 보는 사후 점검용이다.
 """
 from __future__ import annotations
@@ -21,7 +21,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
-ORDER = ["base", "rag", "rag_judge", "rag_judge_cost"]   # v1 시기 비교 구성 (v2·final 은 run_ablation 요약 사용)
+ORDER = ["base", "rag", "rag_judge", "rag_judge_cost"]   # v1 시기 비교 구성 (v2, final 은 run_ablation 요약 사용)
 
 
 def must_include_scores(rows: list[dict], queries: dict) -> dict:

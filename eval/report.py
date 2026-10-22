@@ -7,8 +7,8 @@
 Judge 일치율은 eval/agreement.py 가 eval/human_labels.yaml(사람 지표별 라벨)과
 base_latest.json 의 평가 Judge 판정을 대조해 낸다. 라벨은 base 답변 기준이다.
 
-입력: results/<구성>_latest.json 의 summary (eval/run_ablation.py 가 만든 것). 재실행·재계산 없음.
---split 을 주면 summary.by_split[split] 의 평균·CI 를 쓴다. 구성 간 유의성은 이 표가 아니라
+입력: results/<구성>_latest.json 의 summary (eval/run_ablation.py 가 만든 것). 재실행, 재계산 없음.
+--split 을 주면 summary.by_split[split] 의 평균, CI 를 쓴다. 구성 간 유의성은 이 표가 아니라
 eval/stats.py(질의 단위 paired bootstrap)를 본다.
 """
 from __future__ import annotations
@@ -61,7 +61,7 @@ CIF = {"pct": lambda v: f"{v * 100:.0f}", "f3": lambda v: f"{v:.3f}", "f2": lamb
 
 
 def is_num(v) -> bool:
-    """표에 쓸 수 있는 수인지 (bool·NaN 제외)."""
+    """표에 쓸 수 있는 수인지 (bool, NaN 제외)."""
     return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v
 
 

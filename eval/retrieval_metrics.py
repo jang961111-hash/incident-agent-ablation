@@ -41,7 +41,7 @@ def mrr(retrieved: list[str], gold: list[str]) -> float:
 def summarize(records: list[dict], ks=(1, 3)) -> dict:
     """records: [{"retrieved": [...], "gold": [...]}, ...]
 
-    Returns: recall@k · hit@k (k=1,3) · mrr 의 평균. records 는 gold 가 있는 것만 넘겨야 한다
+    Returns: recall@k, hit@k (k=1,3), mrr 의 평균. records 는 gold 가 있는 것만 넘겨야 한다
     (gold 가 비면 recall 이 NaN 이라 평균 전체가 NaN 이 된다).
     """
     out = {}

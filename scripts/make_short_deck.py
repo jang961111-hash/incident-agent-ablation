@@ -9,7 +9,7 @@ import argparse
 import re
 import zipfile
 
-# 표지 · 한 장 요약 · 실태 현황 · 문제 1 · 결론 · 기여도 표 · 시연 · 한계
+# 표지, 한 장 요약, 실태 현황, 문제 1, 결론, 기여도 표, 시연, 한계
 DEFAULT_KEEP = [1, 2, 3, 6, 4, 11, 16, 17]
 
 ap = argparse.ArgumentParser()

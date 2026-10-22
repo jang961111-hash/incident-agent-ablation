@@ -1,9 +1,9 @@
-"""지연 통제 재측정(_latctl) 집계: 건수·오류·재시도·타임아웃, 구성별 p50·p95·평균±표준편차·95% CI.
+"""지연 통제 재측정(_latctl) 집계: 건수, 오류, 재시도, 타임아웃, 구성별 p50, p95, 평균±표준편차, 95% CI.
 
     .venv/bin/python scripts/latency_summary.py            # results/latctl_summary_<YYYYMMDD_HHMM>.md 저장
     .venv/bin/python scripts/latency_summary.py --tag _latctl
 
-p50·p95 는 README·덱과 같은 정의다: 반복(rep)마다 백분위를 구해 3회 평균(run_ablation 요약과 같음).
+p50, p95 는 README, 덱과 같은 정의다: 반복(rep)마다 백분위를 구해 3회 평균(run_ablation 요약과 같음).
 95% CI 는 반복 3회의 평균을 표본으로 한 t 구간(t_{0.975,2}=4.303)이다.
 타임아웃은 adapter 의 HARD_TIMEOUT_S(300초) 도달 또는 error 문자열에 timeout 이 있는 행이다.
 """

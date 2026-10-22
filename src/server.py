@@ -1,12 +1,12 @@
-"""all_total 통합 실습 — FastAPI 백엔드 (Wave 1·3·12·14 축 + 전체 조립).
+"""all_total 통합 실습 — FastAPI 백엔드 (Wave 1, 3, 12, 14 축 + 전체 조립).
 
-- Wave 1  : lifespan에서 Agent 번들(MCP 연결·LLM·그래프)을 프로세스당 정확히 1회 생성,
+- Wave 1  : lifespan에서 Agent 번들(MCP 연결, LLM, 그래프)을 프로세스당 정확히 1회 생성,
             app.state로 모든 요청이 공유 (creation_count/instance_id로 증명)
 - Wave 2  : mcp_server.py를 subprocess(stdio)로 기동해 연결 유지
 - Wave 3  : GET /chat/stream — 그래프 실행 과정을 SSE 이벤트로 스트리밍
 - Wave 12 : 대화 이력을 SQLite(session.db)에 저장 — 재시작해도 유지
 - Wave 14 : SUPERVISOR_VERSION(v1/v2) 환경변수로 legacy/신형 파이프라인 즉시 전환
-- LangSmith: 요청당 chat_request 루트 run 아래로 노드·LLM·MCP 호출이 계층 기록됨
+- LangSmith: 요청당 chat_request 루트 run 아래로 노드, LLM, MCP 호출이 계층 기록됨
 """
 import json
 import os

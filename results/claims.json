@@ -3,21 +3,21 @@
   "id": "miss_base_final",
   "값": "56% → 9%",
   "의미": "맞는 매뉴얼(정답 런북) 누락률, 원본 → 최종",
-  "분모": "장애로 처리되고 정답 런북이 있는 질문 (회당 base 24개 · final 23개) x 3회",
+  "분모": "장애로 처리되고 정답 런북이 있는 질문 (회당 base 24개, final 23개) x 3회",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "wrong_base_final",
   "값": "65% → 35%",
   "의미": "엉뚱한 매뉴얼 혼입률, 원본 → 최종 (전체 변화)",
-  "분모": "장애로 처리된 질문 (회당 base 30개 · final 29개) x 3회",
+  "분모": "장애로 처리된 질문 (회당 base 30개, final 29개) x 3회",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "wrong_v2",
@@ -27,7 +27,7 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "must_base_final",
@@ -37,7 +37,7 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "pass_base_final",
@@ -47,7 +47,7 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "recall1_base_final",
@@ -57,17 +57,17 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "bias_aligned_para",
   "값": "78% vs 11%",
   "의미": "원본 Recall@1: 알림 문구대로 물을 때 vs 자기 말로 물을 때 (편향 검증)",
-  "분모": "aligned 9행 · paraphrased 9행 (3회 합)",
+  "분모": "aligned 9행, paraphrased 9행 (3회 합)",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "rag_para",
@@ -77,7 +77,7 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "rag_dev_holdout",
@@ -87,7 +87,7 @@
   "데이터셋": "dev / holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "pair_rag_miss",
@@ -173,11 +173,11 @@
   "id": "miss_raw",
   "값": "56.28% → 8.57% (차이 48%p) vs 짝지은 -46.38%p",
   "의미": "정답 누락: 표의 원값과 짝지은 차이 원값. 분모가 달라(전체 장애 질문 vs 두 구성 공통 질문 23개) 값이 다르다",
-  "분모": "표: 장애·정답 런북 질문 전체 / 짝: 공통 질문 23개",
+  "분모": "표: 장애, 정답 런북 질문 전체 / 짝: 공통 질문 23개",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
-  "결과 파일": "results/stats_holdout.json · 결과 파일",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "결과 파일": "results/stats_holdout.json, 결과 파일",
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "unreg_pass",
@@ -187,7 +187,7 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "cost_base_final",
@@ -197,7 +197,7 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "cost_cascade_only",
@@ -207,7 +207,7 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "cost_rj_to_cascade",
@@ -217,57 +217,57 @@
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "lat_judge",
   "값": "+2.7초 [+1.8, +3.7] ★",
-  "의미": "질의당 지연 차이, Judge 단독 (동일 부하·동시 실행 재측정)",
+  "의미": "질의당 지연 차이, Judge 단독 (동일 부하, 동시 실행 재측정)",
   "분모": "질문 36개 (질문별 3회 평균)",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI), 평가 Judge 생략",
   "결과 파일": "results/stats_holdout_latctl.json",
-  "재현 명령": "scripts/run_latency_ctrl.sh · python -m eval.stats --tag _latctl"
+  "재현 명령": "scripts/run_latency_ctrl.sh, python -m eval.stats --tag _latctl"
  },
  {
   "id": "lat_rag_judge",
   "값": "+1.8초 [+1.2, +2.5] ★",
-  "의미": "질의당 지연 차이, RAG 위에 Judge (동일 부하·동시 실행 재측정)",
+  "의미": "질의당 지연 차이, RAG 위에 Judge (동일 부하, 동시 실행 재측정)",
   "분모": "질문 36개 (질문별 3회 평균)",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI), 평가 Judge 생략",
   "결과 파일": "results/stats_holdout_latctl.json",
-  "재현 명령": "scripts/run_latency_ctrl.sh · python -m eval.stats --tag _latctl"
+  "재현 명령": "scripts/run_latency_ctrl.sh, python -m eval.stats --tag _latctl"
  },
  {
   "id": "lat_cascade",
   "값": "+0.1초 [-0.1, +0.4]",
-  "의미": "질의당 지연 차이, 캐스케이드+캐시 (동일 부하·동시 실행 재측정)",
+  "의미": "질의당 지연 차이, 캐스케이드+캐시 (동일 부하, 동시 실행 재측정)",
   "분모": "질문 36개 (질문별 3회 평균)",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI), 평가 Judge 생략",
   "결과 파일": "results/stats_holdout_latctl.json",
-  "재현 명령": "scripts/run_latency_ctrl.sh · python -m eval.stats --tag _latctl"
+  "재현 명령": "scripts/run_latency_ctrl.sh, python -m eval.stats --tag _latctl"
  },
  {
   "id": "lat_v2_final",
   "값": "+0.3초 [+0.1, +0.5] ★",
-  "의미": "질의당 지연 차이, v2 위에 비용·런타임 (동일 부하·동시 실행 재측정)",
+  "의미": "질의당 지연 차이, v2 위에 비용, 런타임 (동일 부하, 동시 실행 재측정)",
   "분모": "질문 36개 (질문별 3회 평균)",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI), 평가 Judge 생략",
   "결과 파일": "results/stats_holdout_latctl.json",
-  "재현 명령": "scripts/run_latency_ctrl.sh · python -m eval.stats --tag _latctl"
+  "재현 명령": "scripts/run_latency_ctrl.sh, python -m eval.stats --tag _latctl"
  },
  {
   "id": "lat_all",
   "값": "+2.5초 [+2.0, +3.0] ★",
-  "의미": "질의당 지연 차이, 전체 (동일 부하·동시 실행 재측정)",
+  "의미": "질의당 지연 차이, 전체 (동일 부하, 동시 실행 재측정)",
   "분모": "질문 36개 (질문별 3회 평균)",
   "데이터셋": "holdout",
   "환경": "실제 모델 (OpenAI), 평가 Judge 생략",
   "결과 파일": "results/stats_holdout_latctl.json",
-  "재현 명령": "scripts/run_latency_ctrl.sh · python -m eval.stats --tag _latctl"
+  "재현 명령": "scripts/run_latency_ctrl.sh, python -m eval.stats --tag _latctl"
  },
  {
   "id": "p95_base_final",
@@ -317,13 +317,13 @@
   "데이터셋": "dev + holdout",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/{base,…,final}_latest.json",
-  "재현 명령": "scripts/run_all.sh (전체) · python -m eval.extra_metrics"
+  "재현 명령": "scripts/run_all.sh (전체), python -m eval.extra_metrics"
  },
  {
   "id": "conc_10",
   "값": "62.8초 → 9.2초 (약 6.9배)",
   "의미": "동시 질문 10개 처리 시간, 동기 → 비동기",
-  "분모": "같은 final 구성·같은 벤치, 동기/비동기만 변경, N마다 1회 측정 (신뢰구간 없음)",
+  "분모": "같은 final 구성, 같은 벤치, 동기/비동기만 변경, N마다 1회 측정 (신뢰구간 없음)",
   "데이터셋": "벤치 질문 세트",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/concurrency_bench_latest.json",
@@ -353,7 +353,7 @@
   "id": "fault_reps",
   "값": "0/71 → 71/71",
   "의미": "고장 위치(seed) 5가지 합계: 고장 맞은 질문 중 끝까지 처리한 수, 원본 → 최종",
-  "분모": "seed 7·11·23·42·101 합계, 완주 여부만 (답 품질 미평가)",
+  "분모": "seed 7, 11, 23, 42, 101 합계, 완주 여부만 (답 품질 미평가)",
   "데이터셋": "벤치 질문 38개 x 5",
   "환경": "실제 모델 (OpenAI)",
   "결과 파일": "results/fault_bench_latest.json, results/fault_bench_seed{11,23,42,101}_latest.json",
@@ -391,7 +391,7 @@
  },
  {
   "id": "mock_e503",
-  "값": "완주 원본 8/8 · 최종 8/8, 지연 중앙값 17.3초 · 13.8초, 최대 23.5초 · 75.5초",
+  "값": "완주 원본 8/8, 최종 8/8, 지연 중앙값 17.3초, 13.8초, 최대 23.5초, 75.5초",
   "의미": "모의 LLM 서버 장애 주입: LLM 호출 30%가 503. 완주 여부와 지연만 측정 (답 품질 미측정)",
   "분모": "holdout normal 질문 8개, 1회",
   "데이터셋": "holdout",
@@ -401,7 +401,7 @@
  },
  {
   "id": "mock_badjson",
-  "값": "완주 원본 8/8 · 최종 8/8, 지연 중앙값 5.2초 · 5.0초, 최대 6.5초 · 6.8초",
+  "값": "완주 원본 8/8, 최종 8/8, 지연 중앙값 5.2초, 5.0초, 최대 6.5초, 6.8초",
   "의미": "모의 LLM 서버 장애 주입: JSON 요청 30%가 깨진 JSON. 완주 여부와 지연만 측정 (답 품질 미측정)",
   "분모": "holdout normal 질문 8개, 1회",
   "데이터셋": "holdout",
@@ -411,7 +411,7 @@
  },
  {
   "id": "mock_hang",
-  "값": "완주 원본 4/4 · 최종 4/4, 지연 중앙값 100.5초 · 69.4초, 최대 132.5초 · 133.5초",
+  "값": "완주 원본 4/4, 최종 4/4, 지연 중앙값 100.5초, 69.4초, 최대 132.5초, 133.5초",
   "의미": "모의 LLM 서버 장애 주입: LLM 호출 15%가 65초 멈춤(클라이언트 60초 타임아웃). 완주 여부와 지연만 측정 (답 품질 미측정)",
   "분모": "holdout normal 질문 4개, 1회",
   "데이터셋": "holdout",
@@ -492,7 +492,7 @@
  {
   "id": "cacheable_share",
   "값": "21%",
-  "의미": "final 비용 중 캐시 대상 단계(route·plan·임베딩) 비중 = 캐시로 줄일 수 있는 비용의 상한",
+  "의미": "final 비용 중 캐시 대상 단계(route, plan, 임베딩) 비중 = 캐시로 줄일 수 있는 비용의 상한",
   "분모": "final 180회 전체 호출",
   "데이터셋": "dev + holdout",
   "환경": "실제 모델 (OpenAI)",
@@ -511,7 +511,7 @@
  },
  {
   "id": "tamper_num",
-  "값": "코드 28/28 · Judge 16/28 · 둘 중 하나 28/28",
+  "값": "코드 28/28, Judge 16/28, 둘 중 하나 28/28",
   "의미": "조작 테스트: 근거에 없는 수치을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
   "분모": "holdout final 1회차 장애 답 28개",
   "데이터셋": "holdout",
@@ -521,7 +521,7 @@
  },
  {
   "id": "tamper_name",
-  "값": "코드 0/29 · Judge 21/29 · 둘 중 하나 21/29",
+  "값": "코드 0/29, Judge 21/29, 둘 중 하나 21/29",
   "의미": "조작 테스트: 없는 시스템명을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
   "분모": "holdout final 1회차 장애 답 29개",
   "데이터셋": "holdout",
@@ -531,7 +531,7 @@
  },
  {
   "id": "tamper_both",
-  "값": "코드 28/28 · Judge 27/28 · 둘 중 하나 28/28",
+  "값": "코드 28/28, Judge 27/28, 둘 중 하나 28/28",
   "의미": "조작 테스트: 수치+시스템명을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
   "분모": "holdout final 1회차 장애 답 28개",
   "데이터셋": "holdout",
@@ -541,7 +541,7 @@
  },
  {
   "id": "tamper_original",
-  "값": "코드 0/29 · Judge 6/29 · 둘 중 하나 6/29",
+  "값": "코드 0/29, Judge 6/29, 둘 중 하나 6/29",
   "의미": "조작 테스트: 원본 답 (오탐)을(를) 잡은 수 (Judge = 파이프라인 Judge v2 gpt-4o-mini, 4지표 중 3개 미만 통과면 반려)",
   "분모": "holdout final 1회차 장애 답 29개",
   "데이터셋": "holdout",
@@ -581,7 +581,7 @@
  },
  {
   "id": "local_cal_local",
-  "값": "Hit@1 11/18 · min_score 0.1683 · margin 0.02",
+  "값": "Hit@1 11/18, min_score 0.1683, margin 0.02",
   "의미": "로컬 임베더 local: dev 정답 매뉴얼 1위 적중 수와 보정한 기준값",
   "분모": "dev 중 정답 매뉴얼이 있는 질문",
   "데이터셋": "dev",
@@ -591,7 +591,7 @@
  },
  {
   "id": "local_cal_local-tfidf",
-  "값": "Hit@1 17/18 · min_score 0.0782 · margin 0.05",
+  "값": "Hit@1 17/18, min_score 0.0782, margin 0.05",
   "의미": "로컬 임베더 local-tfidf: dev 정답 매뉴얼 1위 적중 수와 보정한 기준값",
   "분모": "dev 중 정답 매뉴얼이 있는 질문",
   "데이터셋": "dev",
@@ -601,7 +601,7 @@
  },
  {
   "id": "local_first_final",
-  "값": "110.3초 · 매뉴얼 0개",
+  "값": "110.3초, 매뉴얼 0개",
   "의미": "처음 로컬 실행 (LocalNgram + OpenAI용 기준값 0.3236): 끝까지 돌았으나 매뉴얼 미선택",
   "분모": "Q01 1건",
   "데이터셋": "dev",
@@ -611,8 +611,8 @@
  },
  {
   "id": "local_Q01_base",
-  "값": "24.6초 · high-latency (정답 db-down)",
-  "의미": "로컬 실행 base: 지연·고른 매뉴얼",
+  "값": "24.6초, high-latency (정답 db-down)",
+  "의미": "로컬 실행 base: 지연, 고른 매뉴얼",
   "분모": "Q01 1건",
   "데이터셋": "dev",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -621,8 +621,8 @@
  },
  {
   "id": "local_Q01_final_local",
-  "값": "128.6초 · db-down (정답 db-down) · Judge 재작성 1회",
-  "의미": "로컬 실행 final_local: 지연·고른 매뉴얼",
+  "값": "128.6초, db-down (정답 db-down), Judge 재작성 1회",
+  "의미": "로컬 실행 final_local: 지연, 고른 매뉴얼",
   "분모": "Q01 1건",
   "데이터셋": "dev",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -631,8 +631,8 @@
  },
  {
   "id": "local_Q31_base",
-  "값": "22.3초 · disk-full (정답 disk-full)",
-  "의미": "로컬 실행 base: 지연·고른 매뉴얼",
+  "값": "22.3초, disk-full (정답 disk-full)",
+  "의미": "로컬 실행 base: 지연, 고른 매뉴얼",
   "분모": "Q31 1건",
   "데이터셋": "holdout",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -641,8 +641,8 @@
  },
  {
   "id": "local_Q31_final_local",
-  "값": "94.4초 · db-down (정답 disk-full) · Judge 재작성 2회",
-  "의미": "로컬 실행 final_local: 지연·고른 매뉴얼",
+  "값": "94.4초, db-down (정답 disk-full), Judge 재작성 2회",
+  "의미": "로컬 실행 final_local: 지연, 고른 매뉴얼",
   "분모": "Q31 1건",
   "데이터셋": "holdout",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -651,8 +651,8 @@
  },
  {
   "id": "local_Q37_base",
-  "값": "20.1초 · memory-leak (정답 memory-leak)",
-  "의미": "로컬 실행 base: 지연·고른 매뉴얼",
+  "값": "20.1초, memory-leak (정답 memory-leak)",
+  "의미": "로컬 실행 base: 지연, 고른 매뉴얼",
   "분모": "Q37 1건",
   "데이터셋": "holdout",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -661,8 +661,8 @@
  },
  {
   "id": "local_Q37_final_local",
-  "값": "40.5초 · memory-leak (정답 memory-leak) · Judge 재작성 0회",
-  "의미": "로컬 실행 final_local: 지연·고른 매뉴얼",
+  "값": "40.5초, memory-leak (정답 memory-leak), Judge 재작성 0회",
+  "의미": "로컬 실행 final_local: 지연, 고른 매뉴얼",
   "분모": "Q37 1건",
   "데이터셋": "holdout",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -671,8 +671,8 @@
  },
  {
   "id": "local_cal_bge",
-  "값": "Hit@1 17/18 · 균형 정확도 0.972 · min_score 0.5741 · margin 0.02",
-  "의미": "로컬 임베더 ollama:bge-m3: dev 정답 매뉴얼 1위 적중 수·매뉴얼 유무 판정 균형 정확도와 보정한 기준값",
+  "값": "Hit@1 17/18, 균형 정확도 0.972, min_score 0.5741, margin 0.02",
+  "의미": "로컬 임베더 ollama:bge-m3: dev 정답 매뉴얼 1위 적중 수, 매뉴얼 유무 판정 균형 정확도와 보정한 기준값",
   "분모": "dev 24문제 (정답 있는 18)",
   "데이터셋": "dev",
   "환경": "로컬 Ollama 임베딩 (API 없음)",
@@ -691,8 +691,8 @@
  },
  {
   "id": "local_ret_holdout_local",
-  "값": "Hit@1 18/28 · Recall@3 0.80 · 균형 정확도 0.839 (통과 93% · 걸러짐 75%) · 누락 6/28 · 혼입 14/36",
-  "의미": "검색 단독(LLM·라우팅 없음) holdout 평가 local: dev 기준값 그대로",
+  "값": "Hit@1 18/28, Recall@3 0.80, 균형 정확도 0.839 (통과 93%, 걸러짐 75%), 누락 6/28, 혼입 14/36",
+  "의미": "검색 단독(LLM, 라우팅 없음) holdout 평가 local: dev 기준값 그대로",
   "분모": "holdout 36문제 (정답 있는 28)",
   "데이터셋": "holdout",
   "환경": "로컬 임베더 (API 없음)",
@@ -701,8 +701,8 @@
  },
  {
   "id": "local_ret_holdout_local-tfidf",
-  "값": "Hit@1 21/28 · Recall@3 0.91 · 균형 정확도 0.866 (통과 86% · 걸러짐 88%) · 누락 8/28 · 혼입 7/36",
-  "의미": "검색 단독(LLM·라우팅 없음) holdout 평가 local-tfidf: dev 기준값 그대로",
+  "값": "Hit@1 21/28, Recall@3 0.91, 균형 정확도 0.866 (통과 86%, 걸러짐 88%), 누락 8/28, 혼입 7/36",
+  "의미": "검색 단독(LLM, 라우팅 없음) holdout 평가 local-tfidf: dev 기준값 그대로",
   "분모": "holdout 36문제 (정답 있는 28)",
   "데이터셋": "holdout",
   "환경": "로컬 임베더 (API 없음)",
@@ -711,8 +711,8 @@
  },
  {
   "id": "local_ret_holdout_ollama:bge-m3",
-  "값": "Hit@1 25/28 · Recall@3 1.00 · 균형 정확도 0.768 (통과 54% · 걸러짐 100%) · 누락 14/28 · 혼입 1/36",
-  "의미": "검색 단독(LLM·라우팅 없음) holdout 평가 ollama:bge-m3: dev 기준값 그대로",
+  "값": "Hit@1 25/28, Recall@3 1.00, 균형 정확도 0.768 (통과 54%, 걸러짐 100%), 누락 14/28, 혼입 1/36",
+  "의미": "검색 단독(LLM, 라우팅 없음) holdout 평가 ollama:bge-m3: dev 기준값 그대로",
   "분모": "holdout 36문제 (정답 있는 28)",
   "데이터셋": "holdout",
   "환경": "로컬 임베더 (API 없음)",
@@ -771,8 +771,8 @@
  },
  {
   "id": "local_ho_base_local_lat",
-  "값": "57.7초 · 95.5초",
-  "의미": "로컬 holdout 실행 base_local: 지연 중앙값 · p95",
+  "값": "57.7초, 95.5초",
+  "의미": "로컬 holdout 실행 base_local: 지연 중앙값, p95",
   "분모": "holdout 36문제 1회",
   "데이터셋": "holdout",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -781,8 +781,8 @@
  },
  {
   "id": "local_ho_base_local_rw",
-  "값": "1문제 · 1회",
-  "의미": "로컬 holdout 실행 base_local: 재작성한 문제 수 · 총 재작성 횟수",
+  "값": "1문제, 1회",
+  "의미": "로컬 holdout 실행 base_local: 재작성한 문제 수, 총 재작성 횟수",
   "분모": "holdout 36문제 1회",
   "데이터셋": "holdout",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -841,8 +841,8 @@
  },
  {
   "id": "local_ho_final_local_bge_lat",
-  "값": "78.8초 · 163.0초",
-  "의미": "로컬 holdout 실행 final_local_bge: 지연 중앙값 · p95",
+  "값": "78.8초, 163.0초",
+  "의미": "로컬 holdout 실행 final_local_bge: 지연 중앙값, p95",
   "분모": "holdout 36문제 1회",
   "데이터셋": "holdout",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -851,8 +851,8 @@
  },
  {
   "id": "local_ho_final_local_bge_rw",
-  "값": "9문제 · 11회",
-  "의미": "로컬 holdout 실행 final_local_bge: 재작성한 문제 수 · 총 재작성 횟수",
+  "값": "9문제, 11회",
+  "의미": "로컬 holdout 실행 final_local_bge: 재작성한 문제 수, 총 재작성 횟수",
   "분모": "holdout 36문제 1회",
   "데이터셋": "holdout",
   "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
@@ -861,7 +861,7 @@
  },
  {
   "id": "local_ho_final_local_bge_judge",
-  "값": "첫 판정 22/36 · 최종 29/36 · 시간 상한 120초 3 · 근거 밖 요구 — 재작성 생략 3 · 재시도 상한 2회 1",
+  "값": "첫 판정 22/36, 최종 29/36, 시간 상한 120초 3, 근거 밖 요구 — 재작성 생략 3, 재시도 상한 2회 1",
   "의미": "로컬 holdout 실행 final_local_bge: 파이프라인 Judge(qwen3:8b) 통과 (최종 = 가드 없이 통과)",
   "분모": "Judge 를 거친 문제",
   "데이터셋": "holdout",
@@ -956,7 +956,7 @@
   "분모": "-",
   "데이터셋": "-",
   "환경": "외부 출처",
-  "결과 파일": "docs/research/05_ChatGPT_교차조사.md · AWS 블로그",
+  "결과 파일": "docs/research/05_ChatGPT_교차조사.md, AWS 블로그",
   "재현 명령": "-"
  },
  {
@@ -972,7 +972,7 @@
  {
   "id": "ext_orchestro",
   "값": "71.2%",
-  "의미": "RCA 에이전트 실패 1위 데이터 해석 환각 (오케스트로·한양대, 보도 기준)",
+  "의미": "RCA 에이전트 실패 1위 데이터 해석 환각 (오케스트로, 한양대, 보도 기준)",
   "분모": "-",
   "데이터셋": "-",
   "환경": "외부 출처",

@@ -1,9 +1,9 @@
 """파이프라인 안의 Validator — 원본 규칙(30자 이상 + "1)" 포함)을 LLM-as-a-Judge 4지표로 교체.
 
   relevance              Query  <-> Answer   동문서답 여부
-  completeness           Answer <-> Context  근거에 없는 수치·사실을 만들지 않았는가
-  domain_appropriateness Answer <-> Context  런북 조치·절차를 반영했는가
-  clarity                Answer 단독         요청한 형식·길이를 지키며 체계적인가
+  completeness           Answer <-> Context  근거에 없는 수치, 사실을 만들지 않았는가
+  domain_appropriateness Answer <-> Context  런북 조치, 절차를 반영했는가
+  clarity                Answer 단독         요청한 형식, 길이를 지키며 체계적인가
 
 4지표 중 통과 비율이 threshold 이상이면 합격. 불합격이면 실패 지표의 사유를 피드백으로
 넘겨 재작성한다. 재시도 상한과 시간 상한 중 먼저 닿는 쪽에서 멈추고 통과 처리한다.
@@ -11,8 +11,8 @@
 주의: 이 Judge 는 파이프라인 내부 검증용이다. 평가용 Judge(eval/judge.py)는 다른 모델
 (gpt-4o)로 고정해, 자기 기준에 맞춰 고친 답을 같은 기준으로 다시 채점하는 순환을 피한다.
 
-켜는 스위치: validator=judge (Judge 객체 주입은 src/adapter.py, 판정·가드는 src/ext/graph_ext.py
-validate_judge_node). judge.version 으로 SYSTEM(v1)·SYSTEM_V2 를 고른다.
+켜는 스위치: validator=judge (Judge 객체 주입은 src/adapter.py, 판정, 가드는 src/ext/graph_ext.py
+validate_judge_node). judge.version 으로 SYSTEM(v1), SYSTEM_V2 를 고른다.
 모델: models.judge (구성 기본 gpt-4o-mini). 호출은 원본 OpenAILLM 의 요청 형식 그대로이고,
 토큰은 MeteredChatMixin 이 stage="judge" 로 Meter 에 적는다.
 """
@@ -42,7 +42,7 @@ SYSTEM = (
 
 
 # v2 — 1차 실측에서 찾은 문제를 고친 기준 (docs/06_결과분석.md 3절).
-# 맞는 런북이 없는 질의에서 completeness·domain 이 '런북 절차를 반영하라'는 압력이 되어
+# 맞는 런북이 없는 질의에서 completeness, domain 이 '런북 절차를 반영하라'는 압력이 되어
 # 재작성된 답이 무관한 절차를 섞었다. v2 는 근거 밖 요구를 하지 않고, 반려가 근거 안에서
 # 고칠 수 있는 것인지(fixable)를 함께 판정한다. fixable=false 면 재작성하지 않는다.
 SYSTEM_V2 = (
@@ -66,7 +66,7 @@ def facts_from_prompt(prompt: str | None) -> str | None:
     """write 노드가 받은 프롬프트에서 '## 수집된 사실' 구간만 꺼낸다.
 
     재작성 프롬프트 뒤에 붙는 '## 이전 초안에 대한 검증 반려 사유' 는 잘라 낸다. 반려 사유는 근거가
-    아니므로, Judge·평가 Judge·factcheck 가 모두 '실제로 수집된 사실'만 근거로 보게 하려는 것이다.
+    아니므로, Judge, 평가 Judge, factcheck 가 모두 '실제로 수집된 사실'만 근거로 보게 하려는 것이다.
     프롬프트가 없으면(fake 백엔드 등) None.
     """
     if not prompt or "## 수집된 사실" not in prompt:
@@ -92,7 +92,7 @@ def facts_from_collected(collected: list[dict]) -> str:
 
 
 class OpenAIJudge(MeteredChatMixin, OpenAILLM):
-    """파이프라인 내부 Judge. 한 번의 JSON 모드 호출로 4지표 Pass/Fail·사유(+v2 는 fixable)를 받는다."""
+    """파이프라인 내부 Judge. 한 번의 JSON 모드 호출로 4지표 Pass/Fail, 사유(+v2 는 fixable)를 받는다."""
 
     def __init__(self, model: str, usd_per_1k_tokens: float, version: int = 1):
         super().__init__(model, usd_per_1k_tokens)
@@ -106,7 +106,7 @@ class OpenAIJudge(MeteredChatMixin, OpenAILLM):
         try:
             data = json.loads(content)
         except json.JSONDecodeError:
-            data = {}   # 깨진 응답은 아래에서 전 지표 Fail → 반려·재작성 (가드가 루프를 끊는다)
+            data = {}   # 깨진 응답은 아래에서 전 지표 Fail → 반려, 재작성 (가드가 루프를 끊는다)
         # 빠진 지표도 Fail 로 본다 — 판정이 없으면 합격으로 넘기지 않는다
         verdicts = {m: (data.get(m) or {}).get("verdict", "Fail") for m in METRICS}
         reasons = {m: (data.get(m) or {}).get("reason", "") for m in METRICS}
@@ -119,7 +119,7 @@ class FakeJudge:
     """오프라인 테스트용. 원본 규칙과 같은 기준을 4지표 형식으로 돌려준다.
 
     backend=fake 에서 쓴다. 원본 validate_node 규칙(30자 이상 + "1)" 포함)을 그대로 4지표에 복사하므로
-    fake 로 돌린 judge 구성은 합격·반려가 원본 규칙과 같다 — 배관(루프·가드) 점검용이다.
+    fake 로 돌린 judge 구성은 합격, 반려가 원본 규칙과 같다 — 배관(루프, 가드) 점검용이다.
     """
 
     name = "fake-judge"

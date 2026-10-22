@@ -1,23 +1,23 @@
 """로컬 Ollama 실행 가능성 데모 (API 비용 0, 데이터 외부 전송 없음). 정량 비교 대상 아님.
 
 개선 파이프라인(src/ext)은 OpenAI 호환 /v1/chat/completions 형식으로 호출한다. Ollama 도 같은 형식을
-제공하므로, 원본·ext 코드는 고치지 않고 이 프로세스 안에서만 API 주소를 Ollama 로 바꿔 끼운다
+제공하므로, 원본, ext 코드는 고치지 않고 이 프로세스 안에서만 API 주소를 Ollama 로 바꿔 끼운다
 (eval/mock_llm_bench.py 와 같은 방식).
   - 모델: qwen3:8b (로컬). qwen3 의 생각 과정 출력은 끄고(reasoning_effort none), 남은 <think> 블록은 지운다.
   - 임베딩: OpenAI 임베딩 구성(final 등)은 embedding: local (LocalNgram)로 바꾼다. 다만 OpenAI 로 보정한 min_score 는
     로컬에선 의미가 달라 런북이 하나도 안 걸린다. 로컬용 기준값은 eval/configs/final_local.yaml
     (embedding: local-tfidf, dev 보정 results/calibrate_rag_local_latest.json)을 쓴다.
   - 요청 타임아웃 300초 (로컬 8B 모델은 느리다).
-결과 수치(통과율·지연)는 OpenAI Ablation 과 모델·임베더·채점관이 모두 달라 비교하지 않는다.
+결과 수치(통과율, 지연)는 OpenAI Ablation 과 모델, 임베더, 채점관이 모두 달라 비교하지 않는다.
 
-    python -m eval.ollama_demo                       # base·final 을 같은 질문 1개로 1회씩
+    python -m eval.ollama_demo                       # base, final 을 같은 질문 1개로 1회씩
     python -m eval.ollama_demo --model qwen3:8b --query "..."
     python -m eval.ollama_demo --configs final_local,base --qid Q31 --tag q31   # 평가셋 질문 id 로 지정
 결과: results/ollama_demo_[<tag>_]<YYYYMMDD_HHMM>.json, results/ollama_demo_latest.json
 
-주소 바꿔 끼우기: agent.openai_llm.OPENAI_URL·ext.meter.OPENAI_URL 을 Ollama 의 /v1/chat/completions 로,
+주소 바꿔 끼우기: agent.openai_llm.OPENAI_URL, ext.meter.OPENAI_URL 을 Ollama 의 /v1/chat/completions 로,
 httpx.post 를 _ollama_post 로 바꾼다. 이 프로세스 안에서만 바뀌고 파일은 고치지 않는다.
-eval/ollama_holdout.py 도 이 모듈의 OLLAMA·_ollama_post 를 그대로 가져다 쓴다.
+eval/ollama_holdout.py 도 이 모듈의 OLLAMA, _ollama_post 를 그대로 가져다 쓴다.
 """
 from __future__ import annotations
 
@@ -65,7 +65,7 @@ def _ollama_post(url, *a, json=None, timeout=None, **kw):
 
 
 def main():
-    """구성마다 같은 질문 1개를 로컬 모델로 1회 실행하고 고른 런북·답·지연을 저장한다."""
+    """구성마다 같은 질문 1개를 로컬 모델로 1회 실행하고 고른 런북, 답, 지연을 저장한다."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="qwen3:8b")
     ap.add_argument("--query", default="DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.")
@@ -78,7 +78,7 @@ def main():
         q = next(q for q in yaml.safe_load((ROOT / "eval/queries.yaml").read_text())["queries"] if q["id"] == a.qid)
         a.query, gold = q["query"], q["gold_runbooks"]
 
-    import src.adapter as adapter          # src/ 를 import 경로에 올린다 (agent·ext 보다 먼저)
+    import src.adapter as adapter          # src/ 를 import 경로에 올린다 (agent, ext 보다 먼저)
     import agent.openai_llm as ol
     import ext.meter as em
     ol.OPENAI_URL = em.OPENAI_URL = f"{OLLAMA}/chat/completions"

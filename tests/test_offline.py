@@ -3,7 +3,7 @@
     .venv/bin/python -m pytest -q tests/
 
 품질 수치를 보는 테스트가 아니다. 네 구성이 끝까지 돌고, adapter 계약
-(retrieved·context·rewrites)이 지켜지는지만 본다.
+(retrieved, context, rewrites)이 지켜지는지만 본다.
 """
 import re
 from pathlib import Path
@@ -89,7 +89,7 @@ def test_summary_metrics_shape():
 
 
 def test_cache_does_not_leak_across_reps(tmp_path, monkeypatch):
-    """반복마다 캐시를 비워야 한다 — 앞 반복의 캐시가 다음 반복 비용·지연을 낮추면 안 된다."""
+    """반복마다 캐시를 비워야 한다 — 앞 반복의 캐시가 다음 반복 비용, 지연을 낮추면 안 된다."""
     import eval.run_ablation as ra
     monkeypatch.setattr(ra, "RESULTS", tmp_path)
     qs = [{"id": "T1", "query": QUERY, "gold_runbooks": ["disk-full"], "split": "dev",

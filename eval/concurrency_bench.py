@@ -9,7 +9,7 @@ final 구성에서 async_io 만 끄고 켠 두 변형을 비교한다 (캐시는
     python -m eval.concurrency_bench --backend fake_slow --latency 0.5   # API 없이 메커니즘만 (src/ext/slow_fake.py)
 
 질의 N건을 한 이벤트 루프에서 asyncio.gather 로 동시에 돌려 벽시계 시간(wall_ms)을 잰다.
-질의 풀은 dev 의 normal 질의. 예열 1회(색인·모듈 로딩)는 측정에서 뺀다.
+질의 풀은 dev 의 normal 질의. 예열 1회(색인, 모듈 로딩)는 측정에서 뺀다.
 결과: results/concurrency_bench[_simulated][<tag>]_<YYYYMMDD_HHMM>.json 과 _latest.json (fake 는 저장 안 함)
 """
 from __future__ import annotations
@@ -33,7 +33,7 @@ async def run_batch(cfg: dict, queries: list[str]) -> dict:
     """MCP 를 1번 띄우고 같은 그래프로 queries 를 동시에 실행한다. 질의마다 Meter 를 따로 연다.
 
     src/adapter.run_once 는 질의마다 asyncio.run 을 새로 열어 동시성을 볼 수 없으므로, 여기서는
-    adapter._build_deps·build_graph_ext 를 직접 써서 하나의 루프 위에 올린다.
+    adapter._build_deps, build_graph_ext 를 직접 써서 하나의 루프 위에 올린다.
     """
     from src.adapter import _build_deps
     from agent.mcp_client import MCPClient
@@ -84,7 +84,7 @@ def main():
         base_cfg["fake_latency_s"] = args.latency
 
     out = {"config": "final (cache off)", "queries": pool[:max(ns)], "runs": []}
-    warm = copy.deepcopy(base_cfg)   # 예열 1회 (임베딩 색인·모듈 로딩) — 측정에서 뺀다
+    warm = copy.deepcopy(base_cfg)   # 예열 1회 (임베딩 색인, 모듈 로딩) — 측정에서 뺀다
     warm["name"] = "bench_warmup"
     asyncio.run(run_batch(warm, pool[:1]))
     for n in ns:
