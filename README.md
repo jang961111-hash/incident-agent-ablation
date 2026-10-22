@@ -292,6 +292,7 @@ p95 지연 행: 동일 부하·동시 실행 조건(7구성 동시, workers 2, h
 3. **캐스케이드 승급 기준을 코드 지표로** — LLM Judge 대신 결정적 어구 대조로 비싼 모델 승급 여부를 정한다.
 4. **현업 MCP 연결** — 모니터링·런북을 읽기 전용으로 설정한 공식 MCP(Prometheus·Grafana·Confluence 등)로 바꾸고, 쓰기 도구는 사람 승인 뒤에만 실행한다 ([docs/research/04_현업_MCP.md](docs/research/04_현업_MCP.md)).
 5. **평가 확대** — 질의 수를 늘리고, 사람 라벨로 평가 Judge를 보정하고, 라우터 개선도 같은 Ablation 체계로 재측정한다.
+6. **로컬 실행 고도화** — 망분리 환경을 위해 로컬 Ollama 구성(한국어 임베딩 bge-m3, 로컬용 기준값)을 holdout 전체로 원본과 비교하고, 8B 모델에 맞게 검수 기준과 시간 상한을 조정한다 ([부록: 로컬 Ollama 실행](#로컬-ollama-실행-정량-비교-대상-아님)).
 
 ### 4.3 수행 소감 및 느낀점
 
@@ -368,7 +369,8 @@ API 키 없이, 데이터를 밖으로 보내지 않고 이 Mac 안에서도 돌
 - **반복과 유의성**: 7구성 x 3회, 반복 간 95% CI와 질문 단위 paired bootstrap(2,000회). 반복마다 캐시를 비워 모든 회차를 같은 조건(cold)으로 쟀다.
 - **지표 축 분리**: 검색(맞는 매뉴얼 누락·엉뚱한 매뉴얼 혼입, Recall@k), 답변(평가 Judge 4지표, 매뉴얼 핵심 문구 포함), 운영(건당 비용, 지연, 동시성, 장애 주입).
 - **편향 검증**: 알림 문구대로 묻는 질문과 자기 말로 묻는 질문, dev와 holdout을 나눠 봤다.
-- 자세한 분석: [docs/06_결과분석.md](docs/06_결과분석.md) · 방법: [docs/05_보고서_방법.md](docs/05_보고서_방법.md) · 전체 표: [docs/04_결과표.md](docs/04_결과표.md) · 발표: [5분용 8장](deck/incident-agent-ablation_5min.pptx) · [Canva판](https://www.canva.com/d/wt4hDIP_W8S7Ifb) · [전체 18장](deck/incident-agent-ablation.pptx) · [발표 대본](docs/발표_대본.md) · 조사 근거: [docs/research/](docs/research/00_요약_실태현황.md)
+- 자세한 분석: [docs/06_결과분석.md](docs/06_결과분석.md) · 방법: [docs/05_보고서_방법.md](docs/05_보고서_방법.md) · 전체 표: [docs/04_결과표.md](docs/04_결과표.md)
+- **최종 발표 자료**: [최종 8장 PDF](deck/pdf/incident-agent-ablation_skala.pdf) · [Canva 최종본](https://canva.link/44pmzc1kme81p56) · [발표 스크립트](docs/발표스크립트_최종.md) · [용어집](docs/발표_용어집.md) · 이전 버전: [5분용 8장](deck/incident-agent-ablation_5min.pptx) · [전체 18장](deck/incident-agent-ablation.pptx) · [대본 모음](docs/발표_대본.md)
 
 ### 직접 돌려 보기
 
