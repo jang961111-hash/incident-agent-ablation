@@ -20,6 +20,10 @@ from eval.run_ablation import RESULTS, aggregate
 
 
 def main():
+    """CLI 진입점. --config 구성마다 --reps 반복의 행을 집계에서 빼고 summary 를 다시 만든다.
+
+    뺀 행은 excluded_rows 에, 사유는 summary 의 exclusion_reason 에 남겨 나중에 되돌릴 수 있게 한다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", nargs="+", required=True)
     ap.add_argument("--reps", nargs="+", type=int, required=True)

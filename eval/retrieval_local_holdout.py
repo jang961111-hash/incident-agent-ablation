@@ -76,6 +76,7 @@ def evaluate(name: str, min_score: float, margin: float, qs: list[dict]) -> dict
 
 
 def main():
+    """dev 보정 결과(CAL)의 임베더별 기준값으로 holdout 36건 검색 품질을 계산해 results/ 에 저장하고 출력한다."""
     cal = json.loads(CAL.read_text())
     qs = [q for q in yaml.safe_load((ROOT / "eval/queries.yaml").read_text())["queries"]
           if q.get("split") == "holdout"]

@@ -109,9 +109,11 @@ def main():
     (R / f"ollama_holdout_summary_{ts}.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
 
     def pct(x):
+        """비율을 반올림한 정수 퍼센트 문자열로."""
         return f"{round(x * 100)}%"
 
     def ci(d, k=100, unit="%p", nd=0):
+        """bootstrap 결과를 '차이 단위 [하한, 상한]' 문자열로. k 는 배율, nd 는 소수 자리, 유의하면 끝에 ★."""
         if not d:
             return "-"
         f = (lambda v: f"{v * k:+.{nd}f}")

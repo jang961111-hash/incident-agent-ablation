@@ -95,6 +95,10 @@ def cell(s: dict, key: str, kind: str) -> str:
 
 
 def main():
+    """CLI 진입점. results/ 의 최신 결과로 구성별 지표 표를 출력한다 (--split 으로 dev, holdout 선택).
+
+    표 아래에 반복 횟수와 해석 주의, 사람 라벨이 있으면 base 기준 Judge 와 사람의 일치율을 덧붙인다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--md", action="store_true", help="마크다운 표로 출력")
     ap.add_argument("--split", choices=["dev", "holdout"])

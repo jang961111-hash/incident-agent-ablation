@@ -119,6 +119,10 @@ def run_config(cfg_path: Path, queries: list[dict], threshold: float, use_judge:
     rows, lock = [], threading.Lock()
 
     def run_rep(rep: int):
+        """반복 rep 의 질의들을 스레드 풀로 실행하며 끝나는 순서대로 future 를 내준다.
+
+        제너레이터라서 앞 반복의 풀이 모두 끝난 뒤에야 다음 반복이 시작된다. 각 반복 시작 때 캐시를 비운다.
+        """
         # 반복마다 캐시를 비운다 — 각 반복을 처음 실행(cold)으로 재야 공정하다.
         # (v2 1차 실측에서 2회차에 앞 반복의 캐시가 적중해 비용, 지연이 유리하게 섞인 문제 수정)
         adapter_mod._CACHES.clear()
@@ -235,6 +239,7 @@ def build_summary(name: str, rows: list[dict], retrieval_records: list[dict]) ->
     n = len(judged)
 
     def rate(pred, pool):
+        """pool 중 pred 가 참인 비율. pool 이 비면 NaN (0 으로 두면 '전부 실패'로 오해된다)."""
         return sum(1 for r in pool if pred(r)) / len(pool) if pool else float("nan")
 
     s = {
@@ -280,6 +285,10 @@ def build_summary(name: str, rows: list[dict], retrieval_records: list[dict]) ->
 
 
 def main():
+    """CLI 진입점. --config 하나 또는 --all(ORDER 의 전 구성)을 평가셋으로 실행한다.
+
+    --ids, --split 으로 질의를 좁힐 수 있다. 저장 여부 규칙은 아래 save 계산의 주석을 따른다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--config")
     ap.add_argument("--all", action="store_true")

@@ -46,6 +46,10 @@ def must_include_scores(rows: list[dict], queries: dict) -> dict:
 
 
 def load_all() -> dict:
+    """ORDER 의 v1 구성마다 results/<구성>_latest.json 을 읽어 must_include 어구 포함률을 계산한다.
+
+    Returns: {구성 이름: must_include_scores 결과}. 결과 파일이 없는 구성은 건너뛴다.
+    """
     queries = {q["id"]: q for q in
                yaml.safe_load((ROOT / "eval" / "queries.yaml").read_text())["queries"]}
     out = {}

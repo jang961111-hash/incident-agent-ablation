@@ -31,6 +31,7 @@ TAG = "_external"
 
 
 def load() -> list[dict]:
+    """고정된 외부 블라인드 문항 파일(QFILE)의 queries 목록을 읽는다."""
     return yaml.safe_load(QFILE.read_text(encoding="utf-8"))["queries"]
 
 
@@ -48,6 +49,7 @@ def row_metrics(r: dict) -> dict:
 
 
 def _rate(xs):
+    """None 을 뺀 bool 목록의 (비율, 참 개수, 분모). 분모가 0 이면 (NaN, 0, 0)."""
     xs = [x for x in xs if x is not None]
     return (sum(xs) / len(xs), sum(xs), len(xs)) if xs else (float("nan"), 0, 0)
 
@@ -60,7 +62,7 @@ def paired_ci(a: dict, b: dict, key: str, n_boot: int = 2000, seed: int = 0):
     d = [b[i][key] - a[i][key] for i in ids]
     rng = random.Random(seed)
     boots = sorted(sum(rng.choice(d) for _ in d) / len(d) for _ in range(n_boot))
-    lo, hi = boots[int(0.025 * n_boot)], boots[int(0.975 * n_boot) - 1]
+    lo, hi = boots[int(0.025 * n_boot)], boots[int(0.975 * n_boot) - 1]   # 정렬된 boots 의 2.5%, 97.5% 위치 (eval/stats.bootstrap 과 같은 방식)
     return {"diff": sum(d) / len(d), "lo": lo, "hi": hi, "n": len(ids), "significant": lo > 0 or hi < 0}
 
 
@@ -78,6 +80,10 @@ def per_query(rows: list[dict]) -> dict:
 
 
 def summarize() -> dict:
+    """저장된 base, final 결과를 읽어 구성별 지표, 질문 단위 paired bootstrap 차이, 문항별 값을 만든다.
+
+    오류 행은 지표 계산에서 빼고 errors 로 개수만 남긴다. 지연 중앙값은 정렬 후 가운데(짝수면 위쪽) 값이다.
+    """
     out = {"source": str(QFILE.relative_to(ROOT)), "frozen_commit": "5a98b77", "configs": {}}
     pq = {}
     for c in CONFIGS:
@@ -98,7 +104,9 @@ def summarize() -> dict:
 
 
 def to_md(s: dict) -> str:
+    """summarize 결과를 README 에 붙일 마크다운 표(지표 표, 문항별 누락과 혼입 표)로 만든다."""
     def pct(t):
+        """_rate 결과 (비율, 참 개수, 분모) 를 '73% (11/15)' 형식으로. 분모가 0 이면 '-'."""
         return f"{t[0] * 100:.0f}% ({t[1]:.0f}/{t[2]})" if t[2] else "-"
     b, f = s["configs"]["base"], s["configs"]["final"]
     lines = ["# 외부 블라인드 문항 결과 (Gemini 작성 15문항)", "",
@@ -117,6 +125,7 @@ def to_md(s: dict) -> str:
               "| 문항 | base 누락, 혼입 | final 누락, 혼입 |", "|---|---|---|"]
     for i, d in s["by_query"].items():
         def mi(x):
+            """문항 1개의 반복 평균에서 '누락, 혼입' 칸을 만든다. 값이 없으면 '-', 정답이 없어 누락 대상이 아니면 누락 자리에 '-'."""
             if not x:
                 return "-"
             return f"{'-' if 'miss' not in x else round(x['miss'], 2)}, {round(x['wrong'], 2)}"
@@ -125,6 +134,10 @@ def to_md(s: dict) -> str:
 
 
 def main():
+    """CLI 진입점. 두 구성을 실행해 저장한 뒤(--summary-only 면 생략) 요약 JSON 과 마크다운을 results/ 에 쓴다.
+
+    --backend fake 는 키 없이 배관만 점검하고 저장하지 않는다. 평가 Judge 합격 임계치는 eval/queries.yaml 의 threshold 와 같은 값을 코드에 직접 넣었다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--reps", type=int, default=3)
     ap.add_argument("--workers", type=int, default=2)

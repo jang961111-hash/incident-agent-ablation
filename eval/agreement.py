@@ -129,6 +129,7 @@ def rater_agreement(path_a: Path | str, path_b: Path | str) -> dict:
 
 
 def _reason(row: dict, metric: str) -> str:
+    """결과 행에서 지표 metric 에 대한 평가 Judge 사유 문장을 꺼낸다. 사유가 dict 가 아니면 빈 문자열."""
     r = row.get("judge_reasons")
     return str(r.get(metric, "")) if isinstance(r, dict) else ""
 
@@ -201,6 +202,7 @@ def summary_dict(config: str = "base", labels_path: Path | str | None = None,
 # --- 출력 -------------------------------------------------------------------
 
 def _pct(v) -> str:
+    """비율을 '73%' 처럼 정수 퍼센트 문자열로. 값이 None(분모 0)이면 '-'."""
     return "-" if v is None else f"{v:.0%}"
 
 
@@ -266,6 +268,10 @@ def render(s: dict, md: bool = False) -> str:
 
 
 def main(argv=None):
+    """CLI 진입점. --config 구성의 평가 Judge 판정을 라벨(--labels, 기본은 사람 라벨)과 비교해 표로 출력한다.
+
+    --md 를 주면 마크다운 표로, --results-dir 로 결과 폴더를 바꿀 수 있다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="base")
     ap.add_argument("--md", action="store_true", help="마크다운 표로 출력")

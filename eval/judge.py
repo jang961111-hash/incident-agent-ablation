@@ -55,6 +55,7 @@ JUDGE_PROMPT = ChatPromptTemplate.from_messages([
 
 @dataclass
 class JudgeResult:
+    """평가 Judge 1회 채점 결과. 지표별 판정과 사유, 통과 비율, 합격 여부, 원문 응답을 담는다."""
     verdicts: dict = field(default_factory=dict)   # metric -> "Pass"|"Fail"
     reasons: dict = field(default_factory=dict)    # metric -> str
     score: float = 0.0                             # 통과 비율 0.0~1.0
@@ -62,6 +63,7 @@ class JudgeResult:
     raw: str = ""
 
     def as_dict(self):
+        """결과 행(JSON)에 넣을 수 있게 dataclass 를 dict 로 바꾼다."""
         return asdict(self)
 
 
@@ -70,6 +72,7 @@ class Judge:
 
     def __init__(self, model: str = "gpt-4o", threshold: float = 0.75,
                  temperature: float = 0.0):
+        """평가 모델, 합격 임계치(통과 비율), temperature 로 JSON 모드 채점 체인을 만든다."""
         self.threshold = threshold
         # max_retries=6: 429, 일시 오류는 클라이언트가 재시도 — 평가 Judge 오류로 행이 빠지는 것을 줄인다
         self.llm = ChatOpenAI(model=model, temperature=temperature, max_retries=6).bind(
@@ -116,6 +119,7 @@ class RetryGuard:
     """재시도 횟수와 총 경과 시간 중 먼저 닿는 조건에서 종료시킨다."""
 
     def __init__(self, max_retries: int = 2, max_seconds: float = 120.0):
+        """재시도 상한과 시간 상한(초)을 정하고, 생성 시점부터 경과 시간을 잰다."""
         self.max_retries = max_retries
         self.max_seconds = max_seconds
         self.attempts = 0
@@ -123,6 +127,7 @@ class RetryGuard:
 
     @property
     def elapsed(self) -> float:
+        """생성 이후 경과 초. 시스템 시각 변경에 흔들리지 않게 time.monotonic 기준이다."""
         return time.monotonic() - self._t0
 
     def should_continue(self) -> tuple[bool, str]:

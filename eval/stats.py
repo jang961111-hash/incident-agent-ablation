@@ -55,6 +55,7 @@ def _per_query(rows: list[dict]) -> dict:
     out = {}
     for qid, rs in by.items():
         def avg(f):
+            """이 질의의 반복 행들에 f 를 적용해 None 을 뺀 평균. 대상 값이 하나도 없으면 None."""
             vals = [v for v in (f(r) for r in rs) if v is not None]
             return statistics.fmean(vals) if vals else None
         gold = rs[0]["gold"]
@@ -126,6 +127,7 @@ def fmt(r: dict | None, metric: str) -> str:
 
 
 def main():
+    """CLI 진입점. --split 범위로 PAIRS 비교를 계산해 results/stats_<split><tag>.json 에 저장하고 표로 출력한다."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", default="holdout", choices=["holdout", "dev", "all"])
     ap.add_argument("--md", action="store_true")

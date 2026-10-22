@@ -31,6 +31,7 @@ ORDER = ["base", "rag", "judge", "rag_judge", "rag_judge_cost", "rag_judge_v2", 
 
 
 def _queries() -> dict:
+    """eval/queries.yaml 을 읽어 {질의 id: 질의 dict} 로 돌려준다."""
     return {q["id"]: q for q in yaml.safe_load((ROOT / "eval/queries.yaml").read_text())["queries"]}
 
 

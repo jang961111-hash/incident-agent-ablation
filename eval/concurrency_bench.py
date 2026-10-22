@@ -49,6 +49,10 @@ async def run_batch(cfg: dict, queries: list[str]) -> dict:
         graph = build_graph_ext(deps)
 
         async def one(q: str):
+            """질의 1건을 그래프로 실행하고 (지연 ms, 비용 USD) 를 돌려준다.
+
+            gather 가 질의마다 별도 태스크를 만들고 태스크는 컨텍스트를 복사하므로, 여기서 연 Meter 는 이 질의에만 쓰인다.
+            """
             meter = start_meter()
             t0 = time.perf_counter()
             await graph.ainvoke({"query": q, "thread_id": uuid.uuid4().hex, "history": [],
@@ -67,6 +71,11 @@ async def run_batch(cfg: dict, queries: list[str]) -> dict:
 
 
 def main():
+    """CLI 진입점. --ns 의 N 마다 async_io 를 끈 변형과 켠 변형을 차례로 실행해 벽시계 시간을 잰다.
+
+    질의 풀은 dev 의 normal 질의, 구성은 final.yaml 에서 cost.cache 만 끈 것이다.
+    fake 백엔드는 저장하지 않고, 나머지는 results/ 에 타임스탬프 파일과 _latest 파일로 남긴다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--ns", default="1,3,5,10")
     ap.add_argument("--backend", choices=["openai", "fake", "fake_slow"])

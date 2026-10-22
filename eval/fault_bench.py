@@ -28,6 +28,10 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def main():
+    """CLI 진입점. 변형 3개(base, final_no_tolerance, final)를 같은 장애 주입 조건으로 돌려 완주율을 잰다.
+
+    모든 변형에서 캐시를 끄고 같은 seed 를 써서, 차이가 tolerant_research 에서만 오도록 맞춘다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--rate", type=float, default=0.3)
     ap.add_argument("--seed", type=int, default=7)
@@ -56,6 +60,10 @@ def main():
             cfg["fake_force_incident"] = args.backend == "fake"   # fake 라우터의 판정과 무관하게 모두 장애 경로로 (도구 호출이 일어나야 주입이 된다)
 
         def job(q):
+            """질의 1건을 실행해 완주 여부, 주입된 장애 수, 도구 실패 수, 답 앞 300자를 돌려준다.
+
+            예외가 나도 멈추지 않고 ok=False 행으로 남긴다. 그 예외가 바로 원본 research 의 '질의 전체 실패'다.
+            """
             try:
                 o = run_once(q["query"], cfg)
                 return {"id": q["id"], "ok": True, "faults": o["faults_injected"],

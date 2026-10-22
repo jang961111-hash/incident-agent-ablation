@@ -153,6 +153,10 @@ def run_config(name: str, qs: list[dict], model: str, save: bool) -> list[dict]:
 
 
 def main():
+    """CLI 진입점. holdout 36건을 --configs 의 구성마다 로컬 Ollama(--model)로 실행한다.
+
+    --ids 로 일부만 고를 수 있다. Ollama 가 응답하지 않으면 시작하지 않고 종료한다.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--configs", default="base,final_local_bge")
     ap.add_argument("--model", default="qwen3:8b")

@@ -61,9 +61,11 @@ class H(BaseHTTPRequestHandler):
     """모의 OpenAI 서버. /embeddings 는 해시 벡터를 즉시, chat 은 지연, 멈춤, 503, 깨진 JSON 을 시나리오대로."""
 
     def log_message(self, *a):
+        """요청마다 찍히는 기본 접근 로그를 끈다. 벤치 진행 출력이 묻히지 않게 하려는 것이다."""
         pass
 
     def _send(self, code, obj):
+        """obj 를 JSON 본문으로 code 상태 코드와 함께 응답한다."""
         body = json.dumps(obj, ensure_ascii=False).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
@@ -72,12 +74,18 @@ class H(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_POST(self):
+        """OpenAI 형식 POST 요청에 시나리오(SCEN)대로 응답하고, 주입한 장애 수를 STATS 에 센다.
+
+        /embeddings 는 지연 없이 해시 벡터를 준다. chat 은 지연 후 확률적으로 멈춤, 503, 깨진 JSON 을 넣고,
+        그 외에는 시스템 프롬프트 문구로 단계를 구분해 그 단계가 기대하는 형식의 고정 응답을 준다.
+        """
         req = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
         with _lock:
             STATS["requests"] += 1
         if self.path.endswith("/embeddings"):
             inp = req.get("input")
             inp = inp if isinstance(inp, list) else [inp]
+            # (텍스트, 차원 번호)의 md5 로 -1~1 값을 만든 결정적 64차원 벡터. 같은 텍스트는 늘 같은 벡터
             data = [{"index": i, "embedding": [((int(hashlib.md5(f"{t}:{k}".encode()).hexdigest()[:6], 16) % 2000) - 1000) / 1000
                                                for k in range(64)]} for i, t in enumerate(inp)]
             return self._send(200, {"data": data, "usage": {"prompt_tokens": 10, "total_tokens": 10}})
@@ -144,6 +152,7 @@ def main():
             before = dict(STATS)
 
             def job(q):
+                """질의 1건을 실행해 완주 여부(답이 비어 있지 않음), 지연, API 재시도, 재작성 수를 돌려준다. 예외는 오류 행으로 남긴다."""
                 t0 = time.perf_counter()
                 try:
                     o = adapter.run_once(q["query"], cfg)
