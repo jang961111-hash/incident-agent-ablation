@@ -1,0 +1,109 @@
+# 외부 블라인드 문항 v1 — 수정 금지 (라벨 이견은 eval/external/label_notes.md 에만 적는다)
+# 출처: Google Gemini (gemini.google.com, "Pro" 모드), 2026-10-22, 새 대화·파일/저장소 연결 없음
+# 요청 프롬프트: docs/blind/외부문항_요청_프롬프트.md 의 "프롬프트" 부분을 그대로 붙여 넣음
+# 아래 queries 는 Gemini 응답의 YAML 코드 블록을 한 글자도 바꾸지 않고 옮긴 것이다 (이 주석 줄만 추가).
+queries:
+  - id: X01
+    category: normal
+    query: "web-01 서버에 새 버전 배포하려는데 '디바이스에 남은 공간이 없습니다' 에러가 뜨면서 멈췄어요. 어제 찌꺼기 파일들 지워서 확보했는데 하루 만에 또 이러네요."
+    gold_runbooks: [disk-full]
+    rationale: "남은 공간이 없다는 에러 메시지와 파일 삭제 이력을 통해 디스크 용량 고갈 상황임을 묘사함"
+    source: ""
+
+  - id: X02
+    category: normal
+    query: "고객센터에서 payments-service 결제창 넘어가는 데 평소보다 10배는 오래 걸린다고 난리예요. 끊기진 않는데 화면 렌더링 끝날 때까지 세월아 네월아 합니다."
+    gold_runbooks: [high-latency]
+    rationale: "실패나 끊김은 없지만 처리 시간이 비정상적으로 늘어난 상황을 통해 응답 지연을 표현함"
+    source: ""
+
+  - id: X03
+    category: normal
+    query: "지금 gateway-service 쪽 알람 울려서 들어가 봤더니, top 명령어 상에서 유휴 자원이 아예 0%고 로드 애버리지가 100을 넘겼습니다. 트래픽은 평소 수준이에요."
+    gold_runbooks: [cpu-spike]
+    rationale: "유휴 자원 0% 및 높은 로드 애버리지를 통해 프로세서 과부하(CPU 스파이크) 상태를 나타냄"
+    source: ""
+
+  - id: X04
+    category: normal
+    query: "auth-service에서 Connection refused 로그가 쏟아지면서 로그인이 전면 차단됐습니다. 연동된 오로라 인스턴스 쪽으로 핑 자체가 안 나가는 것 같아요."
+    gold_runbooks: [db-down]
+    rationale: "Connection refused 및 DB 인스턴스 핑 단절 증상으로 데이터베이스 다운 상태를 묘사함"
+    source: "AWS Aurora 장애 사례"
+
+  - id: X05
+    category: normal
+    query: "cache-service 팟(Pod)들 상태를 보니까, 재시작 직후엔 안정적인데 반나절 지나면 점유 그래프가 계속 우상향하다가 결국 뻗어버리는 패턴이 반복됩니다."
+    gold_runbooks: [memory-leak]
+    rationale: "시간 경과에 따라 자원 사용량이 지속적으로 증가하다 종료되는 전형적인 누수 현상을 설명함"
+    source: ""
+
+  - id: X06
+    category: normal
+    query: "지금 log-service로 데이터 쏘는 쪽에서 504 Gateway Timeout 에러가 계속 떨어지고 있습니다. 방화벽 쪽에서 막고 있는 건가요?"
+    gold_runbooks: [network-timeout]
+    rationale: "시스템 간 호출 시 발생하는 504 Timeout을 통해 네트워크 혹은 연동 타임아웃을 나타냄"
+    source: ""
+
+  - id: X07
+    category: normal
+    query: "새로 띄운 image-processing-server 팬 도는 소리가 서버실 밖까지 들려요. htop 켜보니까 모든 코어가 뻘겋게 가득 차서 내려오질 않네요."
+    gold_runbooks: [cpu-spike]
+    rationale: "지정되지 않은 시스템에서 발생한 코어 점유 100% 현상으로 CPU 사용률 급증을 표현함"
+    source: ""
+
+  - id: X08
+    category: normal
+    query: "스토리지 서버(archive-nas) 파티션 사용률이 100% 찼다고 알람이 떴습니다. 당장 지울 만한 과거 로그 파일도 마땅치 않은데 어떡하죠?"
+    gold_runbooks: [disk-full]
+    rationale: "지정되지 않은 시스템에서의 파티션 100% 도달로 디스크 용량 부족을 묘사함"
+    source: ""
+
+  - id: X09
+    category: normal
+    query: "어드민(admin-web) 게시판에서 특정 유저 검색하면 무한 로딩 도는 현상이 있습니다. 에러 페이지가 뜨는 건 아닌데 데이터가 안 와요."
+    gold_runbooks: [high-latency]
+    rationale: "지정되지 않은 시스템에서 타임아웃 에러 없이 무한 로딩되는 현상을 통해 지연 장애를 설명함"
+    source: ""
+
+  - id: X10
+    category: no_runbook
+    query: "payments-service랑 연동된 KCP 쪽에서 응답을 안 줘서 결제가 전부 실패하고 있습니다. PG사 쪽 장애인 것 같은데 영업팀 공지 나갔나요?"
+    gold_runbooks: []
+    rationale: "내부 시스템 장애가 아닌 외부 파트너사(PG사) 장애로, 제공된 매뉴얼로는 해결할 수 없음"
+    source: "국내 PG사 통신 장애 사례"
+
+  - id: X11
+    category: no_runbook
+    query: "어제부터 gateway-service 호출할 때 클라이언트단에서 SSL Certificate Expired 에러가 나면서 통신이 다 끊겼어요. 인증서 갱신 안 된 거 같은데요?"
+    gold_runbooks: []
+    rationale: "인증서 만료 장애는 주어진 6개의 시스템 자원 및 네트워크 지연 매뉴얼에 해당하지 않음"
+    source: ""
+
+  - id: X12
+    category: no_runbook
+    query: "오늘 신규 입사자 분들 백오피스 관리자 권한 부여하려고 하는데, 권한 없음 에러가 납니다. 사내 IAM이나 Active Directory 쪽에 문제가 있나요?"
+    gold_runbooks: []
+    rationale: "접근 권한 및 인증 관리 시스템 문제로, 주어진 성능 및 연결 관련 매뉴얼로 대처 불가"
+    source: ""
+
+  - id: X13
+    category: ambiguous
+    query: "갑자기 web-01 반응이 미친 듯이 느려지더니 502 에러를 뱉네요. 서버 접속해보면 로드 애버리지도 엄청 높고 프로세스들이 엉켜있습니다."
+    gold_runbooks: [cpu-spike, high-latency]
+    rationale: "반응 지연(느려짐) 증상과 프로세스 과부하 현상이 동시에 나타나 두 가지 원인이 겹칠 수 있음"
+    source: ""
+
+  - id: X14
+    category: ambiguous
+    query: "auth-service에서 DB 찌르는 쿼리가 죄다 타임아웃 나면서 결국 서비스가 멈췄어요. DB 자체가 죽은 건지, 그쪽으로 가는 망이 단절된 건지 알 수가 없네요."
+    gold_runbooks: [db-down, network-timeout]
+    rationale: "DB 접속 실패와 타임아웃 현상이 혼재하여 정보 부족으로 원인을 하나로 좁히기 어려움"
+    source: "카카오 C&C 화재 DB 접속 장애"
+
+  - id: X15
+    category: ambiguous
+    query: "알림 발송 워커(notification-worker) 큐에 메시지가 계속 쌓이기만 하고 처리를 못합니다. 죽은 건 아닌데 아무 반응이 없어요. 스레드 덤프 떠야 할까요?"
+    gold_runbooks: [high-latency, network-timeout]
+    rationale: "지정되지 않은 시스템에서 처리가 지연되는지, 외부로 나가는 통신이 막혀 대기 중인지 증상만으론 불명확함"
+    source: ""
