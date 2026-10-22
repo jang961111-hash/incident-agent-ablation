@@ -13,8 +13,8 @@ sys.path.insert(0, str(ROOT))
 from eval.extra_metrics import load_all  # noqa: E402
 
 ORDER = ["base", "rag", "judge", "rag_judge", "rag_judge_cost", "rag_judge_v2", "final"]
-LABEL = {"base": "base", "rag": "+RAG", "judge": "+Judge만", "rag_judge": "RAG+Judge",
-         "rag_judge_cost": "+비용", "rag_judge_v2": "+v2 보완", "final": "**final**"}
+# 머리글은 1.4 의 구성 이름 그대로 쓴다 (본문 표와 구성 표의 이름이 달라 헷갈리지 않게)
+LABEL = {n: f"`{n}`" for n in ORDER} | {"final": "**`final`**"}
 R = ROOT / "results"
 # 지연 통제 재측정(scripts/run_latency_ctrl.sh)이 7구성 모두 있으면 지연은 그 값을 쓴다
 LATCTL = all((R / f"{n}_latctl_latest.json").exists() for n in ORDER) and (R / "stats_holdout_latctl.json").exists()
@@ -27,11 +27,11 @@ def pct(v):
 def holdout_table() -> str:
     H = {n: json.loads((R / f"{n}_latest.json").read_text())["summary"]["by_split"]["holdout"]["mean"] for n in ORDER}
     X = load_all("holdout")
-    rows = [("정답 런북 누락률 ↓", lambda n: pct(X[n]["miss_runbook_rate"])),
-            ("무관 런북 혼입률 ↓", lambda n: pct(X[n]["wrong_runbook_rate"])),
-            ("런북 핵심 어구 포함 (Judge 무관)", lambda n: pct(H[n]["must_phrase_rate"])),
-            ("평가 Judge 통과 (gpt-4o)", lambda n: pct(H[n]["pass_rate"])),
-            ("Recall@1", lambda n: pct(H[n]["recall@1"])),
+    rows = [("맞는 매뉴얼 누락률 ↓", lambda n: pct(X[n]["miss_runbook_rate"])),
+            ("엉뚱한 매뉴얼 혼입률 ↓", lambda n: pct(X[n]["wrong_runbook_rate"])),
+            ("매뉴얼 핵심 문구 포함 (코드로 셈)", lambda n: pct(H[n]["must_phrase_rate"])),
+            ("평가 Judge(gpt-4o) 합격률", lambda n: pct(H[n]["pass_rate"])),
+            ("정답 매뉴얼 1위 (Recall@1)", lambda n: pct(H[n]["recall@1"])),
             ("장애 1건당 비용 (USD)", lambda n: f"{X[n]['cost_per_incident']:.5f}"),
             ("p95 지연", lambda n: f"{H[n]['latency_p95_ms'] / 1000:.1f}초")]
     if LATCTL:
@@ -62,7 +62,7 @@ def contrib_table() -> str:
             s = f"{round(r['diff'] * 100):+d}%p [{lo:+d}, {hi:+d}]"
         return f"**{s}** ★" if r["significant"] else s
     lat_head = "질의당 지연 (같은 부하 재측정)" if LATCTL else "질의당 지연"
-    head = f"| 켠 것 | 정답 누락 | 무관 혼입 | 어구 포함 | 질의당 비용 | {lat_head} |\n|---|---|---|---|---|---|"
+    head = f"| 켠 것 | 맞는 매뉴얼 누락 | 엉뚱한 매뉴얼 혼입 | 핵심 문구 포함 | 질의당 비용 | {lat_head} |\n|---|---|---|---|---|---|"
     lines = [f"| {'**' + p['label'] + '**' if p['a'] == 'base' and p['b'] == 'final' else p['label']} | "
              + " | ".join(c(p[k], k) for k in ("miss", "wrong", "must", "cost", "latency")) + " |" for p in st]
     tail = ("\n\n지연 열: 동일 부하·동시 실행 조건(7구성 동시, workers 2, holdout 36문제 x 3회) 재측정 값. 나머지 열은 원 측정."
