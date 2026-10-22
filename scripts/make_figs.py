@@ -84,7 +84,7 @@ for i, (h, s, c) in enumerate(steps):
     if i < 4:
         ax.annotate("", xy=(x + 1.95, 1.78), xytext=(x + 1.72, 1.78),
                     arrowprops=dict(arrowstyle="->", color=INK2, lw=1.2))
-ax.text(0.15, 3.05, "AI 비서가 하는 일과, 이번에 바꾼 곳 (파란 칸)", fontsize=15, color=INK, fontweight="bold")
+ax.text(0.15, 3.05, "AI 에이전트가 하는 일과, 이번에 바꾼 곳 (파란 칸)", fontsize=15, color=INK, fontweight="bold")
 ax.text(0.15, 0.55, "원본 코드는 그대로 두고, 파란 칸만 스위치로 켜고 끄며 효과를 쟀다", fontsize=11, color=INK2)
 fig.savefig(OUT / "fig1_flow.png", dpi=180, bbox_inches="tight")
 plt.close(fig)
@@ -227,7 +227,8 @@ plt.close(fig)
 # 그리는 코드는 scripts/demo_side_by_side.py 의 render_png 하나뿐이다 (--render 로도 같은 그림).
 sys.path.insert(0, str(ROOT / "scripts"))
 from demo_side_by_side import render_png  # noqa: E402
-demo_path = sorted((R / "raw").glob("demo_*.json"))[-1]
+# 가장 최근 파일이 아니라 README 그림의 근거로 고정한 실행 기록을 쓴다 (이후 시연 리허설 기록이 그림을 바꾸지 않도록)
+demo_path = R / "raw" / "demo_20261021_114804.json"
 render_png(json.loads(demo_path.read_text()), OUT / "fig10_demo.png", demo_path.relative_to(ROOT).as_posix())
 
 print("wrote", sorted(p.name for p in OUT.glob("*.png")))
