@@ -223,12 +223,13 @@ fig.tight_layout()
 fig.savefig(OUT / "fig9_judge.png", dpi=180)
 plt.close(fig)
 
-# 10. 실행 결과 화면 — 같은 질문에 원본과 최종이 낸 답 (results/raw/demo_*.json, 실제 API 1회 실행 기록)
+# 10·11. 실행 결과 화면 — 같은 질문에 원본과 최종이 낸 답 (results/demo/*.json, 실제 API 1회 실행 기록)
 # 그리는 코드는 scripts/demo_side_by_side.py 의 render_png 하나뿐이다 (--render 로도 같은 그림).
 sys.path.insert(0, str(ROOT / "scripts"))
 from demo_side_by_side import render_png  # noqa: E402
-# 가장 최근 파일이 아니라 README 그림의 근거로 고정한 실행 기록을 쓴다 (이후 시연 리허설 기록이 그림을 바꾸지 않도록)
-demo_path = R / "raw" / "demo_20261021_114804.json"
-render_png(json.loads(demo_path.read_text()), OUT / "fig10_demo.png", demo_path.relative_to(ROOT).as_posix())
+# 입력은 커밋된 고정 경로 (results/raw 는 git 에 없고, 리허설 기록이 덮어쓰면 안 된다)
+for demo_path, fig in ((R / "demo" / "demo_q01_20261021_114804.json", "fig10_demo.png"),
+                       (R / "demo" / "demo_q19_20261022_134437.json", "fig11_demo_noRunbook.png")):
+    render_png(json.loads(demo_path.read_text()), OUT / fig, demo_path.relative_to(ROOT).as_posix())
 
 print("wrote", sorted(p.name for p in OUT.glob("*.png")))

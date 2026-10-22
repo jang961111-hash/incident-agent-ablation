@@ -77,9 +77,13 @@ SUMMARY = {
 # 강조할 핵심 조치 (원문 그대로의 구절). 원문에 있을 때만 강조한다.
 KEY_PHRASE = {"base": "풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정합니다.",
               "final": "failover 노드로 전환한다."}
-# 한 줄 해석. 근거 구절이 원문 답에 있을 때만 붙인다.
-NOTE = {"base": ("타임아웃", "DB가 죽었는데, 응답 지연 대응 절차를 안내"),
-        "final": ("failover", "DB 장애 핵심 조치(failover 전환)를 안내")}
+# 한 줄 해석. 질문에 키워드가 있고, 근거 구절이 원문 답에 있을 때만 붙인다.
+NOTES = {
+    "DB 프라이머리": {"base": ("타임아웃", "DB가 죽었는데, 응답 지연 대응 절차를 안내"),
+                    "final": ("failover", "DB 장애 핵심 조치(failover 전환)를 안내")},
+    "PG사": {"base": ("타임아웃", "결제 API 장애인데, 응답 지연 대응 절차를 안내"),
+            "final": ("추가 정보", "맞는 매뉴얼이 없다고 알리고 추가 정보를 요청")},
+}
 
 
 def _font_path() -> str:
@@ -177,7 +181,8 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
     def column(d, key, name, x, y0, height=None, draw=True):
         r = D[key]
         fed = r["fed_runbooks"]
-        ok = bool(gold & set(fed))
+        # 정답 매뉴얼이 없는 질문은 아무것도 넣지 않아야 맞다
+        ok = bool(gold & set(fed)) if gold else not fed
         dark, light, hl = THEME[ok]
         if draw and height:
             d.rounded_rectangle([x, y0, x + CW, y0 + height], radius=28, fill=light, outline=LINE, width=2)
@@ -190,7 +195,9 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
         if draw:
             d.rounded_rectangle([ix, y, ix + iw, y + bh], radius=22, fill=dark)
             draw_icon(d, ix + 56, y + bh / 2, 30, ok, dark)
-            d.text((ix + 104, y + bh / 2), "맞는 매뉴얼을 찾음" if ok else "엉뚱한 매뉴얼을 고름",
+            verdict = (("맞는 매뉴얼을 찾음" if ok else "엉뚱한 매뉴얼을 고름") if gold
+                       else ("매뉴얼 없음을 알림" if ok else "상관없는 매뉴얼을 넣음"))
+            d.text((ix + 104, y + bh / 2), verdict,
                    font=F(46, True), fill="white", anchor="lm")
         y += bh + 20
         # 고른 매뉴얼 칩 (매뉴얼 제목은 context 에서 읽음)
@@ -207,7 +214,7 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
             cx += w + 14
         y += 56 + 22
         # 한 줄 해석
-        note = NOTE.get(key)
+        note = next((v.get(key) for k, v in NOTES.items() if k in D.get("query", "")), None)
         if note and note[0] in r["answer"]:
             if draw:
                 d.rectangle([ix, y + 4, ix + 8, y + 46], fill=dark)
@@ -219,8 +226,9 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
                  ("비용", f"${r['cost_usd']:.5f}", None),
                  ("재작성", f"{r['rewrites']}회", None)]
         if key == right and cost[left] > 0 and cost[right] < cost[left]:
-            frac = round(cost[left] / cost[right])
-            if frac >= 2:
+            ratio = cost[left] / cost[right]
+            frac = f"{round(ratio)}" if abs(ratio - round(ratio)) < 0.15 else f"{ratio:.1f}"
+            if ratio >= 2:
                 stats[1] = (stats[1][0], stats[1][1], f"원본의 약 {frac}분의 1")
         sh = 150
         for i, (lab, val, tag) in enumerate(stats):
@@ -285,8 +293,8 @@ def render_png(D: dict, out: Path, src: str, left: str = "base", right: str = "f
     d.rounded_rectangle([M, top_q, W - M, top_q + qh], radius=24, fill="#f1f0ec", outline=LINE, width=2)
     d.text((M + 36, top_q + qh / 2), "질문", font=F(30, True), fill=INK2, anchor="lm")
     d.text((M + 120, top_q + qh / 2), f"“{D['query']}”", font=F(42, True), fill=INK, anchor="lm")
-    if gold:
-        g = "정답 매뉴얼: " + ", ".join(D["gold"])
+    if "gold" in D:
+        g = ("정답 매뉴얼: " + ", ".join(D["gold"])) if gold else "정답: 맞는 매뉴얼 없음"
         gw = text_w(g, F(32, True)) + 48
         gx = W - M - 32 - gw
         d.rounded_rectangle([gx, top_q + qh / 2 - 30, gx + gw, top_q + qh / 2 + 30], radius=30,
