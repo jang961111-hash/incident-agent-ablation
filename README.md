@@ -370,7 +370,7 @@ API 키 없이, 데이터를 밖으로 보내지 않고 이 Mac 안에서도 돌
 - **지표 축 분리**: 검색(맞는 매뉴얼 누락·엉뚱한 매뉴얼 혼입, Recall@k), 답변(평가 Judge 4지표, 매뉴얼 핵심 문구 포함), 운영(건당 비용, 지연, 동시성, 장애 주입).
 - **편향 검증**: 알림 문구대로 묻는 질문과 자기 말로 묻는 질문, dev와 holdout을 나눠 봤다.
 - 자세한 분석: [docs/06_결과분석.md](docs/06_결과분석.md) · 방법: [docs/05_보고서_방법.md](docs/05_보고서_방법.md) · 전체 표: [docs/04_결과표.md](docs/04_결과표.md)
-- **최종 발표 자료**: [최종 8장 PDF](deck/pdf/incident-agent-ablation_skala.pdf) · [Canva 최종본](https://canva.link/44pmzc1kme81p56) · [발표 스크립트](docs/발표스크립트_최종.md) · [용어집](docs/발표_용어집.md) · 이전 버전: [5분용 8장](deck/incident-agent-ablation_5min.pptx) · [전체 18장](deck/incident-agent-ablation.pptx) · [대본 모음](docs/발표_대본.md)
+- **최종 발표 자료**: [최종 8장 PDF](deck/pdf/incident-agent-ablation_skala.pdf) · [최종 8장 PPTX (Canva 내보내기, 발표자 노트 포함)](deck/final/incident-agent-ablation_skala_canva.pptx) · [Canva 최종본](https://canva.link/44pmzc1kme81p56) · [발표 스크립트](docs/발표/발표스크립트_최종.md) ([연습용 페이지](docs/발표/발표스크립트_최종.html)) · [용어집](docs/발표/발표_용어집.md) · [시연 가이드](docs/발표/시연_가이드.md) · 이전 버전: [5분용 8장](deck/incident-agent-ablation_5min.pptx) · [전체 18장](deck/incident-agent-ablation.pptx) · [대본 모음](docs/발표/발표_대본_이전안.md)
 
 ### 직접 돌려 보기
 

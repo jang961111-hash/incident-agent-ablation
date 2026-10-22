@@ -83,7 +83,7 @@ def main():
     a = ap.parse_args()
     ok = allowed()
     docs = {"README.md": (ROOT / "README.md").read_text(),
-            "docs/발표_대본.md": (ROOT / "docs/발표_대본.md").read_text(),
+            "docs/발표/발표_대본_이전안.md": (ROOT / "docs/발표/발표_대본_이전안.md").read_text(),
             "docs/submission_sheet_draft.md": (ROOT / "docs/submission_sheet_draft.md").read_text(),
             "docs/research/00_요약_실태현황.md": (ROOT / "docs/research/00_요약_실태현황.md").read_text(),
             "deck (pptx 2종)": deck_text()}

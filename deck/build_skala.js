@@ -42,8 +42,8 @@ const FB = `${fsum("base", "completed_among_faulted")}/${fsum("base", "queries_w
 const FF = `${fsum("final", "completed_among_faulted")}/${fsum("final", "queries_with_fault")}`;
 console.log({ MISS, WRONG, COST, COSTP, CONC, FAULT, RAG_MISS, V2_WRONG, LAT_ALL, LAT_JUDGE, RAG_PARA, NCFG, NQ, NREP, ratios: ratios.map((r) => r.toFixed(2)), SPD, FB, FF });
 
-// 발표자 노트: docs/발표_대본.md D안의 ">" 줄 그대로
-const SCRIPT = fs.readFileSync(path.join(ROOT, "docs", "발표_대본.md"), "utf8");
+// 발표자 노트: docs/발표/발표_대본_이전안.md D안의 ">" 줄 그대로
+const SCRIPT = fs.readFileSync(path.join(ROOT, "docs", "발표", "발표_대본_이전안.md"), "utf8");
 const dPart = SCRIPT.split("## D안")[1].split("### 30초")[0];
 const NOTES = {};
 dPart.split(/\n### /).slice(1).forEach((sec) => {
