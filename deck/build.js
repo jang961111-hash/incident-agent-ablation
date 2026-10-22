@@ -18,8 +18,8 @@ const sec = (ms) => `${(ms / 1000).toFixed(1)}초`;
 // ── 테마 ─────────────────────────────────────────────────────────────
 const THEME = {
   name: "Incident Ablation",
-  headFontFace: "Apple SD Gothic Neo",
-  bodyFontFace: "Apple SD Gothic Neo",
+  headFontFace: process.env.DECK_FONT || "Apple SD Gothic Neo",   // Canva용: DECK_FONT="Noto Sans KR"
+  bodyFontFace: process.env.DECK_FONT || "Apple SD Gothic Neo",
   colors: {
     dk1: "1A2230", lt1: "FFFFFF", dk2: "16202C", lt2: "EEF2F6",
     accent1: "E8833A", accent2: "1F8A70", accent3: "8A94A3",
@@ -454,7 +454,7 @@ s.addText([
 ], { placeholder: "body" });
 
 (async () => {
-  const out = path.join(__dirname, "incident-agent-ablation.pptx");
+  const out = path.join(__dirname, process.env.DECK_OUT || "incident-agent-ablation.pptx");
   await pres.writeFile({ fileName: out });
   if (process.env.PPTX_SKILL_DIR) {
     const { applyTheme } = require(path.join(process.env.PPTX_SKILL_DIR, "scripts", "apply_theme.js"));
