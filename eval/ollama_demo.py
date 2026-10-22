@@ -63,9 +63,9 @@ def main():
     ap.add_argument("--configs", default="base,final")
     a = ap.parse_args()
 
+    import src.adapter as adapter          # src/ 를 import 경로에 올린다 (agent·ext 보다 먼저)
     import agent.openai_llm as ol
     import ext.meter as em
-    import src.adapter as adapter
     ol.OPENAI_URL = em.OPENAI_URL = f"{OLLAMA}/chat/completions"
     em.PRICE[a.model] = (0.0, 0.0)          # 로컬 모델은 과금 0 (없으면 비용이 NaN)
     httpx.post = _ollama_post

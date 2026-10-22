@@ -1,0 +1,64 @@
+{
+ "environment": "로컬 Ollama (qwen3:8b), API 비용 0, 정량 비교 대상 아님",
+ "query": "DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.",
+ "model": "qwen3:8b",
+ "embedding": "local (LocalNgram)",
+ "runs": {
+  "final": {
+   "ok": true,
+   "latency_s": 110.3,
+   "route": "incident",
+   "runbooks": [],
+   "rewrites": 0,
+   "llm_calls": [
+    {
+     "model": "qwen3:8b",
+     "stage": "route",
+     "prompt": 162,
+     "completion": 13
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "plan",
+     "prompt": 352,
+     "completion": 61
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "write#1",
+     "prompt": 323,
+     "completion": 164
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "judge",
+     "prompt": 782,
+     "completion": 308
+    }
+   ],
+   "judge_history": [
+    {
+     "attempt": 1,
+     "score": 0.75,
+     "by": "judge",
+     "verdicts": {
+      "relevance": "Pass",
+      "completeness": "Fail",
+      "domain_appropriateness": "Pass",
+      "clarity": "Pass"
+     },
+     "reasons": {
+      "relevance": "사용자가 DB 프라이머리 다운에 대해 물었으나, 등록된 런북에 해당 시스템과 증상에 맞는 절차가 없음을 밝히고, 확인한 모니터링 범위만 전달한 후 대상 시스템과 증상을 되물어 답변한 것으로 적절함.",
+      "completeness": "Context에 제공된 정보를 모두 포함하지 않았으며, DB 프라이머리 다운에 대한 구체적인 원인이나 대응 절차가 누락되어 있음.",
+      "domain_appropriateness": "등록된 런북에 일치하는 절차가 없음을 명시하고, 확인한 모니터링 범위만 전달한 후 대상 시스템과 증상을 되물어 적절한 대응 절차를 요청하는 방식으로 답변함.",
+      "clarity": "요청한 형식과 길이 제약을 지키고 있으며, 논리적으로 정리되어 있음."
+     },
+     "fixable": true,
+     "guard": null,
+     "factcheck_unsupported": []
+    }
+   ],
+   "answer": "1) 모니터링 대상 시스템인 auth-service의 상태가 degraded로 확인되었으며, CPU 사용률 85.4%, 메모리 사용률 64.7%로 과부하 상태입니다.  \n2) 알림 2건이 발생했으며, 'p95 latency 2.4s (threshold 1.0s)' 및 'connection pool 92% used'의 문제가 확인되었습니다.  \n3) 등록된 런북에 해당 증상과 일치하는 절차가 없으며, 최고 유사도 0.171로 기준 0.324를 만족하지 않아 대응 절차가 미등록된 것으로 확인되었습니다."
+  }
+ }
+}
