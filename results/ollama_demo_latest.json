@@ -1,64 +1,47 @@
 {
  "environment": "로컬 Ollama (qwen3:8b), API 비용 0, 정량 비교 대상 아님",
- "query": "DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.",
+ "query": "cache-service 힙 사용량이 계속 우상향이고 메모리 알람이 떴습니다. 당장 할 일과 원인 파악 방법을 알려주세요.",
+ "qid": "Q37",
+ "gold_runbooks": [
+  "memory-leak"
+ ],
  "model": "qwen3:8b",
- "embedding": "local (LocalNgram)",
  "runs": {
-  "final": {
+  "base": {
    "ok": true,
-   "latency_s": 110.3,
+   "latency_s": 20.1,
+   "selection": "keyword",
+   "embedding": null,
+   "min_score": null,
    "route": "incident",
-   "runbooks": [],
+   "runbooks": [
+    "memory-leak"
+   ],
+   "ranking": null,
+   "notices": [],
    "rewrites": 0,
    "llm_calls": [
     {
      "model": "qwen3:8b",
      "stage": "route",
-     "prompt": 162,
+     "prompt": 180,
      "completion": 13
     },
     {
      "model": "qwen3:8b",
      "stage": "plan",
-     "prompt": 352,
-     "completion": 61
+     "prompt": 388,
+     "completion": 47
     },
     {
      "model": "qwen3:8b",
      "stage": "write#1",
-     "prompt": 323,
-     "completion": 164
-    },
-    {
-     "model": "qwen3:8b",
-     "stage": "judge",
-     "prompt": 782,
-     "completion": 308
+     "prompt": 428,
+     "completion": 148
     }
    ],
-   "judge_history": [
-    {
-     "attempt": 1,
-     "score": 0.75,
-     "by": "judge",
-     "verdicts": {
-      "relevance": "Pass",
-      "completeness": "Fail",
-      "domain_appropriateness": "Pass",
-      "clarity": "Pass"
-     },
-     "reasons": {
-      "relevance": "사용자가 DB 프라이머리 다운에 대해 물었으나, 등록된 런북에 해당 시스템과 증상에 맞는 절차가 없음을 밝히고, 확인한 모니터링 범위만 전달한 후 대상 시스템과 증상을 되물어 답변한 것으로 적절함.",
-      "completeness": "Context에 제공된 정보를 모두 포함하지 않았으며, DB 프라이머리 다운에 대한 구체적인 원인이나 대응 절차가 누락되어 있음.",
-      "domain_appropriateness": "등록된 런북에 일치하는 절차가 없음을 명시하고, 확인한 모니터링 범위만 전달한 후 대상 시스템과 증상을 되물어 적절한 대응 절차를 요청하는 방식으로 답변함.",
-      "clarity": "요청한 형식과 길이 제약을 지키고 있으며, 논리적으로 정리되어 있음."
-     },
-     "fixable": true,
-     "guard": null,
-     "factcheck_unsupported": []
-    }
-   ],
-   "answer": "1) 모니터링 대상 시스템인 auth-service의 상태가 degraded로 확인되었으며, CPU 사용률 85.4%, 메모리 사용률 64.7%로 과부하 상태입니다.  \n2) 알림 2건이 발생했으며, 'p95 latency 2.4s (threshold 1.0s)' 및 'connection pool 92% used'의 문제가 확인되었습니다.  \n3) 등록된 런북에 해당 증상과 일치하는 절차가 없으며, 최고 유사도 0.171로 기준 0.324를 만족하지 않아 대응 절차가 미등록된 것으로 확인되었습니다."
+   "judge_history": [],
+   "answer": "1) 메모리 사용률이 87.6%로 높아졌으며, 6시간 동안 꾸준히 증가하고 있음.  \n2) 현재 상태가 degraded로, 메모리 알람이 2건 발생했으므로 즉시 재시작을 고려해야 함.  \n3) 힙 덤프나 프로파일링 도구를 사용해 메모리 누수 원인(예: 캐시 무제한 증가, 이벤트 리스너 중복 등록 등)을 확인하고, 최근 배포에 해당 패턴이 있었는지 점검해야 함."
   }
  }
 }

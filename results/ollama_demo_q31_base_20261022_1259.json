@@ -1,0 +1,47 @@
+{
+ "environment": "로컬 Ollama (qwen3:8b), API 비용 0, 정량 비교 대상 아님",
+ "query": "log-service에서 disk space low 알람이 떴습니다. 용량 확보 절차와 이후 조치를 알려주세요.",
+ "qid": "Q31",
+ "gold_runbooks": [
+  "disk-full"
+ ],
+ "model": "qwen3:8b",
+ "runs": {
+  "base": {
+   "ok": true,
+   "latency_s": 22.3,
+   "selection": "keyword",
+   "embedding": null,
+   "min_score": null,
+   "route": "incident",
+   "runbooks": [
+    "disk-full"
+   ],
+   "ranking": null,
+   "notices": [],
+   "rewrites": 0,
+   "llm_calls": [
+    {
+     "model": "qwen3:8b",
+     "stage": "route",
+     "prompt": 172,
+     "completion": 13
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "plan",
+     "prompt": 372,
+     "completion": 44
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "write#1",
+     "prompt": 391,
+     "completion": 157
+    }
+   ],
+   "judge_history": [],
+   "answer": "1) 모니터링 상태 확인: log-service의 상태는 degraded로, 디스크 사용률은 95%에 달해 임계 수준(90% 이상)을 초과하고 있습니다.  \n2) 디스크 정리 및 용량 확보: 로그 파일, 임시 파일, 오래된 백업 등 안전하게 삭제할 수 있는 항목부터 정리하여 즉시 용량을 확보합니다.  \n3) 정상화 및 정책 재검토: 용량이 정상화되면 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토하여 조기에 감지되도록 조정합니다."
+  }
+ }
+}

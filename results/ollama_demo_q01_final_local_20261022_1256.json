@@ -1,0 +1,121 @@
+{
+ "environment": "로컬 Ollama (qwen3:8b), API 비용 0, 정량 비교 대상 아님",
+ "query": "DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.",
+ "qid": "Q01",
+ "gold_runbooks": [
+  "db-down"
+ ],
+ "model": "qwen3:8b",
+ "runs": {
+  "final_local": {
+   "ok": true,
+   "latency_s": 128.6,
+   "selection": "rag",
+   "embedding": "local-tfidf",
+   "min_score": 0.0782,
+   "route": "incident",
+   "runbooks": [
+    "db-down"
+   ],
+   "ranking": [
+    [
+     "db-down",
+     0.0782
+    ],
+    [
+     "cpu-spike",
+     0.0
+    ],
+    [
+     "disk-full",
+     0.0
+    ]
+   ],
+   "notices": [
+    "질문에 등록된 모니터링 대상 시스템 이름이 없어 auth-service 를 기본으로 조회함 — 질문 대상과 다를 수 있음을 밝힐 것."
+   ],
+   "rewrites": 1,
+   "llm_calls": [
+    {
+     "model": "qwen3:8b",
+     "stage": "route",
+     "prompt": 162,
+     "completion": 13
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "plan",
+     "prompt": 352,
+     "completion": 61
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "write#1",
+     "prompt": 335,
+     "completion": 202
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "judge",
+     "prompt": 832,
+     "completion": 272
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "write#2",
+     "prompt": 528,
+     "completion": 101
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "judge",
+     "prompt": 731,
+     "completion": 296
+    }
+   ],
+   "judge_history": [
+    {
+     "attempt": 1,
+     "score": 0.25,
+     "by": "judge",
+     "verdicts": {
+      "relevance": "Fail",
+      "completeness": "Fail",
+      "domain_appropriateness": "Fail",
+      "clarity": "Pass"
+     },
+     "reasons": {
+      "relevance": "질문은 DB 프라이머리 다운에 대한 대응 절차를 요청했으나, 답변은 auth-service의 상태를 다루며, DB 프라이머리와 관련된 구체적인 절차를 제공하지 않았다.",
+      "completeness": "Context에 제공된 DB Down 대응 절차를 완전히 반영하지 않았으며, DB 프라이머리 다운에 대한 구체적인 절차가 누락되어 있다.",
+      "domain_appropriateness": "질문은 DB 프라이머리 다운에 대한 대응 절차를 요청했으나, 답변은 auth-service의 상태를 중심으로 작성되어 질문과 무관한 런북 절차를 섞었다.",
+      "clarity": "답변은 논리적으로 정리되어 있으며, 형식과 길이 제약을 준수하고 있다."
+     },
+     "fixable": true,
+     "guard": null,
+     "factcheck_unsupported": []
+    },
+    {
+     "attempt": 2,
+     "score": 0.25,
+     "by": "judge",
+     "verdicts": {
+      "relevance": "Fail",
+      "completeness": "Fail",
+      "domain_appropriateness": "Fail",
+      "clarity": "Pass"
+     },
+     "reasons": {
+      "relevance": "질문은 DB 프라이머리 다운에 대한 대응 절차를 요청했으나, 답변은 auth-service의 모니터링 상태를 기반으로 한 일반적인 DB Down 대응 절차를 제공하며, 질문 대상 시스템과 다를 수 있음을 명시하지 않았다.",
+      "completeness": "Context에 제공된 'auth-service'의 모니터링 상태 정보(예: CPU, 메모리, 알림 내용)를 전혀 반영하지 않았으며, 핵심 사실을 생략했다.",
+      "domain_appropriateness": "질문에 등록된 시스템 이름이 없어 auth-service를 기본으로 조회한다고 명시되었음에도, 답변은 DB 프라이머리 다운에 대한 일반 절차를 제공하며, 질문과 관련 없는 런북 절차를 섞었다.",
+      "clarity": "형식과 길이 제약을 지키고 있으며, 논리적으로 정리되어 있다."
+     },
+     "fixable": true,
+     "guard": "시간 상한 120초",
+     "factcheck_unsupported": []
+    }
+   ],
+   "answer": "1) DB 프라이머리 다운 장애를 즉시 인지하고, get_monitoring_status로 현재 상태를 확인한다.  \n2) 커넥션 풀 상태와 리플리케이션 상태를 점검하여, 필요 시 failover 노드로 전환한다.  \n3) 서비스 정상화를 확인한 후, 원인 분석과 재발 방지 대책을 문서화하여 대응을 완료한다."
+  }
+ }
+}

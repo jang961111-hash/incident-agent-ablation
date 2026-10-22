@@ -1,0 +1,151 @@
+{
+ "environment": "로컬 Ollama (qwen3:8b), API 비용 0, 정량 비교 대상 아님",
+ "query": "log-service에서 disk space low 알람이 떴습니다. 용량 확보 절차와 이후 조치를 알려주세요.",
+ "qid": "Q31",
+ "gold_runbooks": [
+  "disk-full"
+ ],
+ "model": "qwen3:8b",
+ "runs": {
+  "final_local": {
+   "ok": true,
+   "latency_s": 94.4,
+   "selection": "rag",
+   "embedding": "local-tfidf",
+   "min_score": 0.0782,
+   "route": "incident",
+   "runbooks": [
+    "db-down"
+   ],
+   "ranking": [
+    [
+     "db-down",
+     0.1257
+    ],
+    [
+     "disk-full",
+     0.0468
+    ],
+    [
+     "memory-leak",
+     0.0083
+    ]
+   ],
+   "notices": [],
+   "rewrites": 2,
+   "llm_calls": [
+    {
+     "model": "qwen3:8b",
+     "stage": "route",
+     "prompt": 172,
+     "completion": 13
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "plan",
+     "prompt": 372,
+     "completion": 44
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "write#1",
+     "prompt": 286,
+     "completion": 126
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "judge",
+     "prompt": 707,
+     "completion": 241
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "write#2",
+     "prompt": 454,
+     "completion": 160
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "judge",
+     "prompt": 741,
+     "completion": 284
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "write#3",
+     "prompt": 494,
+     "completion": 140
+    },
+    {
+     "model": "qwen3:8b",
+     "stage": "judge",
+     "prompt": 721,
+     "completion": 265
+    }
+   ],
+   "judge_history": [
+    {
+     "attempt": 1,
+     "score": 0.25,
+     "by": "judge",
+     "verdicts": {
+      "relevance": "Fail",
+      "completeness": "Fail",
+      "domain_appropriateness": "Fail",
+      "clarity": "Pass"
+     },
+     "reasons": {
+      "relevance": "질문은 log-service의 디스크 공간 부족 문제에 대한 절차를 묻고 있지만, 제공된 런북은 DB Down 대응 절차에 관한 것이며, 관련된 절차가 없으므로 적절한 답변이 아님.",
+      "completeness": "Context에 없는 정보(예: 로그 파일 관리 방법, 백업 절차 등)를 만들어내어 완전하지 않음.",
+      "domain_appropriateness": "질문에 맞는 런북 절차가 없고, DB Down 대응 절차를 무리하게 적용함.",
+      "clarity": "형식과 길이 제약을 지키고 논리적으로 정리됨."
+     },
+     "fixable": true,
+     "guard": null,
+     "factcheck_unsupported": []
+    },
+    {
+     "attempt": 2,
+     "score": 0.25,
+     "by": "judge",
+     "verdicts": {
+      "relevance": "Fail",
+      "completeness": "Fail",
+      "domain_appropriateness": "Fail",
+      "clarity": "Pass"
+     },
+     "reasons": {
+      "relevance": "질문은 log-service의 디스크 공간 부족 문제에 대한 대응 절차를 묻고 있으나, 제공된 런북은 'DB Down' 대응 절차에 해당하며, log-service 관련 절차가 런북에 등록되지 않았음에도 불구하고 추측한 절차를 제시함.",
+      "completeness": "Context에 제공된 정보를 기반으로 하지 않고, 추측된 원인(예: /var/log 디렉토리의 로그 파일)과 조치를 추가하여 완전하지 않음.",
+      "domain_appropriateness": "질문에 해당하는 런북이 제공되지 않았음에도 불구하고, DB Down 대응 절차를 기반으로 추측한 절차를 제시함.",
+      "clarity": "형식과 길이 제약을 지키고, 논리적으로 정리되어 있음."
+     },
+     "fixable": true,
+     "guard": null,
+     "factcheck_unsupported": []
+    },
+    {
+     "attempt": 3,
+     "score": 0.25,
+     "by": "judge",
+     "verdicts": {
+      "relevance": "Fail",
+      "completeness": "Fail",
+      "domain_appropriateness": "Fail",
+      "clarity": "Pass"
+     },
+     "reasons": {
+      "relevance": "질문은 log-service의 디스크 공간 부족 문제에 대한 절차를 묻고 있으나, 제공된 런북은 'DB Down' 대응 절차로 관련성이 없으며, 이에 대한 대응 절차를 제공하지 않았다.",
+      "completeness": "Context에 제공된 정보를 기반으로 하지 않고, 추측된 절차를 제시하여 핵심 사실이 누락되었다.",
+      "domain_appropriateness": "질문에 맞는 런북 절차가 제공되지 않았으며, Context에 '일치하는 런북이 없음'이 명시되어 있음에도 불구하고 추측한 절차를 제시하였다.",
+      "clarity": "형식과 길이 제약을 지키고 있으며, 논리적으로 정리되어 있다."
+     },
+     "fixable": true,
+     "guard": "재시도 상한 2회",
+     "factcheck_unsupported": []
+    }
+   ],
+   "answer": "1) 디스크 사용률이 95%에 달해 'disk space low' 알람이 발생했으므로, 즉시 /var/log 디렉토리의 로그 파일을 점검하여 사용 공간을 확인한다.  \n2) 로그 파일을 정리하거나, 로그 회전 설정을 확인하여 일시적인 용량 확보를 수행하고, 필요 시 로그 파일을 백업 후 삭제한다.  \n3) 용량 확보 후, 모니터링 상태를 확인하여 log-service가 정상 운영 중인지 확인하고, 재발 방지를 위한 정책을 문서화한다."
+  }
+ }
+}

@@ -341,6 +341,27 @@ p95 지연 행: 동일 부하·동시 실행 조건(7구성 동시, workers 2, h
 부하 조건이 달라 직접 비교 불가: base·rag·judge·rag_judge·rag_judge_v2 는 7프로세스 동시, rag_judge_cost·final 은 캐시 버그 수정 뒤 2프로세스로 쟀다. 본문 표는 동일 부하 재측정 값을 쓴다.
 <!-- /AUTO:latency_old -->
 
+### 로컬 Ollama 실행 (정량 비교 대상 아님)
+
+API 키 없이, 데이터를 밖으로 보내지 않고 이 Mac 안에서도 돌아가는지 확인한 기록이다. 모델·임베더·채점관이 본문 실험과 모두 달라 숫자를 본문과 비교하지 않는다.
+
+- **베이스는 원래 지원했다.** `LLM_BACKEND=ollama` 로 켜면 `src/agent/ollama_llm.py` 가 로컬 모델을 부른다. 원본 서버를 그대로 띄워 `/health`·`/chat` 을 호출한 기록: [docs/evidence/base_original_ollama.txt](docs/evidence/base_original_ollama.txt) (fast qwen2.5:0.5b, quality qwen3:8b).
+- **개선판은 코드 수정 없이 주소만 바꿔 끼웠다.** `eval/ollama_demo.py` 가 프로세스 안에서만 OpenAI 호환 주소를 `127.0.0.1:11434/v1` 로 바꾸고, 모델은 전부 qwen3:8b, 단가는 0, qwen3 생각 출력은 끄고, 요청 타임아웃은 300초로 둔다.
+- **RAG 기준값은 로컬 임베더로 다시 정했다.** 처음 실행은 끝까지 돌았지만 매뉴얼을 하나도 고르지 못했다 (110.3초 · 매뉴얼 0개). `final.yaml` 의 최소 유사도 0.3236 은 OpenAI 임베딩 척도라 로컬 점수가 전부 그 아래였다. dev 24문제만으로 다시 보정해 보니 기존 로컬 임베더(글자 n-gram)는 기준값을 맞춰도 정답 매뉴얼 1위가 Hit@1 11/18 · min_score 0.1683 · margin 0.02 수준이었다. DB 질문(Q01)에서 high-latency 를 1위로 올렸다. 그래서 런북 6개에서 구한 IDF 로 흔한 어구의 무게를 낮춘 글자 n-gram TF-IDF 임베더(`local-tfidf`)를 플래그로 추가했고, Hit@1 17/18 · min_score 0.0782 · margin 0.05 로 이쪽을 골랐다. 근거: `results/calibrate_rag_local_latest.json`, 구성: `eval/configs/final_local.yaml`.
+
+| 질문 | 구성 | 지연 · 고른 매뉴얼 | Judge (qwen3:8b) |
+|---|---|---|---|
+| Q01 DB 프라이머리 다운 (dev) | base | 24.6초 · high-latency (정답 db-down) | 없음 (규칙 기반) |
+| | final_local | 128.6초 · db-down (정답 db-down) · Judge 재작성 1회 | 4지표 중 1개 통과 → 시간 상한 120초에서 종료 |
+| Q31 log-service 디스크 부족 (holdout) | base | 22.3초 · disk-full (정답 disk-full) | 없음 (규칙 기반) |
+| | final_local | 94.4초 · db-down (정답 disk-full) · Judge 재작성 2회 | 4지표 중 1개 통과 → 재시도 상한 2회에서 종료 |
+| Q37 cache-service 메모리 (holdout) | base | 20.1초 · memory-leak (정답 memory-leak) | 없음 (규칙 기반) |
+| | final_local | 40.5초 · memory-leak (정답 memory-leak) · Judge 재작성 0회 | 4지표 중 3개 통과 (Pass) |
+
+결과 파일: `results/ollama_demo_q01_*`, `results/ollama_demo_q31_*`, `results/ollama_demo_q37_*` (각 1회 실행). 재현: `python -m eval.ollama_demo --configs final_local,base --qid Q01`.
+
+한계: 질문마다 1회씩 3문제뿐이라 경향을 말할 수 없다. 로컬 임베더는 Q31 에서 틀린 매뉴얼(db-down)을 골랐고, dev 보정에서도 균형 정확도가 OpenAI 임베딩보다 낮다 (매뉴얼 없는 질문 1건을 통과시키고 있는 질문 1건을 걸렀다). Q01 은 맞는 매뉴얼을 골랐는데도 8B 채점관이 "auth-service 모니터링 내용을 반영하지 않았다"며 낮게 줘 가드에서 끝났다. 한국어 채점·작성 품질이 gpt-4o 계열보다 낮고, 개선판은 질문당 수십 초에서 2분 남짓 걸린다.
+
 ### 측정 방법
 
 - **평가셋 60문제** (`eval/queries.yaml` v3): dev 24문제는 v2 기준값 조정에만 썼다. holdout 36문제는 v2 구현 전에 고정했고(커밋 `6eb9482`) 최종 보고에만 썼다. 카테고리: 일반·제약·복합·미등록 시스템·모호.

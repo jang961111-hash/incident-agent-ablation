@@ -580,6 +580,96 @@
   "재현 명령": "python -m eval.calibrate_rag"
  },
  {
+  "id": "local_cal_local",
+  "값": "Hit@1 11/18 · min_score 0.1683 · margin 0.02",
+  "의미": "로컬 임베더 local: dev 정답 매뉴얼 1위 적중 수와 보정한 기준값",
+  "분모": "dev 중 정답 매뉴얼이 있는 질문",
+  "데이터셋": "dev",
+  "환경": "로컬 임베더 (API 없음)",
+  "결과 파일": "results/calibrate_rag_local_latest.json",
+  "재현 명령": "python -m eval.calibrate_rag --embedding local"
+ },
+ {
+  "id": "local_cal_local-tfidf",
+  "값": "Hit@1 17/18 · min_score 0.0782 · margin 0.05",
+  "의미": "로컬 임베더 local-tfidf: dev 정답 매뉴얼 1위 적중 수와 보정한 기준값",
+  "분모": "dev 중 정답 매뉴얼이 있는 질문",
+  "데이터셋": "dev",
+  "환경": "로컬 임베더 (API 없음)",
+  "결과 파일": "results/calibrate_rag_local_latest.json",
+  "재현 명령": "python -m eval.calibrate_rag --embedding local"
+ },
+ {
+  "id": "local_first_final",
+  "값": "110.3초 · 매뉴얼 0개",
+  "의미": "처음 로컬 실행 (LocalNgram + OpenAI용 기준값 0.3236): 끝까지 돌았으나 매뉴얼 미선택",
+  "분모": "Q01 1건",
+  "데이터셋": "dev",
+  "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
+  "결과 파일": "results/ollama_demo_20261022_1247.json",
+  "재현 명령": "python -m eval.ollama_demo --configs final"
+ },
+ {
+  "id": "local_Q01_base",
+  "값": "24.6초 · high-latency (정답 db-down)",
+  "의미": "로컬 실행 base: 지연·고른 매뉴얼",
+  "분모": "Q01 1건",
+  "데이터셋": "dev",
+  "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
+  "결과 파일": "results/ollama_demo_q01_base_20261022_1257.json",
+  "재현 명령": "python -m eval.ollama_demo --configs base --qid Q01"
+ },
+ {
+  "id": "local_Q01_final_local",
+  "값": "128.6초 · db-down (정답 db-down) · Judge 재작성 1회",
+  "의미": "로컬 실행 final_local: 지연·고른 매뉴얼",
+  "분모": "Q01 1건",
+  "데이터셋": "dev",
+  "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
+  "결과 파일": "results/ollama_demo_q01_final_local_20261022_1256.json",
+  "재현 명령": "python -m eval.ollama_demo --configs final_local --qid Q01"
+ },
+ {
+  "id": "local_Q31_base",
+  "값": "22.3초 · disk-full (정답 disk-full)",
+  "의미": "로컬 실행 base: 지연·고른 매뉴얼",
+  "분모": "Q31 1건",
+  "데이터셋": "holdout",
+  "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
+  "결과 파일": "results/ollama_demo_q31_base_20261022_1259.json",
+  "재현 명령": "python -m eval.ollama_demo --configs base --qid Q31"
+ },
+ {
+  "id": "local_Q31_final_local",
+  "값": "94.4초 · db-down (정답 disk-full) · Judge 재작성 2회",
+  "의미": "로컬 실행 final_local: 지연·고른 매뉴얼",
+  "분모": "Q31 1건",
+  "데이터셋": "holdout",
+  "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
+  "결과 파일": "results/ollama_demo_q31_final_local_20261022_1258.json",
+  "재현 명령": "python -m eval.ollama_demo --configs final_local --qid Q31"
+ },
+ {
+  "id": "local_Q37_base",
+  "값": "20.1초 · memory-leak (정답 memory-leak)",
+  "의미": "로컬 실행 base: 지연·고른 매뉴얼",
+  "분모": "Q37 1건",
+  "데이터셋": "holdout",
+  "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
+  "결과 파일": "results/ollama_demo_q37_base_20261022_1300.json",
+  "재현 명령": "python -m eval.ollama_demo --configs base --qid Q37"
+ },
+ {
+  "id": "local_Q37_final_local",
+  "값": "40.5초 · memory-leak (정답 memory-leak) · Judge 재작성 0회",
+  "의미": "로컬 실행 final_local: 지연·고른 매뉴얼",
+  "분모": "Q37 1건",
+  "데이터셋": "holdout",
+  "환경": "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)",
+  "결과 파일": "results/ollama_demo_q37_final_local_20261022_1300.json",
+  "재현 명령": "python -m eval.ollama_demo --configs final_local --qid Q37"
+ },
+ {
   "id": "ext_uptime",
   "값": "54%",
   "의미": "최근 중대 장애 비용 10만 달러 초과 응답 (Uptime Institute 2025)",

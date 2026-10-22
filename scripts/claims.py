@@ -251,6 +251,27 @@ add("min_score", f"{cal['min_score']}", "v2 최소 유사도 기준", "dev 질�
 add("min_score_gap", f"{cal['gap']}", "dev에서 맞는 매뉴얼이 있는 질문과 없는 질문의 유사도 점수 차이 (경계값이 얇다는 뜻)", "dev 질문",
     "dev", REAL + " (임베딩)", "results/calibrate_rag.json", "python -m eval.calibrate_rag")
 
+# ── 로컬 Ollama 데모 (정량 비교 대상 아님) ──
+LOCAL = "로컬 Ollama qwen3:8b (데모, 정량 비교 대상 아님)"
+cl = js("calibrate_rag_local_latest.json")
+for k in ("local", "local-tfidf"):
+    c = cl["candidates"][k]
+    hits = round(c["retrieval_dev_gold"]["hit@1"] * c["retrieval_dev_gold"]["n"])
+    add(f"local_cal_{k}", f"Hit@1 {hits}/{c['retrieval_dev_gold']['n']} · min_score {c['best']['min_score']} · margin {c['margin']['pick']}",
+        f"로컬 임베더 {k}: dev 정답 매뉴얼 1위 적중 수와 보정한 기준값", "dev 중 정답 매뉴얼이 있는 질문", "dev",
+        "로컬 임베더 (API 없음)", "results/calibrate_rag_local_latest.json", "python -m eval.calibrate_rag --embedding local")
+d0 = js("ollama_demo_20261022_1247.json")["runs"]["final"]
+add("local_first_final", f"{d0['latency_s']}초 · 매뉴얼 {len(d0['runbooks'])}개", "처음 로컬 실행 (LocalNgram + OpenAI용 기준값 0.3236): 끝까지 돌았으나 매뉴얼 미선택",
+    "Q01 1건", "dev", LOCAL, "results/ollama_demo_20261022_1247.json", "python -m eval.ollama_demo --configs final")
+for f in sorted(R.glob("ollama_demo_q*_2026*.json")):
+    d = json.loads(f.read_text())
+    for cfg, r in d["runs"].items():
+        jh = r.get("judge_history") or []
+        add(f"local_{d['qid']}_{cfg}", f"{r['latency_s']}초 · {','.join(r.get('runbooks') or []) or '없음'} (정답 {','.join(d['gold_runbooks'])})"
+            + (f" · Judge 재작성 {r.get('rewrites')}회" if jh else ""),
+            f"로컬 실행 {cfg}: 지연·고른 매뉴얼", f"{d['qid']} 1건", "dev" if d["qid"] <= "Q24" else "holdout", LOCAL,
+            f"results/{f.name}", f"python -m eval.ollama_demo --configs {cfg} --qid {d['qid']}")
+
 # ── 외부 출처 (조사) ──
 for key, val, mean, src in [
         ("ext_uptime", "54%", "최근 중대 장애 비용 10만 달러 초과 응답 (Uptime Institute 2025)", "docs/research/03_논문_근거.md"),
