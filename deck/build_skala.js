@@ -133,15 +133,15 @@ function bubble(s, x, y, w, h, who, text, right = false, color = RED) {
     if (i < 5) LN(s, 1.0, rowY(i) + 0.52, 0, 0.16, "D1D5DB");
   });
   const CARDS = [
-    [0, "비동기 · 도구 고장 허용", "줄 안 세우고 동시에", "1~3단계"],
+    // 순서 = 만들고 실험한 순서(대본 3장과 같음). 단계 표시는 끼어드는 위치
     [2, "RAG 매뉴얼 검색", "맞는 매뉴얼 페이지 펴 주기", "3단계"],
-    [2, "v2 보완", "억지로 고르지 않기", "3·6단계"],
-    [4, "캐스케이드", "신입 먼저, 막히면 선배", "5단계"],
     [5, "LLM Judge 검수", "답을 다시 보는 AI 채점관", "6단계"],
+    [4, "캐스케이드", "신입 먼저, 막히면 선배", "5단계"],
+    [2, "v2 보완", "억지로 고르지 않기", "3·6단계"],
+    [0, "비동기 · 도구 고장 허용", "줄 안 세우고 동시에", "1~3단계"],
   ];
   CARDS.forEach((c, j) => {
     const y = 1.0 + j * 0.82, x = 3.85;
-    LN(s, 3.35, rowY(c[0]) + 0.26, 0.5, (y + 0.34) - (rowY(c[0]) + 0.26), "F3B5BF", 1);
     RR(s, { x, y, w: 5.55, h: 0.68, fill: { color: "FFFFFF" }, line: { color: LINE, width: 1 }, rectRadius: 0.2 });
     RR(s, { x: x + 0.2, y: y + 0.2, w: 0.5, h: 0.28, fill: { color: RED }, line: { color: RED }, rectRadius: 0.14 });
     OV(s, { x: x + 0.44, y: y + 0.225, w: 0.23, h: 0.23, fill: { color: "FFFFFF" }, line: { color: "FFFFFF" } });
