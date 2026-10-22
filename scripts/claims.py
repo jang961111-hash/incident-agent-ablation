@@ -332,6 +332,33 @@ if _sf:
             f"로컬 holdout {pb['b']}−{pb['a']} 차이 (질문 단위 paired bootstrap 95% CI)", f"짝지은 문제 {d['n']}개", "holdout", LOCAL,
             f"results/{_sf[-1].name}", "python -m eval.ollama_holdout_summary")
 
+# ── 외부 블라인드 문항 (Gemini 작성 15개, 실행 전 고정) ──
+_eb = R / "external_blind_summary_latest.json"
+if _eb.exists():
+    eb = json.loads(_eb.read_text())
+    _cmd = "python -m eval.external_blind --reps 3"
+    _src = "results/external_blind_summary_latest.json"
+    for k in ("base", "final"):
+        s = eb["configs"][k]
+        for key, mean in [("miss", "맞는 매뉴얼 누락"), ("wrong", "엉뚱한 매뉴얼 혼입"), ("hit1", "정답 매뉴얼 1위"),
+                          ("abstain_ok", "맞는 매뉴얼이 없는 문항에서 아무것도 넣지 않음"), ("judge_pass", "평가 Judge(gpt-4o) 합격")]:
+            r, n, d = s[key]
+            add(f"blind_{k}_{key}", f"{round(r * 100)}% ({n:.0f}/{d})", f"외부 블라인드 {k}: {mean}",
+                "15문항 x 3회 (해당 문항만)", "external", REAL, _src, _cmd)
+        add(f"blind_{k}_cost", f"${s['cost_per_query']:.5f}", f"외부 블라인드 {k}: 질의당 비용 (평가 Judge 제외)",
+            "15문항 x 3회", "external", REAL, _src, _cmd)
+        add(f"blind_{k}_lat", f"{s['latency_median_s']:.1f}초", f"외부 블라인드 {k}: 지연 중앙값", "15문항 x 3회", "external", REAL, _src, _cmd)
+    for m in ("miss", "wrong", "hit1", "judge_pass"):
+        d = eb["paired"][m]
+        add(f"blind_diff_{m}", f"{round(d['diff'] * 100):+d}%p [{round(d['lo'] * 100):+d}, {round(d['hi'] * 100):+d}]"
+            + (" ★" if d["significant"] else ""), "외부 블라인드 final−base 차이 (질문 단위 paired bootstrap 95% CI)",
+            f"짝지은 문항 {d['n']}개", "external", REAL, _src, _cmd)
+    _fr = json.loads((R / "final_external_latest.json").read_text())["rows"]
+    _m = [r for r in _fr if r.get("gold") and "error" not in r and not set(r["fed_runbooks"]) & set(r["gold"])]
+    add("blind_final_miss_top1", f"{sum(1 for r in _m if r['retrieved'] and r['retrieved'][0] in r['gold'])}/{len(_m)}",
+        "외부 블라인드 final: 맞는 매뉴얼 누락 중 1위는 정답이었는데 최소 유사도(0.3236)에 걸려 못 넣은 수",
+        "누락된 행 (3회 합)", "external", REAL, "results/final_external_latest.json", _cmd)
+
 # ── 외부 출처 (조사) ──
 for key, val, mean, src in [
         ("ext_uptime", "54%", "최근 중대 장애 비용 10만 달러 초과 응답 (Uptime Institute 2025)", "docs/research/03_논문_근거.md"),

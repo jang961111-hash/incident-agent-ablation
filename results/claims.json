@@ -940,6 +940,196 @@
   "재현 명령": "python -m eval.ollama_holdout_summary"
  },
  {
+  "id": "blind_base_miss",
+  "값": "69% (25/36)",
+  "의미": "외부 블라인드 base: 맞는 매뉴얼 누락",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_base_wrong",
+  "값": "76% (34/45)",
+  "의미": "외부 블라인드 base: 엉뚱한 매뉴얼 혼입",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_base_hit1",
+  "값": "31% (11/36)",
+  "의미": "외부 블라인드 base: 정답 매뉴얼 1위",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_base_abstain_ok",
+  "값": "0% (0/9)",
+  "의미": "외부 블라인드 base: 맞는 매뉴얼이 없는 문항에서 아무것도 넣지 않음",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_base_judge_pass",
+  "값": "80% (36/45)",
+  "의미": "외부 블라인드 base: 평가 Judge(gpt-4o) 합격",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_base_cost",
+  "값": "$0.00364",
+  "의미": "외부 블라인드 base: 질의당 비용 (평가 Judge 제외)",
+  "분모": "15문항 x 3회",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_base_lat",
+  "값": "5.9초",
+  "의미": "외부 블라인드 base: 지연 중앙값",
+  "분모": "15문항 x 3회",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_final_miss",
+  "값": "58% (21/36)",
+  "의미": "외부 블라인드 final: 맞는 매뉴얼 누락",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_final_wrong",
+  "값": "40% (18/45)",
+  "의미": "외부 블라인드 final: 엉뚱한 매뉴얼 혼입",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_final_hit1",
+  "값": "58% (21/36)",
+  "의미": "외부 블라인드 final: 정답 매뉴얼 1위",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_final_abstain_ok",
+  "값": "100% (9/9)",
+  "의미": "외부 블라인드 final: 맞는 매뉴얼이 없는 문항에서 아무것도 넣지 않음",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_final_judge_pass",
+  "값": "98% (44/45)",
+  "의미": "외부 블라인드 final: 평가 Judge(gpt-4o) 합격",
+  "분모": "15문항 x 3회 (해당 문항만)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_final_cost",
+  "값": "$0.00112",
+  "의미": "외부 블라인드 final: 질의당 비용 (평가 Judge 제외)",
+  "분모": "15문항 x 3회",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_final_lat",
+  "값": "9.5초",
+  "의미": "외부 블라인드 final: 지연 중앙값",
+  "분모": "15문항 x 3회",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_diff_miss",
+  "값": "-11%p [-50, +31]",
+  "의미": "외부 블라인드 final−base 차이 (질문 단위 paired bootstrap 95% CI)",
+  "분모": "짝지은 문항 12개",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_diff_wrong",
+  "값": "-36%p [-73, +2]",
+  "의미": "외부 블라인드 final−base 차이 (질문 단위 paired bootstrap 95% CI)",
+  "분모": "짝지은 문항 15개",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_diff_hit1",
+  "값": "+28%p [-17, +69]",
+  "의미": "외부 블라인드 final−base 차이 (질문 단위 paired bootstrap 95% CI)",
+  "분모": "짝지은 문항 12개",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_diff_judge_pass",
+  "값": "+18%p [+4, +33] ★",
+  "의미": "외부 블라인드 final−base 차이 (질문 단위 paired bootstrap 95% CI)",
+  "분모": "짝지은 문항 15개",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/external_blind_summary_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
+  "id": "blind_final_miss_top1",
+  "값": "6/21",
+  "의미": "외부 블라인드 final: 맞는 매뉴얼 누락 중 1위는 정답이었는데 최소 유사도(0.3236)에 걸려 못 넣은 수",
+  "분모": "누락된 행 (3회 합)",
+  "데이터셋": "external",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/final_external_latest.json",
+  "재현 명령": "python -m eval.external_blind --reps 3"
+ },
+ {
   "id": "ext_uptime",
   "값": "54%",
   "의미": "최근 중대 장애 비용 10만 달러 초과 응답 (Uptime Institute 2025)",

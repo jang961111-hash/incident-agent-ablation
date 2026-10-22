@@ -1,0 +1,130 @@
+
+=== base_external === reps=3 workers=2 n=15 교수님 베이스 원본 그대로 (원본 build_graph). Before 기준선.
+  r1 X02  incident  ret=['cpu-spike']  judge=1.00 PASS  rw=0  6801ms  $0.0027  [1/45]
+  r1 X01  incident  ret=['db-down']  judge=1.00 PASS  rw=0  7893ms  $0.0026  [2/45]
+  r1 X04  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  8929ms  $0.0049  [3/45]
+  r1 X03  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  10979ms  $0.0044  [4/45]
+  r1 X06  incident  ret=['disk-full']  judge=1.00 PASS  rw=0  5408ms  $0.0029  [5/45]
+  r1 X05  incident  ret=['memory-leak']  judge=1.00 PASS  rw=0  7511ms  $0.0039  [6/45]
+  r1 X07  incident  ret=['high-latency']  judge=0.25 FAIL  rw=0  5202ms  $0.0034  [7/45]
+  r1 X08  incident  ret=['high-latency']  judge=0.50 FAIL  rw=0  6454ms  $0.0041  [8/45]
+  r1 X09  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  6171ms  $0.0038  [9/45]
+  r1 X10  incident  ret=['cpu-spike']  judge=0.75 PASS  rw=0  6001ms  $0.0030  [10/45]
+  r1 X11  incident  ret=['network-timeout']  judge=0.75 PASS  rw=0  5557ms  $0.0038  [11/45]
+  r1 X12  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5527ms  $0.0036  [12/45]
+  r1 X14  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5624ms  $0.0038  [13/45]
+  r1 X13  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  9574ms  $0.0050  [14/45]
+  r1 X15  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5260ms  $0.0033  [15/45]
+  r2 X02  incident  ret=['cpu-spike']  judge=1.00 PASS  rw=0  5360ms  $0.0027  [16/45]
+  r2 X01  incident  ret=['db-down']  judge=0.75 PASS  rw=0  6946ms  $0.0028  [17/45]
+  r2 X03  incident  ret=['high-latency']  judge=0.50 FAIL  rw=0  6179ms  $0.0040  [18/45]
+  r2 X04  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  7771ms  $0.0045  [19/45]
+  r2 X05  incident  ret=['memory-leak']  judge=1.00 PASS  rw=0  6292ms  $0.0037  [20/45]
+  r2 X06  incident  ret=['disk-full']  judge=1.00 PASS  rw=0  5198ms  $0.0031  [21/45]
+  r2 X07  incident  ret=['high-latency']  judge=0.25 FAIL  rw=0  5349ms  $0.0037  [22/45]
+  r2 X08  incident  ret=['high-latency']  judge=0.25 FAIL  rw=0  6211ms  $0.0039  [23/45]
+  r2 X09  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5440ms  $0.0037  [24/45]
+  r2 X10  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  7115ms  $0.0032  [25/45]
+  r2 X11  incident  ret=['network-timeout']  judge=0.75 PASS  rw=0  5444ms  $0.0038  [26/45]
+  r2 X12  incident  ret=['high-latency']  judge=0.50 FAIL  rw=0  5299ms  $0.0033  [27/45]
+  r2 X13  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  8368ms  $0.0047  [28/45]
+  r2 X14  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5265ms  $0.0037  [29/45]
+  r2 X15  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  4981ms  $0.0033  [30/45]
+  r3 X02  incident  ret=['cpu-spike']  judge=1.00 PASS  rw=0  4632ms  $0.0027  [31/45]
+  r3 X01  incident  ret=['db-down']  judge=1.00 PASS  rw=0  6519ms  $0.0027  [32/45]
+  r3 X04  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  7275ms  $0.0047  [33/45]
+  r3 X03  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  8852ms  $0.0054  [34/45]
+  r3 X06  incident  ret=['disk-full']  judge=1.00 PASS  rw=0  5046ms  $0.0029  [35/45]
+  r3 X05  incident  ret=['memory-leak']  judge=1.00 PASS  rw=0  6923ms  $0.0039  [36/45]
+  r3 X07  incident  ret=['high-latency']  judge=0.25 FAIL  rw=0  5693ms  $0.0037  [37/45]
+  r3 X08  incident  ret=['high-latency']  judge=0.25 FAIL  rw=0  6534ms  $0.0038  [38/45]
+  r3 X09  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5741ms  $0.0038  [39/45]
+  r3 X10  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5181ms  $0.0031  [40/45]
+  r3 X11  incident  ret=['network-timeout']  judge=0.75 PASS  rw=0  5872ms  $0.0044  [41/45]
+  r3 X12  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5004ms  $0.0033  [42/45]
+  r3 X13  incident  ret=['db-down']  judge=0.75 PASS  rw=0  5629ms  $0.0025  [43/45]
+  r3 X14  incident  ret=['high-latency']  judge=1.00 PASS  rw=0  5410ms  $0.0037  [44/45]
+  r3 X15  incident  ret=['high-latency']  judge=0.50 FAIL  rw=0  5919ms  $0.0039  [45/45]
+{"n": 15.0, "errors": 0.0, "pass_rate": 0.7999999999999999, "must_phrase_rate": null, "recall@1": 0.23611111111111113, "fed_precision": 0.3055555555555555, "unsupported_answer_rate": 0.06666666666666667, "latency_p95_ms": 8564.73934869997, "cost_usd_total": 0.05452838333333334, "rewrites_total": 0.0}
+
+=== final_external === reps=3 workers=2 n=15 rag_judge_v2 + 비용(캐스케이드, 캐시) + 런타임(비동기 I/O, 도구 부분 실패 허용). 최종 After.
+  r1 X02  incident  ret=['memory-leak', 'network-timeout']  judge=1.00 PASS  rw=0  10740ms  $0.0004  [1/45]
+  r1 X01  incident  ret=['disk-full', 'network-timeout']  judge=1.00 PASS  rw=0  11478ms  $0.0005  [2/45]
+  r1 X04  incident  ret=['db-down', 'network-timeout']  judge=1.00 PASS  rw=0  10311ms  $0.0006  [3/45]
+  r1 X03  incident  ret=['disk-full', 'db-down']  judge=0.75 PASS  rw=0  11574ms  $0.0006  [4/45]
+  r1 X06  incident  ret=['network-timeout', 'db-down']  judge=1.00 PASS  rw=0  9362ms  $0.0005  [5/45]
+  r1 X05  incident  ret=['memory-leak', 'high-latency']  judge=1.00 PASS  rw=0  11396ms  $0.0007  [6/45]
+  r1 X07  incident  ret=['cpu-spike', 'memory-leak']  judge=1.00 PASS  rw=0  8775ms  $0.0006  [7/45]
+  r1 X08  incident  ret=['disk-full', 'high-latency']  judge=1.00 PASS  rw=2  14111ms  $0.0068  [8/45]
+  r1 X09  incident  ret=['db-down', 'network-timeout']  judge=1.00 PASS  rw=0  9843ms  $0.0005  [9/45]
+  r1 X10  incident  ret=['high-latency', 'db-down']  judge=1.00 PASS  rw=0  8215ms  $0.0004  [10/45]
+  r1 X11  incident  ret=['network-timeout', 'db-down']  judge=1.00 PASS  rw=0  7296ms  $0.0004  [11/45]
+  r1 X12  incident  ret=['db-down', 'disk-full']  judge=1.00 PASS  rw=0  9214ms  $0.0005  [12/45]
+  r1 X13  incident  ret=['network-timeout', 'db-down']  judge=0.75 PASS  rw=0  14871ms  $0.0009  [13/45]
+  r1 X14  incident  ret=['db-down', 'network-timeout']  judge=1.00 PASS  rw=0  8660ms  $0.0004  [14/45]
+  r1 X15  incident  ret=['memory-leak', 'high-latency']  judge=1.00 PASS  rw=0  8731ms  $0.0005  [15/45]
+  r2 X02  incident  ret=['memory-leak', 'network-timeout']  judge=1.00 PASS  rw=0  8801ms  $0.0004  [16/45]
+  r2 X01  incident  ret=['disk-full', 'network-timeout']  judge=1.00 PASS  rw=0  11993ms  $0.0004  [17/45]
+  r2 X03  incident  ret=['disk-full', 'db-down']  judge=0.75 PASS  rw=0  9510ms  $0.0006  [18/45]
+  r2 X04  incident  ret=['db-down', 'network-timeout']  judge=1.00 PASS  rw=0  10392ms  $0.0006  [19/45]
+  r2 X05  incident  ret=['memory-leak', 'high-latency']  judge=1.00 PASS  rw=0  11607ms  $0.0007  [20/45]
+  r2 X06  incident  ret=['network-timeout', 'db-down']  judge=1.00 PASS  rw=0  8570ms  $0.0005  [21/45]
+  r2 X07  incident  ret=['cpu-spike', 'memory-leak']  judge=1.00 PASS  rw=0  8618ms  $0.0006  [22/45]
+  r2 X08  incident  ret=['disk-full', 'high-latency']  judge=1.00 PASS  rw=2  14822ms  $0.0068  [23/45]
+  r2 X09  incident  ret=['db-down', 'network-timeout']  judge=0.75 PASS  rw=0  9089ms  $0.0005  [24/45]
+  r2 X10  incident  ret=['high-latency', 'db-down']  judge=1.00 PASS  rw=0  10017ms  $0.0005  [25/45]
+  r2 X11  incident  ret=['network-timeout', 'db-down']  judge=1.00 PASS  rw=0  7357ms  $0.0004  [26/45]
+  r2 X12  incident  ret=['db-down', 'disk-full']  judge=1.00 PASS  rw=0  9380ms  $0.0005  [27/45]
+  r2 X13  incident  ret=['network-timeout', 'db-down']  judge=0.75 PASS  rw=0  12759ms  $0.0009  [28/45]
+  r2 X14  incident  ret=['db-down', 'network-timeout']  judge=1.00 PASS  rw=0  8446ms  $0.0004  [29/45]
+  r2 X15  incident  ret=['memory-leak', 'high-latency']  judge=1.00 PASS  rw=0  8926ms  $0.0005  [30/45]
+  r3 X01  incident  ret=['disk-full', 'network-timeout']  judge=1.00 PASS  rw=0  9404ms  $0.0004  [31/45]
+  r3 X03  incident  ret=['disk-full', 'db-down']  judge=1.00 PASS  rw=1  12721ms  $0.0042  [32/45]
+  r3 X02  incident  ret=['memory-leak', 'network-timeout']  judge=1.00 PASS  rw=1  36410ms  $0.0031  [33/45]
+  r3 X04  incident  ret=['db-down', 'network-timeout']  judge=1.00 PASS  rw=0  11114ms  $0.0006  [34/45]
+  r3 X05  incident  ret=['memory-leak', 'high-latency']  judge=1.00 PASS  rw=0  10909ms  $0.0007  [35/45]
+  r3 X06  incident  ret=['network-timeout', 'db-down']  judge=1.00 PASS  rw=0  9232ms  $0.0005  [36/45]
+  r3 X07  incident  ret=['cpu-spike', 'memory-leak']  judge=0.50 FAIL  rw=0  9547ms  $0.0007  [37/45]
+  r3 X08  incident  ret=['disk-full', 'high-latency']  judge=1.00 PASS  rw=2  13634ms  $0.0079  [38/45]
+  r3 X09  incident  ret=['db-down', 'network-timeout']  judge=1.00 PASS  rw=0  9539ms  $0.0005  [39/45]
+  r3 X10  incident  ret=['high-latency', 'db-down']  judge=1.00 PASS  rw=0  9558ms  $0.0005  [40/45]
+  r3 X11  incident  ret=['network-timeout', 'db-down']  judge=1.00 PASS  rw=0  8499ms  $0.0004  [41/45]
+  r3 X12  incident  ret=['db-down', 'disk-full']  judge=1.00 PASS  rw=0  8475ms  $0.0005  [42/45]
+  r3 X13  incident  ret=['network-timeout', 'db-down']  judge=0.75 PASS  rw=0  13023ms  $0.0009  [43/45]
+  r3 X14  incident  ret=['db-down', 'network-timeout']  judge=1.00 PASS  rw=0  9024ms  $0.0004  [44/45]
+  r3 X15  incident  ret=['memory-leak', 'high-latency']  judge=1.00 PASS  rw=0  9341ms  $0.0005  [45/45]
+{"n": 15.0, "errors": 0.0, "pass_rate": 0.9777777777777779, "must_phrase_rate": null, "recall@1": 0.5416666666666666, "fed_precision": 0.3958333333333333, "unsupported_answer_rate": 0.06666666666666667, "latency_p95_ms": 16061.117603933331, "cost_usd_total": 0.016809023333333332, "rewrites_total": 2.6666666666666665}
+# 외부 블라인드 문항 결과 (Gemini 작성 15문항)
+
+문항: `eval/external/queries_external_v1.yaml` (실행 전 고정 커밋 fa943a3). 실행 수 base 45 · final 45, 오류 base 0 · final 0.
+
+| 지표 | base | final | 차이 (final − base, 95% CI) |
+|---|---|---|---|
+| 맞는 매뉴얼 누락 ↓ | 69% (25/36) | 58% (21/36) | -11%p [-50, +31] |
+| 엉뚱한 매뉴얼 혼입 ↓ | 76% (34/45) | 40% (18/45) | -36%p [-73, +2] |
+| 정답 매뉴얼 1위 | 31% (11/36) | 58% (21/36) | +28%p [-17, +69] |
+| 매뉴얼 없는 문항에서 넣지 않음 | 0% (0/9) | 100% (9/9) |  |
+| 평가 Judge(gpt-4o) 합격 | 80% (36/45) | 98% (44/45) | +18%p [+4, +33] ★ |
+| 질의당 비용 | $0.00364 | $0.00112 | -0.00251 ★ |
+| 지연 중앙값 | 5.9초 | 9.5초 | +4.5초 ★ |
+
+★ = 질문 단위 paired bootstrap 95% CI 가 0을 포함하지 않음. 15문항이라 구간이 넓다.
+
+| 문항 | base 누락·혼입 | final 누락·혼입 |
+|---|---|---|
+| X01 | 1.0 · 1.0 | 1.0 · 0.0 |
+| X02 | 1.0 · 1.0 | 1.0 · 0.0 |
+| X03 | 1.0 · 1.0 | 1.0 · 1.0 |
+| X04 | 1.0 · 1.0 | 1.0 · 0.0 |
+| X05 | 0.0 · 0.0 | 0.0 · 1.0 |
+| X06 | 1.0 · 1.0 | 0.0 · 1.0 |
+| X07 | 1.0 · 1.0 | 0.0 · 1.0 |
+| X08 | 1.0 · 1.0 | 0.0 · 0.0 |
+| X09 | 0.0 · 0.0 | 1.0 · 1.0 |
+| X10 | - · 1.0 | - · 0.0 |
+| X11 | - · 1.0 | - · 0.0 |
+| X12 | - · 1.0 | - · 0.0 |
+| X13 | 0.33 · 0.33 | 1.0 · 1.0 |
+| X14 | 1.0 · 1.0 | 0.0 · 0.0 |
+| X15 | 0.0 · 0.0 | 1.0 · 0.0 |
+
