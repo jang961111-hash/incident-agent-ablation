@@ -39,6 +39,7 @@ LABELS = LABELS_PATH   # --labels 로 바꿀 수 있다 (시험용)
 
 
 def _ids(name: str) -> list[str]:
+    """eval/ 아래 id 목록 파일(쉼표나 줄바꿈 구분)을 읽는다. 파일이 없으면 빈 목록."""
     p = ROOT / "eval" / name
     return [x.strip() for x in p.read_text().replace("\n", ",").split(",") if x.strip()] if p.exists() else []
 
@@ -66,6 +67,7 @@ ANSWERS = {it["id"]: it["answer"] for it in ITEMS}
 
 
 def state() -> dict:
+    """지금 라벨 파일 기준 진행 상황. 저장할 때마다 파일을 다시 읽어, 터미널 도구(label.py)와 함께 써도 어긋나지 않는다."""
     labels = load_human(LABELS)["labels"]
     done = {i: labels[i]["overall"] for i in labels}
     return {"done": done, "sample_total": len(SAMPLE), "sample_done": sum(1 for i in SAMPLE if i in labels),
@@ -73,7 +75,9 @@ def state() -> dict:
 
 
 class H(BaseHTTPRequestHandler):
+    """채점 페이지의 HTTP 처리. GET 은 페이지, 목록, 일치도를 주고 POST 는 라벨 1건을 저장한다."""
     def _send(self, code: int, body: bytes, ctype: str):
+        """상태 코드와 본문을 그대로 돌려준다."""
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
@@ -81,12 +85,15 @@ class H(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _json(self, obj, code=200):
+        """객체를 JSON 으로 돌려준다 (한글 그대로)."""
         self._send(code, json.dumps(obj, ensure_ascii=False).encode(), "application/json; charset=utf-8")
 
     def log_message(self, fmt, *args):   # 터미널을 조용히
+        """요청마다 찍히는 접속 로그를 끈다."""
         pass
 
     def do_GET(self):
+        """/ 는 페이지, /api/items 는 채점 대상(평가 Judge 정보 없음), /api/agreement 는 표본을 다 채점했을 때만 일치도를 준다."""
         if self.path in ("/", "/index.html"):
             self._send(200, PAGE.encode(), "text/html; charset=utf-8")
         elif self.path == "/api/items":
@@ -103,6 +110,7 @@ class H(BaseHTTPRequestHandler):
             self._send(404, b"not found", "text/plain")
 
     def do_POST(self):
+        """/api/label 로 받은 지표 4개 판정을 검증하고 저장한다. 이미 채점한 건은 409 로 거부한다 (라벨은 고치지 않는다)."""
         if self.path != "/api/label":
             self._send(404, b"not found", "text/plain")
             return
@@ -236,6 +244,7 @@ load();
 
 
 def main():
+    """--port, --labels 를 받아 127.0.0.1 에서만 서버를 연다 (같은 컴퓨터에서만 접속)."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--labels", default=None, help="라벨 파일 경로 (기본 eval/human_labels.yaml)")
