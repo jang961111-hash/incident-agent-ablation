@@ -1,4 +1,4 @@
-"""비전공자용 그림 — 모든 수치를 results/ 에서 읽어 docs/figures/*.png 로 그린다.
+"""설명용 그림: 모든 수치를 results/ 에서 읽어 docs/figures/*.png 로 그린다.
 
     .venv/bin/python scripts/make_figs.py
 
