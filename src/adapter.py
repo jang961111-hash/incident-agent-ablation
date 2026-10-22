@@ -42,7 +42,7 @@ from agent.mcp_client import MCPClient  # noqa: E402
 from ext.graph_ext import ExtDeps, build_graph_ext  # noqa: E402
 from ext.judge import FakeJudge, OpenAIJudge, facts_from_collected, facts_from_prompt  # noqa: E402
 from ext.meter import MeteredFastLLM, MeteredQualityLLM, QueryCache, start_meter  # noqa: E402
-from ext.rag import LocalNgramEmbedder, OpenAIEmbedder, RunbookRetriever  # noqa: E402
+from ext.rag import LocalNgramEmbedder, LocalTfidfEmbedder, OpenAIEmbedder, RunbookRetriever  # noqa: E402
 from ext.faults import FaultyMCP  # noqa: E402
 
 RUNBOOK_DIR = SRC / "data" / "runbooks"
@@ -92,6 +92,7 @@ def _build_deps(cfg: dict, mcp: MCPClient) -> ExtDeps:
                             version=cfg.get("judge", {}).get("version", 1))
         emb_model = cfg.get("rag", {}).get("embedding", "text-embedding-3-small")
         embedder = (LocalNgramEmbedder() if emb_model == "local" else
+                    LocalTfidfEmbedder(RUNBOOK_DIR) if emb_model == "local-tfidf" else
                     OpenAIEmbedder(emb_model, os.environ.get("OPENAI_API_KEY", ""), CACHE_DIR))
 
     use_rag = cfg.get("runbook_selection") == "rag"

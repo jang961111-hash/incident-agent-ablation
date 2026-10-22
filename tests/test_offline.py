@@ -101,3 +101,12 @@ def test_cache_does_not_leak_across_reps(tmp_path, monkeypatch):
     s = ra.run_config(p, qs, 0.75, use_judge=False, save=False, backend="fake", reps=2, workers=1)
     hits = [r["cache_hits"] for r in s["per_rep"]]
     assert hits == [0, 0], f"반복 간 캐시 적중 {hits}"
+
+
+def test_local_tfidf_embedder_ranks_db_down():
+    """로컬 Ollama 데모용 TF-IDF 임베더: LocalNgram 이 놓치던 DB 장애 질문에서 db-down 이 1위여야 한다."""
+    from ext.rag import LocalTfidfEmbedder, RunbookRetriever
+    rb = ROOT / "src/data/runbooks"
+    ret = RunbookRetriever(rb, LocalTfidfEmbedder(rb))
+    assert ret.rank("DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.", top_k=3)[0][0] == "db-down"
+    assert ret.rank("전혀 관계없는 문장 xyz", top_k=1)[0][1] < 0.0782   # final_local.yaml min_score 미만

@@ -1,0 +1,33 @@
+name: final_local
+description: final 과 같은 파이프라인을 로컬 Ollama(qwen3:8b)로 돌리는 데모 구성. 정량 비교 대상 아님 (eval/ollama_demo.py 전용).
+# backend 는 openai 그대로 둔다 — eval/ollama_demo.py 가 프로세스 안에서 API 주소를 Ollama 로 바꿔 끼운다.
+backend: openai
+runbook_selection: rag
+validator: judge
+cost:
+  model_tiering: true
+  cache: false
+  cache_ttl: 600
+models:
+  fast: qwen3:8b
+  quality: qwen3:8b
+  cascade_writer: qwen3:8b
+  judge: qwen3:8b
+rag:
+  top_k: 3
+  # 로컬 임베더용 기준값. dev 24건만으로 보정 (python -m eval.calibrate_rag --embedding local).
+  # 근거: results/calibrate_rag_local_20261022_1252.json — LocalNgram 은 dev Hit@1 11/18 이라
+  # 글자 2·3-gram TF-IDF(local-tfidf, Hit@1 17/18)를 골랐다. final.yaml 의 0.3236 은 OpenAI 임베딩 척도라 쓰지 않는다.
+  margin: 0.05
+  min_score: 0.0782
+  notices: true
+  embedding: local-tfidf
+judge:
+  version: 2
+  factcheck: true
+  threshold: 0.75
+  max_retries: 2
+  max_seconds: 120
+runtime:
+  async_io: true
+  tolerant_research: true

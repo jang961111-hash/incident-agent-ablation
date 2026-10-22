@@ -77,6 +77,45 @@ class LocalNgramEmbedder:
         return out
 
 
+class LocalTfidfEmbedder:
+    """API 없이 도는 글자 2·3-gram TF-IDF 임베딩 (rag.embedding: local-tfidf). 로컬 Ollama 데모용.
+
+    LocalNgram 은 모든 런북에 흔한 어구(확인·상태·점검)가 점수를 좌우해 dev 정답 1위가 18건 중 11건뿐이었다.
+    여기서는 런북 6개에서 문서 빈도(IDF)를 구해 흔한 어구의 무게를 낮추고, 런북에 없는 어구는 질의에서 뺀다.
+    어휘·IDF 는 런북 본문에서만 만든다 (평가 질의는 보지 않는다).
+    """
+
+    name = "local-tfidf"
+
+    def __init__(self, runbook_dir: Path, ns: tuple[int, ...] = (2, 3)):
+        self.ns = ns
+        docs = [self._grams(p.read_text(encoding="utf-8")) for p in sorted(runbook_dir.glob("*.md"))]
+        df: dict[str, int] = {}
+        for g in docs:
+            for k in g:
+                df[k] = df.get(k, 0) + 1
+        self.vocab = {k: i for i, k in enumerate(sorted(df))}
+        self.idf = {k: math.log((len(docs) + 1) / (c + 1)) for k, c in df.items()}
+
+    def _grams(self, t: str) -> dict[str, int]:
+        s = "".join(t.lower().split())
+        out: dict[str, int] = {}
+        for n in self.ns:
+            for i in range(len(s) - n + 1):
+                out[s[i:i + n]] = out.get(s[i:i + n], 0) + 1
+        return out
+
+    def embed(self, texts: list[str], persist: bool = False) -> list[list[float]]:
+        out = []
+        for t in texts:
+            v = [0.0] * len(self.vocab)
+            for g, c in self._grams(t).items():
+                if g in self.vocab:
+                    v[self.vocab[g]] = (1 + math.log(c)) * self.idf[g]
+            out.append(_unit(v))
+        return out
+
+
 _INDEX: dict[str, list[list[float]]] = {}   # 임베더 이름 → 런북 벡터 (프로세스당 1회)
 
 

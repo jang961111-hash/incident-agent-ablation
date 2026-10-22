@@ -4,13 +4,16 @@
 제공하므로, 원본·ext 코드는 고치지 않고 이 프로세스 안에서만 API 주소를 Ollama 로 바꿔 끼운다
 (eval/mock_llm_bench.py 와 같은 방식).
   - 모델: qwen3:8b (로컬). qwen3 의 생각 과정 출력은 끄고(reasoning_effort none), 남은 <think> 블록은 지운다.
-  - 임베딩: embedding: local (LocalNgram). OpenAI 임베딩으로 보정한 min_score 는 로컬에선 의미가 다르다.
+  - 임베딩: OpenAI 임베딩 구성(final 등)은 embedding: local (LocalNgram)로 바꾼다. 다만 OpenAI 로 보정한 min_score 는
+    로컬에선 의미가 달라 런북이 하나도 안 걸린다. 로컬용 기준값은 eval/configs/final_local.yaml
+    (embedding: local-tfidf, dev 보정 results/calibrate_rag_local_latest.json)을 쓴다.
   - 요청 타임아웃 300초 (로컬 8B 모델은 느리다).
 결과 수치(통과율·지연)는 OpenAI Ablation 과 모델·임베더·채점관이 모두 달라 비교하지 않는다.
 
     python -m eval.ollama_demo                       # base·final 을 같은 질문 1개로 1회씩
     python -m eval.ollama_demo --model qwen3:8b --query "..."
-결과: results/ollama_demo_<YYYYMMDD_HHMM>.json, results/ollama_demo_latest.json
+    python -m eval.ollama_demo --configs final_local,base --qid Q31 --tag q31   # 평가셋 질문 id 로 지정
+결과: results/ollama_demo_[<tag>_]<YYYYMMDD_HHMM>.json, results/ollama_demo_latest.json
 """
 from __future__ import annotations
 
@@ -61,7 +64,13 @@ def main():
     ap.add_argument("--model", default="qwen3:8b")
     ap.add_argument("--query", default="DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.")
     ap.add_argument("--configs", default="base,final")
+    ap.add_argument("--qid", default=None, help="eval/queries.yaml 의 질문 id (주면 --query 대신 사용)")
+    ap.add_argument("--tag", default="", help="결과 파일 이름에 붙일 꼬리표")
     a = ap.parse_args()
+    gold = None
+    if a.qid:
+        q = next(q for q in yaml.safe_load((ROOT / "eval/queries.yaml").read_text())["queries"] if q["id"] == a.qid)
+        a.query, gold = q["query"], q["gold_runbooks"]
 
     import src.adapter as adapter          # src/ 를 import 경로에 올린다 (agent·ext 보다 먼저)
     import agent.openai_llm as ol
@@ -71,18 +80,25 @@ def main():
     httpx.post = _ollama_post
 
     out = {"environment": f"로컬 Ollama ({a.model}), API 비용 0, 정량 비교 대상 아님",
-           "query": a.query, "model": a.model, "embedding": "local (LocalNgram)", "runs": {}}
+           "query": a.query, "qid": a.qid, "gold_runbooks": gold, "model": a.model, "runs": {}}
     for name in a.configs.split(","):
         cfg = copy.deepcopy(yaml.safe_load((ROOT / f"eval/configs/{name}.yaml").read_text()))
         cfg["name"] = f"{name}_local"
         cfg["models"] = {k: a.model for k in ("fast", "quality", "cascade_writer", "judge")}
-        cfg.setdefault("rag", {})["embedding"] = "local"
+        if not str(cfg.setdefault("rag", {}).get("embedding", "")).startswith("local"):
+            cfg["rag"]["embedding"] = "local"      # OpenAI 임베딩 구성은 LocalNgram 으로 (API 호출 없음)
         cfg.setdefault("cost", {})["cache"] = False
         t0 = time.perf_counter()
         try:
             o = adapter.run_once(a.query, cfg)
             res = {"ok": bool(o.get("answer")), "latency_s": round(time.perf_counter() - t0, 1),
+                   "selection": cfg.get("runbook_selection", "keyword"),
+                   "embedding": cfg["rag"]["embedding"] if cfg.get("runbook_selection") == "rag" else None,
+                   "min_score": cfg["rag"].get("min_score") if cfg.get("runbook_selection") == "rag" else None,
                    "route": o.get("route"), "runbooks": o.get("fed_runbooks"),
+                   "ranking": next(([r for r in e.get("ranking", [])] for e in o.get("events", [])
+                                    if e.get("type") == "ReplanCheck" and e.get("ranking")), None),
+                   "notices": o.get("notices"),
                    "rewrites": o.get("rewrites"), "llm_calls": o.get("llm_calls"),
                    "judge_history": o.get("judge_history"),
                    "answer": o.get("answer", "")}
@@ -94,9 +110,10 @@ def main():
               f"{res.get('error', '')}", flush=True)
         print((res.get("answer") or "")[:600], flush=True)
     ts = f"{datetime.now():%Y%m%d_%H%M}"
-    for p in (R / f"ollama_demo_{ts}.json", R / "ollama_demo_latest.json"):
+    stem = f"ollama_demo_{a.tag}_{ts}" if a.tag else f"ollama_demo_{ts}"
+    for p in (R / f"{stem}.json", R / "ollama_demo_latest.json"):
         p.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
-    print("saved", f"results/ollama_demo_{ts}.json")
+    print("saved", f"results/{stem}.json")
 
 
 if __name__ == "__main__":
