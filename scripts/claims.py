@@ -272,6 +272,66 @@ for f in sorted(R.glob("ollama_demo_q*_2026*.json")):
             f"로컬 실행 {cfg}: 지연·고른 매뉴얼", f"{d['qid']} 1건", "dev" if d["qid"] <= "Q24" else "holdout", LOCAL,
             f"results/{f.name}", f"python -m eval.ollama_demo --configs {cfg} --qid {d['qid']}")
 
+# ── 로컬 임베더 3종 비교 (bge-m3 포함) · holdout 전체 로컬 실행 ──
+clb = js("calibrate_rag_local_bge_latest.json")
+c = clb["candidates"]["ollama:bge-m3"]
+add("local_cal_bge", f"Hit@1 {round(c['retrieval_dev_gold']['hit@1'] * c['retrieval_dev_gold']['n'])}/{c['retrieval_dev_gold']['n']}"
+    f" · 균형 정확도 {c['best']['balanced_acc']:.3f} · min_score {c['best']['min_score']} · margin {c['margin']['pick']}",
+    "로컬 임베더 ollama:bge-m3: dev 정답 매뉴얼 1위 적중 수·매뉴얼 유무 판정 균형 정확도와 보정한 기준값", "dev 24문제 (정답 있는 18)",
+    "dev", "로컬 Ollama 임베딩 (API 없음)", "results/calibrate_rag_local_bge_latest.json", "python -m eval.calibrate_rag --embedding ollama:bge-m3")
+add("local_cal_tfidf_bal", f"균형 정확도 {clb['candidates']['local-tfidf']['best']['balanced_acc']:.3f}",
+    "로컬 임베더 local-tfidf: dev 매뉴얼 유무 판정 균형 정확도", "dev 24문제", "dev", "로컬 임베더 (API 없음)",
+    "results/calibrate_rag_local_bge_latest.json", "python -m eval.calibrate_rag --embedding ollama:bge-m3")
+rlf = sorted(R.glob("retrieval_local_holdout_2*.json"))[-1]
+for k, m in json.loads(rlf.read_text())["embedders"].items():
+    add(f"local_ret_holdout_{k}", f"Hit@1 {m['hit@1_n']}/{m['n_gold']} · Recall@3 {m['recall@3']:.2f} · 균형 정확도 {m['balanced_acc']:.3f}"
+        f" (통과 {round(m['gold_kept'] * 100)}% · 걸러짐 {round(m['nogold_filtered'] * 100)}%) · 누락 {m['miss_n']}/{m['n_gold']} · 혼입 {m['wrong_n']}/{m['n']}",
+        f"검색 단독(LLM·라우팅 없음) holdout 평가 {k}: dev 기준값 그대로", "holdout 36문제 (정답 있는 28)", "holdout",
+        "로컬 임베더 (API 없음)", f"results/{rlf.name}", "python -m eval.retrieval_local_holdout")
+_sf = sorted(R.glob("ollama_holdout_summary_2*.json"))
+if _sf:
+    so = json.loads(_sf[-1].read_text())
+    _cmd = "python -m eval.ollama_holdout && python -m eval.ollama_holdout_summary"
+    for k, s in so["summary"].items():
+        for key, val, mean in [
+                ("done", f"{s['completed_n']}/{s['n']}", "오류 없이 답을 낸 문제 수"),
+                ("miss", f"{round(s['miss_rate'] * 100)}% ({s['miss_n']}/{s['miss_den']})", "맞는 매뉴얼 누락"),
+                ("wrong", f"{round(s['wrong_rate'] * 100)}% ({s['wrong_n']}/{s['wrong_den']})", "엉뚱한 매뉴얼 혼입"),
+                ("hit1", f"{s['hit1_n']}/{s['hit1_den']}", "정답 매뉴얼 1위"),
+                ("must", f"{round(s['must_phrase_rate'] * 100)}%", "매뉴얼 핵심 문구 포함률"),
+                ("lat", f"{s['latency_median_s']:.1f}초 · {s['latency_p95_s']:.1f}초", "지연 중앙값 · p95"),
+                ("rw", f"{s['rewritten_n']}문제 · {s['rewrites_total']}회", "재작성한 문제 수 · 총 재작성 횟수")]:
+            add(f"local_ho_{k}_{key}", val, f"로컬 holdout 실행 {k}: {mean}", "holdout 36문제 1회", "holdout", LOCAL,
+                f"results/{_sf[-1].name}", _cmd)
+        if s["judge_judged_n"]:
+            add(f"local_ho_{k}_judge", f"첫 판정 {s['judge_first_pass_n']}/{s['judge_judged_n']} · 최종 {s['judge_final_pass_n']}/{s['judge_judged_n']}"
+                + "".join(f" · {g} {v}" for g, v in s["judge_guard"].items()),
+                f"로컬 holdout 실행 {k}: 파이프라인 Judge(qwen3:8b) 통과 (최종 = 가드 없이 통과)", "Judge 를 거친 문제", "holdout", LOCAL,
+                f"results/{_sf[-1].name}", _cmd)
+    _rows = {k: json.loads((ROOT / p).read_text())["rows"] for k, p in so["files"].items()}
+    _ng = [r for r in _rows["base_local"] if not r.get("gold") and "error" not in r]
+    add("local_ho_base_local_nogold_fed", f"{sum(1 for r in _ng if r['fed_runbooks'])}/{len(_ng)}",
+        "로컬 holdout base_local: 매뉴얼이 없는 질문에 매뉴얼을 넣은 수 (키워드 규칙)", "정답 매뉴얼 없는 holdout 질문", "holdout", LOCAL,
+        so["files"]["base_local"], _cmd)
+    if "final_local_bge" in _rows:
+        _m = [r for r in _rows["final_local_bge"] if r.get("gold") and "error" not in r and r["route"] == "incident"
+              and not set(r["fed_runbooks"]) & set(r["gold"])]
+        add("local_ho_bge_miss_top1", f"{sum(1 for r in _m if r['retrieved'] and r['retrieved'][0] in r['gold'])}/{len(_m)}",
+            "로컬 holdout final_local_bge: 맞는 매뉴얼 누락 중 1위는 정답이었는데 최소 유사도에 걸려 못 넣은 수", "누락된 질문",
+            "holdout", LOCAL, so["files"]["final_local_bge"], _cmd)
+    pb = so["paired_bootstrap"]
+    for m, unit in (("miss", "%p"), ("wrong", "%p"), ("must", "%p"), ("hit1", "%p"), ("latency", "초")):
+        d = pb.get(m)
+        if not d:
+            continue
+        if unit == "%p":
+            val = f"{round(d['diff'] * 100):+d}%p [{round(d['lo'] * 100):+d}, {round(d['hi'] * 100):+d}]"
+        else:
+            val = f"{d['diff']:+.1f}초 [{d['lo']:+.1f}, {d['hi']:+.1f}]"
+        add(f"local_ho_diff_{m}", val + (" ★" if d["significant"] else ""),
+            f"로컬 holdout {pb['b']}−{pb['a']} 차이 (질문 단위 paired bootstrap 95% CI)", f"짝지은 문제 {d['n']}개", "holdout", LOCAL,
+            f"results/{_sf[-1].name}", "python -m eval.ollama_holdout_summary")
+
 # ── 외부 출처 (조사) ──
 for key, val, mean, src in [
         ("ext_uptime", "54%", "최근 중대 장애 비용 10만 달러 초과 응답 (Uptime Institute 2025)", "docs/research/03_논문_근거.md"),
