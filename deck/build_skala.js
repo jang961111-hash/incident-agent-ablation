@@ -58,7 +58,7 @@ const WHO = "SKALA 4기 · 광주 2반 · G062 장병헌";
 const W = 10, H = 5.625;
 
 const p = new pptxgen();
-p.layout = "LAYOUT_16x9"; p.author = "장병헌 (G062)"; p.title = "장애 대응 AI 비서, 무엇이 진짜 효과였나";
+p.layout = "LAYOUT_16x9"; p.author = "장병헌 (G062)"; p.title = "장애 대응 AI 에이전트, 무엇이 진짜 효과였나";
 p.theme = { headFontFace: F, bodyFontFace: F };
 const T = (s, text, o) => s.addText(text, Object.assign({ fontFace: F, margin: 0, lang: "ko-KR" }, o));
 const RR = (s, o) => s.addShape(p.shapes.ROUNDED_RECTANGLE, Object.assign({ rectRadius: 0.18 }, o));
@@ -100,7 +100,7 @@ function bubble(s, x, y, w, h, who, text, right = false, color = RED) {
   const s = slide(null, 1);
   img(s, "gpt_webtoon.png", 5.55, 0.55, 4.1, 4.1);
   OV(s, { x: 0.6, y: 0.9, w: 0.26, h: 0.26, fill: { color: RED }, line: { color: RED } });
-  T(s, "장애 대응 AI 비서,\n무엇이 진짜 효과였나", { x: 0.6, y: 1.35, w: 4.8, h: 1.5, fontSize: 30, bold: true, color: INK, valign: "top" });
+  T(s, "장애 대응 AI 에이전트,\n무엇이 진짜 효과였나", { x: 0.6, y: 1.35, w: 4.8, h: 1.5, fontSize: 30, bold: true, color: INK, valign: "top" });
   RR(s, { x: 0.6, y: 3.1, w: 4.6, h: 0.62, fill: { color: PINK }, line: { color: PINK }, rectRadius: 0.3 });
   T(s, [{ text: "고친 것 5가지", options: { bold: true, color: RED } }, { text: " · 스위치로 하나씩 증명", options: { color: INK } }],
     { x: 0.8, y: 3.1, w: 4.3, h: 0.62, fontSize: 14, valign: "middle" });
@@ -109,9 +109,9 @@ function bubble(s, x, y, w, h, who, text, right = false, color = RED) {
 
 // 2 문제
 {
-  const s = slide("새벽 장애, 비서가 헛짚었어요", 2);
+  const s = slide("새벽 장애, 에이전트가 헛짚었어요", 2);
   bubble(s, 0.6, 1.15, 4.6, 0.95, "당직자", "\"DB 프라이머리가 다운됐습니다\"");
-  bubble(s, 1.2, 2.5, 4.4, 0.95, "원본 비서", "\"응답 지연 매뉴얼입니다\"", true, ORG);
+  bubble(s, 1.2, 2.5, 4.4, 0.95, "원본 에이전트", "\"응답 지연 매뉴얼입니다\"", true, ORG);
   T(s, "✕ 엉뚱한 매뉴얼", { x: 1.2, y: 3.62, w: 4.4, h: 0.3, fontSize: 11, bold: true, color: ORG, align: "right" });
   RR(s, { x: 6.1, y: 1.15, w: 3.3, h: 2.6, fill: { color: CARD }, line: { color: CARD }, rectRadius: 0.22 });
   T(s, "맞는 매뉴얼을", { x: 6.35, y: 1.35, w: 2.9, h: 0.3, fontSize: 13, color: G });
