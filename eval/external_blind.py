@@ -1,6 +1,6 @@
 """외부 블라인드 문항(eval/external/queries_external_v1.yaml)으로 base 와 final 을 같은 조건에서 돌린다.
 
-문항과 정답 라벨은 개발에 관여하지 않은 AI(Gemini)가 만들었고, 실행 전에 커밋으로 고정했다 (fa943a3).
+문항과 정답 라벨은 개발에 관여하지 않은 AI(Gemini)가 만들었고, 실행 전에 커밋으로 고정했다 (5a98b77).
 기준값, 프롬프트, 코드는 본 실험과 같다. 결과는 좋든 나쁘든 그대로 싣는다 (재실행으로 고르지 않는다).
 
     python -m eval.external_blind --backend fake --reps 1      # 키 없이 배관 점검 (저장 안 함)
@@ -78,7 +78,7 @@ def per_query(rows: list[dict]) -> dict:
 
 
 def summarize() -> dict:
-    out = {"source": str(QFILE.relative_to(ROOT)), "frozen_commit": "fa943a3", "configs": {}}
+    out = {"source": str(QFILE.relative_to(ROOT)), "frozen_commit": "5a98b77", "configs": {}}
     pq = {}
     for c in CONFIGS:
         data = json.loads((R / f"{c}{TAG}_latest.json").read_text())
