@@ -157,6 +157,26 @@ fv = js("fault_bench_latest.json")["variants"]
 add("fault", f"{fv['base']['completed_among_faulted']}/{fv['base']['queries_with_fault']} → {fv['final']['completed_among_faulted']}/{fv['final']['queries_with_fault']}",
     "모니터링 조회 30% 실패 주입 시 고장 맞은 질문 중 끝까지 처리한 수, 원본 → 최종",
     "고장 맞은 질문 수(실행마다 다름), 1회 측정, 완주 여부만 (답 품질 미평가)", "벤치 질문 38개", REAL, "results/fault_bench_latest.json", "python -m eval.fault_bench")
+# 반복 측정 (1회차 + _rep2.._rep5, LangSmith tracing off). 1회차와 조건이 조금 다를 수 있어 범위로만 쓴다.
+ratios, syncs, asyncs = [], [], []
+for f in ["concurrency_bench_latest.json"] + [f"concurrency_bench_rep{i}_latest.json" for i in range(2, 6)]:
+    rr = js(f)["runs"]
+    s = next(r for r in rr if r["n"] == 10 and not r["async_io"])["wall_ms"] / 1000
+    a = next(r for r in rr if r["n"] == 10 and r["async_io"])["wall_ms"] / 1000
+    syncs.append(s); asyncs.append(a); ratios.append(s / a)
+add("conc_10_reps", f"{min(ratios):.1f}~{max(ratios):.1f}배 (중앙값 {statistics.median(ratios):.1f}배)",
+    "동시 질문 10개, 동기 → 비동기 배수의 5회 범위",
+    f"같은 벤치 5회 (동기 {min(syncs):.1f}~{max(syncs):.1f}초, 비동기 {min(asyncs):.1f}~{max(asyncs):.1f}초)", "벤치 질문 세트", REAL,
+    "results/concurrency_bench_latest.json, results/concurrency_bench_rep{2..5}_latest.json", "scripts/run_bench_reps.sh")
+fb = {"base": [0, 0], "final": [0, 0]}
+for f in ["fault_bench_latest.json"] + [f"fault_bench_seed{s}_latest.json" for s in (11, 23, 42, 101)]:
+    v = js(f)["variants"]
+    for k in fb:
+        fb[k][0] += v[k]["completed_among_faulted"]; fb[k][1] += v[k]["queries_with_fault"]
+add("fault_reps", f"{fb['base'][0]}/{fb['base'][1]} → {fb['final'][0]}/{fb['final'][1]}",
+    "고장 위치(seed) 5가지 합계: 고장 맞은 질문 중 끝까지 처리한 수, 원본 → 최종",
+    "seed 7·11·23·42·101 합계, 완주 여부만 (답 품질 미평가)", "벤치 질문 38개 x 5", REAL,
+    "results/fault_bench_latest.json, results/fault_bench_seed{11,23,42,101}_latest.json", "scripts/run_bench_reps.sh")
 cbm = js("cache_bench_latest.json")["passes"]
 add("cache", f"{cbm[1]['cache_hits']}/{cbm[1]['cache_lookups']}, p50 {cbm[0]['latency_p50_ms'] / 1000:.1f}초 → {cbm[1]['latency_p50_ms'] / 1000:.1f}초",
     "같은 질문 2회차 캐시 적중, 지연 p50 1회차 → 2회차", "60문제 x 2회, final 구성", "dev + holdout", REAL, "results/cache_bench_latest.json",

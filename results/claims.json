@@ -340,6 +340,26 @@
   "재현 명령": "python -m eval.fault_bench"
  },
  {
+  "id": "conc_10_reps",
+  "값": "6.5~9.4배 (중앙값 6.9배)",
+  "의미": "동시 질문 10개, 동기 → 비동기 배수의 5회 범위",
+  "분모": "같은 벤치 5회 (동기 62.8~88.2초, 비동기 9.2~12.4초)",
+  "데이터셋": "벤치 질문 세트",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/concurrency_bench_latest.json, results/concurrency_bench_rep{2..5}_latest.json",
+  "재현 명령": "scripts/run_bench_reps.sh"
+ },
+ {
+  "id": "fault_reps",
+  "값": "0/71 → 71/71",
+  "의미": "고장 위치(seed) 5가지 합계: 고장 맞은 질문 중 끝까지 처리한 수, 원본 → 최종",
+  "분모": "seed 7·11·23·42·101 합계, 완주 여부만 (답 품질 미평가)",
+  "데이터셋": "벤치 질문 38개 x 5",
+  "환경": "실제 모델 (OpenAI)",
+  "결과 파일": "results/fault_bench_latest.json, results/fault_bench_seed{11,23,42,101}_latest.json",
+  "재현 명령": "scripts/run_bench_reps.sh"
+ },
+ {
   "id": "cache",
   "값": "112/160, p50 7.9초 → 5.6초",
   "의미": "같은 질문 2회차 캐시 적중, 지연 p50 1회차 → 2회차",
