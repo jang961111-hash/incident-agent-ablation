@@ -14,6 +14,10 @@
     python -m eval.ollama_demo --model qwen3:8b --query "..."
     python -m eval.ollama_demo --configs final_local,base --qid Q31 --tag q31   # 평가셋 질문 id 로 지정
 결과: results/ollama_demo_[<tag>_]<YYYYMMDD_HHMM>.json, results/ollama_demo_latest.json
+
+주소 바꿔 끼우기: agent.openai_llm.OPENAI_URL·ext.meter.OPENAI_URL 을 Ollama 의 /v1/chat/completions 로,
+httpx.post 를 _ollama_post 로 바꾼다. 이 프로세스 안에서만 바뀌고 파일은 고치지 않는다.
+eval/ollama_holdout.py 도 이 모듈의 OLLAMA·_ollama_post 를 그대로 가져다 쓴다.
 """
 from __future__ import annotations
 
@@ -38,8 +42,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 R = ROOT / "results"
 OLLAMA = "http://127.0.0.1:11434/v1"
-_THINK = re.compile(r"<think>.*?</think>\s*", re.S)
-_real_post = httpx.post
+_THINK = re.compile(r"<think>.*?</think>\s*", re.S)   # qwen3 의 생각 블록 — JSON 파싱을 깨뜨리므로 지운다
+_real_post = httpx.post   # 바꿔 끼우기 전 원래 함수 (Ollama 가 아닌 요청과 실제 전송에 쓴다)
 
 
 def _ollama_post(url, *a, json=None, timeout=None, **kw):
@@ -48,6 +52,7 @@ def _ollama_post(url, *a, json=None, timeout=None, **kw):
         return _real_post(url, *a, json=json, timeout=timeout, **kw)
     payload = dict(json or {})
     payload["reasoning_effort"] = "none"
+    # 호출하는 쪽(post_with_retry)의 60초 대신 300초 — 로컬 8B 모델은 한 번의 작성도 오래 걸린다
     resp = _real_post(url, *a, json=payload, timeout=300.0, **kw)
     if resp.status_code != 200:
         return resp
@@ -60,6 +65,7 @@ def _ollama_post(url, *a, json=None, timeout=None, **kw):
 
 
 def main():
+    """구성마다 같은 질문 1개를 로컬 모델로 1회 실행하고 고른 런북·답·지연을 저장한다."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="qwen3:8b")
     ap.add_argument("--query", default="DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.")
@@ -84,7 +90,7 @@ def main():
     for name in a.configs.split(","):
         cfg = copy.deepcopy(yaml.safe_load((ROOT / f"eval/configs/{name}.yaml").read_text()))
         cfg["name"] = f"{name}_local"
-        cfg["models"] = {k: a.model for k in ("fast", "quality", "cascade_writer", "judge")}
+        cfg["models"] = {k: a.model for k in ("fast", "quality", "cascade_writer", "judge")}   # 모든 역할을 로컬 모델 하나로
         if not str(cfg.setdefault("rag", {}).get("embedding", "")).startswith(("local", "ollama:")):
             cfg["rag"]["embedding"] = "local"      # OpenAI 임베딩 구성은 LocalNgram 으로 (API 호출 없음)
         cfg.setdefault("cost", {})["cache"] = False

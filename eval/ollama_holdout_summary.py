@@ -11,6 +11,9 @@
 
     python -m eval.ollama_holdout_summary --a base_local --b final_local_bge
 결과: results/ollama_holdout_summary_<YYYYMMDD_HHMM>.json / .md
+
+입력은 구성마다 가장 최근 results/ollama_holdout_<구성>_<시각>.json (파일 이름 정렬 마지막).
+scripts/claims.py 의 local_ho_* 수치가 이 요약 파일에서 나온다.
 """
 from __future__ import annotations
 
@@ -28,10 +31,11 @@ from eval.run_ablation import _pct  # noqa: E402
 from eval.stats import _per_query, bootstrap  # noqa: E402
 
 R = ROOT / "results"
-THRESHOLD = 0.75
+THRESHOLD = 0.75   # 파이프라인 Judge 합격 기준 (구성 judge.threshold 와 같은 값, 4지표 중 3개)
 
 
 def latest(cfg: str) -> Path:
+    """완료된 실행 파일 중 가장 최근 것. '_2*' 로 시각이 붙은 파일만 골라 _partial 은 제외된다."""
     fs = sorted(p for p in R.glob(f"ollama_holdout_{cfg}_2*.json"))
     if not fs:
         raise SystemExit(f"results/ollama_holdout_{cfg}_<ts>.json 없음")
@@ -39,6 +43,7 @@ def latest(cfg: str) -> Path:
 
 
 def summarize(rows: list[dict]) -> dict:
+    """한 구성 rows → 분자·분모를 함께 남긴 요약 (1회 실행이라 비율보다 'n/m' 을 보여 주려고)."""
     ok = [r for r in rows if "error" not in r]
     inc = [r for r in ok if r["route"] == "incident"]
     inc_gold = [r for r in inc if r["gold"]]
@@ -47,6 +52,7 @@ def summarize(rows: list[dict]) -> dict:
     lat = [r["latency_ms"] / 1000 for r in ok]
     judged = [r for r in ok if r.get("pipeline_judge")]
     first_pass = [r for r in judged if r["pipeline_judge"][0]["score"] >= THRESHOLD]
+    # '최종 통과' 는 가드로 통과 처리된 것을 빼고, 마지막 판정이 실제로 기준을 넘은 것만 센다
     final_pass = [r for r in judged if r["pipeline_judge"][-1]["guard"] is None
                   and r["pipeline_judge"][-1]["score"] >= THRESHOLD]
     guards: dict[str, int] = {}
@@ -80,6 +86,7 @@ def summarize(rows: list[dict]) -> dict:
 
 
 def main():
+    """두 구성(a=기준, b=비교)의 요약과 질문 단위 paired bootstrap 차이를 json·md 로 쓴다."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--a", default="base_local")
     ap.add_argument("--b", default="final_local_bge")

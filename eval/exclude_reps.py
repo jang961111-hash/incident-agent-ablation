@@ -5,6 +5,10 @@
 배경: v2 실측(2026-10-21)에서 rag_judge_cost·final 의 2회차에만 앞 반복의 캐시가 적중했다
 (160·158회). 반복을 cold 로 다시 잴 API 한도가 없어, 2회차를 빼고 1·3회차로 집계한다.
 반복이 2회라 반복 간 95% CI 는 t(df=1)=12.7 로 넓다. 구성 간 비교는 질의 단위 bootstrap 을 본다.
+
+results/<구성>_latest.json 을 제자리에서 고쳐 쓴다 (summary·rows 교체, excluded_rows·exclusion_reason 추가).
+요약은 eval/run_ablation.aggregate 를 그대로 다시 불러 만든다 — 집계 방식이 본 실행과 같다.
+다시 실행해도 안전하다: 이전에 뺀 행을 먼저 되돌린 뒤 이번 --reps 로 다시 뺀다.
 """
 from __future__ import annotations
 

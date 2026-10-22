@@ -8,6 +8,12 @@
 시나리오: normal(지연 0.3초) · slow(지연 2초) · e503(30% 503) · badjson(JSON 요청의 30%에 깨진 JSON) ·
          hang(15% 요청이 65초 멈춤 → 클라이언트 60초 타임아웃 후 재시도)
     python -m eval.mock_llm_bench            # 결과: results/mock_llm_bench_<YYYYMMDD_HHMM>.json·.md, _latest.json
+
+바꿔 끼우는 것: agent.openai_llm.OPENAI_URL · ext.meter.OPENAI_URL(채팅), ext.rag.EMBED_URL(임베딩),
+src.adapter.CACHE_DIR(임시 폴더). 그래서 클라이언트 쪽 정책(src/ext/meter.post_with_retry 의 재시도·
+60초 타임아웃, adapter 의 HARD_TIMEOUT_S, Judge 의 깨진 JSON 처리)이 그대로 시험된다.
+무작위는 Random(7) 하나를 시나리오·구성마다 다시 seed 해, base 와 final 이 같은 순서의 주입을 받게 한다
+(다만 4개 스레드가 동시에 뽑으므로 어느 요청이 맞을지는 실행마다 조금 다를 수 있다).
 """
 from __future__ import annotations
 
@@ -36,6 +42,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 R = ROOT / "results"
 
+# 현재 시나리오 설정 (모의 서버 스레드가 읽는다). hang_s 65초 > 클라이언트 타임아웃 60초 → 타임아웃 재시도를 유발
 SCEN = {"delay": 0.3, "p503": 0.0, "pbad": 0.0, "phang": 0.0, "hang_s": 65.0}
 _rng = random.Random(7)
 _lock = threading.Lock()
@@ -45,11 +52,14 @@ TEXT = "1) 모니터링 상태를 확인한다.\n2) 런북 절차에 따라 조�
 
 
 def _roll(p):
+    """확률 p 로 True. 서버 스레드들이 같은 Random 을 쓰므로 잠금 안에서 뽑는다."""
     with _lock:
         return _rng.random() < p
 
 
 class H(BaseHTTPRequestHandler):
+    """모의 OpenAI 서버. /embeddings 는 해시 벡터를 즉시, chat 은 지연·멈춤·503·깨진 JSON 을 시나리오대로."""
+
     def log_message(self, *a):
         pass
 
@@ -86,6 +96,7 @@ class H(BaseHTTPRequestHandler):
                 with _lock:
                     STATS["bad"] += 1
                 content = "이건 JSON 이 아니다 {"
+            # 시스템 프롬프트 문구로 어느 단계 호출인지 구분해 그 단계가 기대하는 JSON 을 돌려준다
             elif "라우터" in system:
                 content = json.dumps({"route": "incident", "needs_analysis": False})
             elif "planning" in system:
@@ -100,7 +111,8 @@ class H(BaseHTTPRequestHandler):
 
 
 def main():
-    srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
+    """시나리오 5개 x 구성 2개(base·final)를 4개 스레드로 실행하고 완주·지연·재시도·주입 수를 남긴다."""
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), H)   # 포트 0 = 빈 포트 자동 선택
     port = srv.server_address[1]
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     base_url = f"http://127.0.0.1:{port}/v1"
@@ -127,7 +139,7 @@ def main():
             SCEN.update({"delay": 0.3, "p503": 0.0, "pbad": 0.0, "phang": 0.0, **conf})
             _rng.seed(7)
             cfg = copy.deepcopy(load(cname))
-            cfg.setdefault("cost", {})["cache"] = False
+            cfg.setdefault("cost", {})["cache"] = False   # 두 구성 모두 매 질의 LLM 을 실제로 부르게 (캐시 효과를 빼고 장애 대응만 본다)
             adapter._CACHES.clear() if hasattr(adapter, "_CACHES") else None
             before = dict(STATS)
 

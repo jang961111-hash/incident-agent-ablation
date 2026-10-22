@@ -14,6 +14,10 @@
         # 로컬 Ollama 임베딩 모델(bge-m3)을 로컬 임베더 2종과 같은 dev 보정·같은 선택 규칙으로 비교한다.
         # Ollama(127.0.0.1:11434)에 모델이 받아져 있어야 한다 (ollama pull bge-m3). 기존 보정 파일은 덮지 않는다.
         # 결과: results/calibrate_rag_local_bge_<YYYYMMDD_HHMM>.json, results/calibrate_rag_local_bge_latest.json
+
+왜 dev 만 쓰나: holdout 은 기준값을 정하는 데 한 번도 보지 않아야 '조정에 쓰지 않은 질의'로서
+일반화 성능을 보여 줄 수 있다. 여기서 나온 값을 eval/configs/*.yaml 의 rag.min_score·margin 에 옮겨 적는다.
+OpenAI 임베딩 결과 파일(results/calibrate_rag.json)은 scripts/claims.py 의 min_score·min_score_gap 출처이기도 하다.
 """
 from __future__ import annotations
 
@@ -35,10 +39,11 @@ from ext.rag import (LocalNgramEmbedder, LocalTfidfEmbedder, OllamaEmbedder,  # 
                      OpenAIEmbedder, RunbookRetriever, select_feed)
 from eval.retrieval_metrics import summarize  # noqa: E402
 
-MARGINS = (0.02, 0.03, 0.05, 0.08, 0.1)
+MARGINS = (0.02, 0.03, 0.05, 0.08, 0.1)   # 로컬 임베더용 margin 후보 (OpenAI 구성의 0.05 는 측정 전에 고정한 값)
 
 
 def main():
+    """OpenAI 임베딩(text-embedding-3-small)으로 dev 1위 점수를 모아 min_score 를 정한다. API 키 필요."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--embedding", choices=["openai", "local", "ollama:bge-m3"], default="openai")
     emb = ap.parse_args().embedding
@@ -59,15 +64,17 @@ def main():
     pos = [r["score"] for r in rows if r["has_gold"]]
     neg = [r["score"] for r in rows if not r["has_gold"]]
     best = None
+    # 후보 기준값 = 관측된 1위 점수들(+0). 오름차순으로 훑으며 '엄격히 더 좋을 때만' 바꾸므로
+    # 동점이면 먼저 만난 낮은 값이 남는다 → gold 있는 질의를 덜 놓치는 쪽
     for tau in sorted({r["score"] for r in rows} | {0.0}):
-        tpr = sum(s >= tau for s in pos) / len(pos)
-        tnr = sum(s < tau for s in neg) / len(neg)
-        bal = (tpr + tnr) / 2
+        tpr = sum(s >= tau for s in pos) / len(pos)   # gold 있는 질의 중 통과 (런북을 넣음)
+        tnr = sum(s < tau for s in neg) / len(neg)    # gold 없는 질의 중 걸러짐 (런북을 안 넣음)
+        bal = (tpr + tnr) / 2   # 18:6 불균형이라 정확도 대신 균형 정확도
         if best is None or bal > best["balanced_acc"] + 1e-9:
             best = {"min_score": tau, "balanced_acc": bal, "gold_kept": tpr, "nogold_filtered": tnr}
     if best["balanced_acc"] == 1.0:   # 완전히 갈리면 경계값 대신 간격의 중간을 쓴다
         best["min_score"] = round((max(neg) + min(pos)) / 2, 4)
-        best["gap"] = round(min(pos) - max(neg), 4)
+        best["gap"] = round(min(pos) - max(neg), 4)   # 간격이 얇을수록 holdout 에서 흔들리기 쉽다
     out = {"split": "dev", "n": len(rows), "best": best, "rows": rows,
            "gold_scores": sorted(pos), "nogold_scores": sorted(neg)}
     (ROOT / "results").mkdir(exist_ok=True)
@@ -78,6 +85,7 @@ def main():
 
 
 def _dev_queries():
+    """dev 24건만. 개수가 다르면(평가셋 버전이 바뀌면) 멈춘다."""
     qs = [q for q in yaml.safe_load((ROOT / "eval/queries.yaml").read_text())["queries"]
           if q.get("split") == "dev"]
     assert len(qs) == 24, "dev 24건만 써야 한다"
@@ -102,6 +110,7 @@ def _best_threshold(rows):
 
 
 def _f1(fed, gold):
+    """넣은 런북과 정답의 F1. 정답이 없는 질의에 아무것도 안 넣었으면 만점(1.0)."""
     if not fed and not gold:
         return 1.0
     hit = len(set(fed) & set(gold))
@@ -112,6 +121,7 @@ def _f1(fed, gold):
 
 
 def _calibrate(embedder, qs):
+    """임베더 1개의 dev 보정: min_score(_best_threshold) → margin 격자 탐색 → dev 검색 지표·행별 투입 결과."""
     ret = RunbookRetriever(ROOT / "src/data/runbooks", embedder)
     rows, rankings = [], {}
     for q in qs:
@@ -133,7 +143,7 @@ def _calibrate(embedder, qs):
             fed = [rid for rid, s in top3 if rid in select_feed(top3, m) and s >= best["min_score"]]
             f1s.append(_f1(fed, q["gold_runbooks"]))
         margin_rows.append({"margin": m, "fed_f1_mean": round(sum(f1s) / len(f1s), 4)})
-    pick = max(margin_rows, key=lambda r: (r["fed_f1_mean"], -abs(r["margin"] - 0.05)))
+    pick = max(margin_rows, key=lambda r: (r["fed_f1_mean"], -abs(r["margin"] - 0.05)))   # 동점이면 기존 0.05 에 가까운 값
     for r in rows:   # 고른 기준값으로 실제 넣게 될 런북
         top3 = rankings[r["id"]][:3]
         r["fed"] = [rid for rid, s in top3 if rid in select_feed(top3, pick["margin"]) and s >= best["min_score"]]

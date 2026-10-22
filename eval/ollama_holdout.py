@@ -13,6 +13,11 @@ eval/ollama_demo.py 와 같은 방식으로 프로세스 안에서만 OpenAI 호
 
     python -m eval.ollama_holdout --configs base,final_local_bge
     python -m eval.ollama_holdout --configs base --ids Q25,Q26     # 일부만 (저장 안 함: --no-save)
+
+왜 자식 프로세스인가: 로컬 모델이 멈추면 스레드로는 강제 종료할 수 없다. 질의마다 spawn 한 프로세스에서
+돌리고, QUERY_TIMEOUT_S 가 지나면 terminate 해 다음 질의로 넘어간다. adapter 의 HARD_TIMEOUT_S(300초,
+그래프 실행 구간만)보다 길어서, 그래프가 300초에 걸리면 자식 안에서 _evaluate_one 이 오류 행을 먼저 만들어 보낸다.
+요약·짝지은 비교는 eval/ollama_holdout_summary.py 가 한다.
 """
 from __future__ import annotations
 
@@ -35,10 +40,14 @@ import yaml  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 R = ROOT / "results"
-QUERY_TIMEOUT_S = 360
+QUERY_TIMEOUT_S = 360   # 질의 1건 상한 (자식 프로세스 기준, MCP 기동 포함)
 
 
 def local_cfg(name: str, model: str) -> dict:
+    """구성 yaml 을 로컬용으로: 모든 모델을 model 로, OpenAI 임베딩이면 local 로, 캐시 끔.
+
+    이름에 local 이 이미 있으면(final_local_bge 등) 그대로, 아니면 _local 을 붙인다 (base → base_local).
+    """
     cfg = copy.deepcopy(yaml.safe_load((ROOT / f"eval/configs/{name}.yaml").read_text()))
     cfg["name"] = name if "local" in name else f"{name}_local"
     cfg["models"] = {k: model for k in ("fast", "quality", "cascade_writer", "judge")}
@@ -68,12 +77,13 @@ def _child(q: dict, cfg: dict, model: str, conn):
 
 
 def run_query(q: dict, cfg: dict, model: str) -> dict:
+    """질의 1건을 자식 프로세스로 실행. 시간 초과·비정상 종료면 run_ablation 과 같은 형식의 오류 행."""
     ctx = mp.get_context("spawn")
     rx, tx = ctx.Pipe(duplex=False)
     p = ctx.Process(target=_child, args=(q, cfg, model, tx), daemon=False)
     t0 = time.perf_counter()
     p.start()
-    tx.close()
+    tx.close()   # 부모 쪽 송신 끝을 닫아야 자식이 죽었을 때 recv 가 EOFError 로 끝난다
     row = None
     if rx.poll(QUERY_TIMEOUT_S):
         try:
@@ -94,6 +104,7 @@ def run_query(q: dict, cfg: dict, model: str) -> dict:
 
 
 def ollama_alive() -> bool:
+    """Ollama 서버가 응답하는지 (/api/tags)."""
     import httpx
     try:
         return httpx.get("http://127.0.0.1:11434/api/tags", timeout=10).status_code == 200
@@ -102,6 +113,7 @@ def ollama_alive() -> bool:
 
 
 def run_config(name: str, qs: list[dict], model: str, save: bool) -> list[dict]:
+    """구성 1개를 holdout 질의에 순차 실행. partial 파일로 이어 하기, 연속 오류 시 서버 상태 확인 후 중단."""
     cfg = local_cfg(name, model)
     partial = R / f"ollama_holdout_{cfg['name']}_partial.json"
     rows = json.loads(partial.read_text())["rows"] if (save and partial.exists()) else []

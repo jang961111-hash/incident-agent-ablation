@@ -6,6 +6,11 @@ runtime.async_io=true 는 그 호출을 스레드로 빼서 루프를 막지 않
 final 구성에서 async_io 만 끄고 켠 두 변형을 비교한다 (캐시는 꺼서 반복 질의 효과를 뺀다).
 
     python -m eval.concurrency_bench            # N = 1, 3, 5, 10
+    python -m eval.concurrency_bench --backend fake_slow --latency 0.5   # API 없이 메커니즘만 (src/ext/slow_fake.py)
+
+질의 N건을 한 이벤트 루프에서 asyncio.gather 로 동시에 돌려 벽시계 시간(wall_ms)을 잰다.
+질의 풀은 dev 의 normal 질의. 예열 1회(색인·모듈 로딩)는 측정에서 뺀다.
+결과: results/concurrency_bench[_simulated][<tag>]_<YYYYMMDD_HHMM>.json 과 _latest.json (fake 는 저장 안 함)
 """
 from __future__ import annotations
 
@@ -25,6 +30,11 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 async def run_batch(cfg: dict, queries: list[str]) -> dict:
+    """MCP 를 1번 띄우고 같은 그래프로 queries 를 동시에 실행한다. 질의마다 Meter 를 따로 연다.
+
+    src/adapter.run_once 는 질의마다 asyncio.run 을 새로 열어 동시성을 볼 수 없으므로, 여기서는
+    adapter._build_deps·build_graph_ext 를 직접 써서 하나의 루프 위에 올린다.
+    """
     from src.adapter import _build_deps
     from agent.mcp_client import MCPClient
     from ext.graph_ext import build_graph_ext
@@ -68,7 +78,7 @@ def main():
     qs = yaml.safe_load((ROOT / "eval/queries.yaml").read_text())["queries"]
     pool = [q["query"] for q in qs if q["category"] == "normal" and q.get("split") == "dev"]
     base_cfg = yaml.safe_load((ROOT / "eval/configs/final.yaml").read_text())
-    base_cfg["cost"]["cache"] = False
+    base_cfg["cost"]["cache"] = False   # 같은 질의 반복의 캐시 효과를 빼고 async_io 효과만 본다
     if args.backend:
         base_cfg["backend"] = args.backend
         base_cfg["fake_latency_s"] = args.latency

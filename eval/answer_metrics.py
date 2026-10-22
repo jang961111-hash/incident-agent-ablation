@@ -8,6 +8,9 @@ must_include 는 평가셋 v2 작성 때(측정 전) 정답 런북 본문에서 
 관대하게 판정하는 경향이 있어, 이 지표로 런북 절차가 실제로 답에 반영됐는지 따로 본다.
 
     python -m eval.answer_metrics
+
+참고: 같은 지표(must_phrase_rate·must_all_rate)를 eval/run_ablation.py 가 실행 때 행마다 계산해
+요약에 넣는다. 이 파일은 저장된 결과로 질의별 'n/m' 표를 다시 뽑아 보는 사후 점검용이다.
 """
 from __future__ import annotations
 
@@ -18,10 +21,12 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
-ORDER = ["base", "rag", "rag_judge", "rag_judge_cost"]
+ORDER = ["base", "rag", "rag_judge", "rag_judge_cost"]   # v1 시기 비교 구성 (v2·final 은 run_ablation 요약 사용)
 
 
 def must_include_scores(rows: list[dict], queries: dict) -> dict:
+    """Returns: n_must(어구가 정의된 질의 수), must_phrase_rate(어구 단위), must_all_rate(전부 포함한 답 비율),
+    per_query({id: '맞힌 수/어구 수'}). 같은 id 가 반복으로 여러 행이면 per_query 는 마지막 행 값이다."""
     per_q, phrases_hit, phrases_total, all_hit = {}, 0, 0, 0
     for r in rows:
         need = queries.get(r["id"], {}).get("must_include") or []

@@ -6,6 +6,10 @@
 반복 실행 결과면 '평균 ±95% CI 반폭'으로 표시한다 (t 분포, 반복 수 기준).
 Judge 일치율은 eval/agreement.py 가 eval/human_labels.yaml(사람 지표별 라벨)과
 base_latest.json 의 평가 Judge 판정을 대조해 낸다. 라벨은 base 답변 기준이다.
+
+입력: results/<구성>_latest.json 의 summary (eval/run_ablation.py 가 만든 것). 재실행·재계산 없음.
+--split 을 주면 summary.by_split[split] 의 평균·CI 를 쓴다. 구성 간 유의성은 이 표가 아니라
+eval/stats.py(질의 단위 paired bootstrap)를 본다.
 """
 from __future__ import annotations
 
@@ -19,6 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
 ORDER = ["base", "rag", "judge", "rag_judge", "rag_judge_cost", "rag_judge_v2", "final"]
 
+# 표의 행: (summary 키, 표시 이름, 서식). 서식 None 은 구획 제목 행
 ROWS = [
     ("__q", "답변 품질 — 평가 Judge (gpt-4o)", None),
     ("relevance",              "관련성",            "pct"),
@@ -56,10 +61,12 @@ CIF = {"pct": lambda v: f"{v * 100:.0f}", "f3": lambda v: f"{v:.3f}", "f2": lamb
 
 
 def is_num(v) -> bool:
+    """표에 쓸 수 있는 수인지 (bool·NaN 제외)."""
     return isinstance(v, (int, float)) and not isinstance(v, bool) and v == v
 
 
 def load(split: str | None) -> dict:
+    """구성 이름 → 요약 dict. 결과 파일이 없거나 해당 split 이 없는 구성은 건너뛴다."""
     found = {}
     for nm in ORDER:
         p = RESULTS / f"{nm}_latest.json"
@@ -77,6 +84,7 @@ def load(split: str | None) -> dict:
 
 
 def cell(s: dict, key: str, kind: str) -> str:
+    """값 1칸. 반복이 2회 이상이면 '평균 ±95% CI 반폭' (퍼센트 지표의 반폭은 %p 숫자만)."""
     v = s.get(key)
     if not is_num(v):
         return "-"
@@ -105,6 +113,7 @@ def main():
         if not any(is_num(found[c].get(key)) for c in cols):
             continue
         table.append([label] + [cell(found[c], key, kind) for c in cols])
+    # 'pass_rate[normal]' → 'normal' (앞 10글자 'pass_rate[' 와 끝 ']' 를 뗀다)
     cats = sorted({k[10:-1] for s in found.values() for k in s if k.startswith("pass_rate[")})
     if cats:
         table.append(["**카테고리별 평가 Judge 통과율**" if args.md else "[카테고리별 통과율]"] + [""] * len(cols))

@@ -6,6 +6,10 @@
 
 비교 대상은 results/{config}_latest.json 의 judge_* 필드뿐이다 (rep 필드가 있으면 rep==1).
 라벨을 매길 때 본 답변과 현재 답변이 다른 건(answer_sha 불일치)은 비교에서 빼고 따로 나열한다.
+
+라벨 파일: eval/human_labels.yaml(사람, scripts/label.py 로 작성) 또는 eval/claude_labels.yaml
+(독립 AI 평가자, --labels 로 지정). 지표마다 일치율·Cohen's kappa·관대도·엄격도를 낸다.
+쓰는 곳: eval/report.py(표 아래 한 줄), scripts/claims.py · deck/data.py(rater_* 수치).
 """
 from __future__ import annotations
 
@@ -31,6 +35,7 @@ STRICT = "Judge 엄격(사람 Pass·Judge Fail)"
 
 
 def answer_sha(answer: str) -> str:
+    """답 원문 sha1 앞 12자리. 라벨이 '어느 답'에 매겨졌는지 고정해, 재실행으로 답이 바뀌면 비교에서 뺀다."""
     return hashlib.sha1(answer.encode()).hexdigest()[:12]
 
 
@@ -62,7 +67,11 @@ def load_rows(config: str = "base", results_dir: Path | str | None = None) -> di
 
 
 def cohen_kappa(hp_jp: int, hp_jf: int, hf_jp: int, hf_jf: int) -> tuple[float, str]:
-    """2x2 표(사람 x Judge)에서 Cohen's kappa. 정의 불가면 (nan, 사유)."""
+    """2x2 표(사람 x Judge)에서 Cohen's kappa. 정의 불가면 (nan, 사유).
+
+    kappa = (관측 일치 po - 우연 일치 pe) / (1 - pe). 한쪽이 거의 다 Pass 면 일치율이 높아도
+    kappa 는 낮게 나온다 — Judge 가 후한지 볼 때 일치율만 보지 않는 이유.
+    """
     n = hp_jp + hp_jf + hf_jp + hf_jf
     if n == 0:
         return math.nan, "표본 없음"
@@ -77,7 +86,7 @@ def _stats(pairs: list[tuple[str, str, str]]) -> dict:
     """pairs: (id, human, judge) 모두 Pass/Fail."""
     c = {"hp_jp": 0, "hp_jf": 0, "hf_jp": 0, "hf_jf": 0}
     for _, h, j in pairs:
-        c[f"h{h[0].lower()}_j{j[0].lower()}"] += 1
+        c[f"h{h[0].lower()}_j{j[0].lower()}"] += 1   # ('Pass','Fail') → 'hp_jf'
     n = len(pairs)
     kappa, note = cohen_kappa(c["hp_jp"], c["hp_jf"], c["hf_jp"], c["hf_jf"])
     hf, hp = c["hf_jp"] + c["hf_jf"], c["hp_jp"] + c["hp_jf"]
@@ -126,6 +135,11 @@ def _reason(row: dict, metric: str) -> str:
 
 def summary_dict(config: str = "base", labels_path: Path | str | None = None,
                  results_dir: Path | str | None = None) -> dict:
+    """라벨 x results/<config>_latest.json(rep 1)의 평가 Judge 판정 → 지표별 일치도·불일치 목록.
+
+    labels_path 를 주지 않으면(=사람 라벨) eval/human_exclude.txt 의 id 를 뺀다. 라벨러가 가이드 예시 등으로
+    Judge 판정을 이미 본 건이라 블라인드가 아니기 때문이다.
+    """
     human = load_human(labels_path)
     rows = load_rows(config, results_dir)
     labels = human["labels"]
@@ -191,6 +205,7 @@ def _pct(v) -> str:
 
 
 def render(s: dict, md: bool = False) -> str:
+    """summary_dict 결과를 사람이 읽는 표(평문 또는 마크다운)로."""
     fmt = "github" if md else "simple"
     h2 = (lambda t: f"\n### {t}\n") if md else (lambda t: f"\n[{t}]")
     out = [f"Judge 일치도 — config={s['config']}, 라벨 {s['n_labeled']}건, "

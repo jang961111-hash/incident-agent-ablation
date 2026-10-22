@@ -7,6 +7,11 @@ Ablation 본 실행(cold 1회)에서는 질의가 겹치지 않아 캐시가 한
 
     python -m eval.cache_bench                     # rag_judge_cost 구성, 24건 x 2회
     python -m eval.cache_bench --ids Q01,Q05
+
+캐시 대상은 route·plan 결과와 질의 임베딩뿐이다 (src/ext/meter.py QueryCache). write·Judge 는
+매번 호출되므로 2회차 비용 감소의 상한은 그 단계들의 비용 비중이다 (deck/data.py cacheable_share_final).
+같은 프로세스에서 run_once 를 이어 부르므로 src/adapter.py 의 구성별 캐시(_CACHES)가 2회차까지 살아 있다.
+결과: results/cache_bench_<YYYYMMDD_HHMM>.json, results/cache_bench_latest.json (fake·--ids 실행은 저장 안 함)
 """
 from __future__ import annotations
 
@@ -21,6 +26,7 @@ from eval.run_ablation import CONFIG_DIR, RESULTS, load_queries
 
 
 def main():
+    """평가셋을 같은 순서로 2회 돌려 회차별 캐시 적중·토큰·비용·지연 p50 을 비교한다."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default=str(CONFIG_DIR / "rag_judge_cost.yaml"))
     ap.add_argument("--ids")
@@ -54,7 +60,7 @@ def main():
             "tokens_prompt": sum(r["tokens"]["prompt"] for r in rows),
             "tokens_completion": sum(r["tokens"]["completion"] for r in rows),
             "cost_usd": sum(r["cost_usd"] for r in rows),
-            "latency_p50_ms": lat[len(lat) // 2],
+            "latency_p50_ms": lat[len(lat) // 2],   # 단순 중앙값 (짝수 개면 위쪽 값)
             "rows": rows,
         })
 

@@ -11,6 +11,9 @@ holdout 36건은 여기서 처음 읽고, 결과를 보고 기준값을 바꾸�
 
     python -m eval.retrieval_local_holdout
 결과: results/retrieval_local_holdout_<YYYYMMDD_HHMM>.json
+
+넣는 런북 계산은 파이프라인(src/ext/graph_ext.replan_check_rag_node)과 같다:
+top3 → select_feed(margin) → min_score 이상만. 라우팅(chat/장애)을 거치지 않으므로 분모가 파이프라인 지표와 다르다.
 """
 from __future__ import annotations
 
@@ -31,6 +34,7 @@ CAL = ROOT / "results/calibrate_rag_local_bge_latest.json"
 
 
 def _embedder(name: str):
+    """보정 파일의 후보 이름 → 임베더 객체."""
     if name == "local":
         return LocalNgramEmbedder()
     if name == "local-tfidf":
@@ -41,6 +45,7 @@ def _embedder(name: str):
 
 
 def evaluate(name: str, min_score: float, margin: float, qs: list[dict]) -> dict:
+    """임베더 1개를 dev 에서 정한 기준값 그대로 holdout 에 적용해 검색 지표·투입 결과를 낸다."""
     ret = RunbookRetriever(ROOT / "src/data/runbooks", _embedder(name))
     rows = []
     for q in qs:

@@ -12,6 +12,10 @@
   split 별 Recall@1 — dev(기준값 조정에 씀) vs holdout(조정에 안 씀)
 
     python -m eval.extra_metrics
+
+쓰는 곳: scripts/claims.py · scripts/gen_readme_tables.py · scripts/make_figs.py · deck/data.py 가
+load_all(split) 으로 이 값을 읽는다 (README 주요 표의 누락률·혼입률·건당 비용 출처).
+계산 순서: 반복마다 비율을 구한 뒤 반복 평균 (run_ablation 요약과 같은 방식).
 """
 from __future__ import annotations
 
@@ -31,20 +35,28 @@ def _queries() -> dict:
 
 
 def _wrong(r: dict) -> bool:
+    """혼입: 정답 아닌 런북이 하나라도 들어감. 정답이 없는 질의(미등록·모호)는 무엇이든 넣으면 혼입."""
     fed = set(r.get("fed_runbooks") or [])
     gold = set(r.get("gold") or [])
     return bool(fed - gold) if gold else bool(fed)
 
 
 def _miss(r: dict) -> bool:
+    """누락: 넣은 런북에 정답이 하나도 없음. 정답 있는 질의에만 쓴다 (호출하는 쪽이 거른다)."""
     return not (set(r.get("fed_runbooks") or []) & set(r["gold"]))
 
 
 def _hit1(r: dict) -> float:
+    """1순위(retrieved[0])가 정답이면 1.0."""
     return float(bool(r.get("retrieved")) and r["retrieved"][0] in set(r["gold"]))
 
 
 def compute(rows: list[dict], qs: dict, split: str | None = None) -> dict:
+    """한 구성의 rows → 지표 dict (반복별로 계산해 평균). 분모는 '장애 경로로 처리된 질의'.
+
+    chat 경로로 빠진 질의는 런북을 넣을 기회가 없으므로 누락·혼입 분모에서 뺀다.
+    비용은 반복 전체 질의 비용(chat 포함) ÷ 장애 경로 건수 — '장애 1건 처리에 드는 돈'.
+    """
     rows = [r for r in rows if "error" not in r and (split is None or r.get("split") == split)]
     reps = sorted({r.get("rep", 1) for r in rows})
     per = []
@@ -71,6 +83,7 @@ def compute(rows: list[dict], qs: dict, split: str | None = None) -> dict:
 
 
 def load_all(split: str | None = None) -> dict:
+    """ORDER 의 각 구성 results/<구성>_latest.json → compute(). split=None 이면 전체."""
     qs = _queries()
     res = {}
     for nm in ORDER:

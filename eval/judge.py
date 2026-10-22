@@ -6,9 +6,15 @@ Day2 Validator 강의 내용 기준:
   DomainAppropriateness  Answer <-> Context   도메인 내용 반영
   Clarity                Answer 자체          논리적/체계적 작성
 
-하나의 호출에서 4지표에 Pass/Fail이 떨어지고, 통과 비율이 임계치(기본 80%)
-미달이면 재작성을 요청한다. 무한 루프 방지를 위해 재시도 횟수와 총 시간
+하나의 호출에서 4지표에 Pass/Fail이 떨어지고, 통과 비율이 임계치(기본 0.75 = 4지표 중 3개)
+이상이면 합격이다. 무한 루프 방지를 위해 재시도 횟수와 총 시간
 두 조건을 모두 둔다 (먼저 닿는 쪽에서 종료).
+
+역할: 이 파일은 '평가용' Judge 다. eval/run_ablation.py 가 모든 구성의 최종 답을 같은 모델
+(EVAL_JUDGE_MODEL, 기본 gpt-4o)·같은 프롬프트로 채점한다. 재작성을 시키지 않고 점수만 매긴다.
+파이프라인 안에서 답을 반려·재작성시키는 Judge 는 src/ext/judge.py(gpt-4o-mini)와
+src/ext/graph_ext.py validate_judge_node 이며, 실제 루프 가드도 그쪽에 있다.
+아래 RetryGuard 는 같은 가드 규칙(2회·120초)을 독립적으로 표현한 것으로, 현재 tests/ 에서만 쓴다.
 """
 from __future__ import annotations
 
@@ -60,14 +66,18 @@ class JudgeResult:
 
 
 class Judge:
+    """LangChain ChatOpenAI 로 4지표를 JSON 모드 한 번에 채점한다. temperature 0."""
+
     def __init__(self, model: str = "gpt-4o", threshold: float = 0.75,
                  temperature: float = 0.0):
         self.threshold = threshold
+        # max_retries=6: 429·일시 오류는 클라이언트가 재시도 — 평가 Judge 오류로 행이 빠지는 것을 줄인다
         self.llm = ChatOpenAI(model=model, temperature=temperature, max_retries=6).bind(
             response_format={"type": "json_object"})
         self.chain = JUDGE_PROMPT | self.llm
 
     def evaluate(self, query: str, context: str, answer: str) -> JudgeResult:
+        """Args: 질의, 근거(write 가 받은 '수집된 사실'), 채점할 답. Returns: JudgeResult."""
         msg = self.chain.invoke({"query": query, "context": context, "answer": answer})
         text = msg.content if hasattr(msg, "content") else str(msg)
         res = JudgeResult(raw=text)
@@ -81,16 +91,18 @@ class Judge:
             return res   # passed=None → 통과율 분모에서 빠진다
 
         for m in METRICS:
+            # 지표가 빠졌거나 형식이 틀리면 Fail (JSON 자체가 깨진 경우만 ParseError 로 따로 둔다)
             item = data.get(m) if isinstance(data.get(m), dict) else {}
             res.verdicts[m] = item.get("verdict", "Fail")
             res.reasons[m] = item.get("reason", "")
         n_pass = sum(1 for m in METRICS if res.verdicts[m] == "Pass")
         res.score = n_pass / len(METRICS)
-        res.passed = res.score >= self.threshold
+        res.passed = res.score >= self.threshold   # 0.75 → Pass 3개 이상
         return res
 
 
 def _strip_fence(s: str) -> str:
+    """응답이 ```json ... ``` 코드 블록으로 감싸여 와도 본문 JSON 만 남긴다."""
     s = s.strip()
     if s.startswith("```"):
         s = s.split("\n", 1)[1] if "\n" in s else s
@@ -114,6 +126,7 @@ class RetryGuard:
         return time.monotonic() - self._t0
 
     def should_continue(self) -> tuple[bool, str]:
+        """(계속할지, 멈춘 이유). 재시도 상한을 시간 상한보다 먼저 본다."""
         if self.attempts >= self.max_retries:
             return False, f"재시도 상한 {self.max_retries}회 도달"
         if self.elapsed >= self.max_seconds:
@@ -121,4 +134,5 @@ class RetryGuard:
         return True, ""
 
     def record(self):
+        """재작성 1회를 센다."""
         self.attempts += 1

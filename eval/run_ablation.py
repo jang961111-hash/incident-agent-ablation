@@ -8,6 +8,13 @@
 평가용 Judge 는 구성과 무관하게 EVAL_JUDGE_MODEL(기본 gpt-4o)로 고정한다. 파이프라인 안의
 Validator(rag_judge 이후 gpt-4o-mini)와 같은 모델·같은 기준으로 채점하면, Validator 기준에
 맞춰 고친 답이 자동으로 높은 점수를 받는 순환이 생긴다.
+
+흐름: eval/queries.yaml(고정 평가셋) x eval/configs/<구성>.yaml → src/adapter.run_once(질의 1건)
+      → 평가 Judge(eval/judge.py) + 결정적 지표(must_include·factcheck) → 행(row)
+      → aggregate(반복별·split별 요약, 반복 간 95% CI) → results/<구성>_latest.json
+후속: eval/stats.py(질의 단위 bootstrap), eval/extra_metrics.py(누락·혼입·건당 비용),
+      eval/report.py(표), scripts/claims.py(CLAIMS.md) 가 모두 이 결과 파일만 읽는다.
+--backend fake 나 판정 없는 실행은 _latest 를 덮지 않도록 저장 규칙을 main() 에 둔다.
 """
 from __future__ import annotations
 
@@ -34,6 +41,7 @@ METRICS = ("relevance", "completeness", "domain_appropriateness", "clarity")
 
 
 def load_queries() -> tuple[list[dict], float]:
+    """평가셋과 평가 Judge 합격 임계치(queries.yaml 의 threshold, 없으면 0.75)."""
     data = yaml.safe_load((ROOT / "eval" / "queries.yaml").read_text(encoding="utf-8"))
     return data["queries"], data.get("threshold", 0.75)
 
@@ -54,6 +62,7 @@ def _evaluate_one(q: dict, rep: int, cfg: dict, run_once, judge) -> dict:
             jverd, jreason, jscore, jpass = jr.verdicts, jr.reasons, jr.score, jr.passed
         except Exception as e:
             jerr = repr(e)
+    # Judge 와 무관한 결정적 지표: 정답 런북 핵심 어구 포함(대소문자 무시) · 근거 없는 수치
     need = q.get("must_include") or []
     ans = out["answer"].lower()
     fc = factcheck(out["answer"], out.get("context", ""))
@@ -81,6 +90,12 @@ def _evaluate_one(q: dict, rep: int, cfg: dict, run_once, judge) -> dict:
 def run_config(cfg_path: Path, queries: list[dict], threshold: float, use_judge: bool = True,
                save: bool = True, backend: str | None = None, reps: int = 1,
                workers: int = 1, tag: str = "") -> dict:
+    """구성 1개를 평가셋 전체 x reps 회 실행하고 요약을 돌려준다.
+
+    반복은 차례로, 반복 안의 질의는 workers 개 스레드로 병렬 실행한다. 행이 끝날 때마다
+    <이름>_partial.json 에 중간 저장하고, 다 끝나면 <이름>_<시각>.json 과 <이름>_latest.json 을 쓴다.
+    tag 는 결과 파일 이름 뒤에 붙는다 (예: _latctl = 지연 통제 재측정).
+    """
     import threading
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -145,6 +160,7 @@ def run_config(cfg_path: Path, queries: list[dict], threshold: float, use_judge:
     return summary
 
 
+# t 분포 양측 95% 임계값 (자유도 → t). 반복 3회면 df=2 → 4.303. 표에 없으면 정규근사 1.96
 _T95 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571}
 
 
@@ -153,7 +169,7 @@ def _agg(per_rep: list[dict]) -> dict:
     out = {}
     keys = {k for s in per_rep for k, v in s.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}
     for k in keys:
-        vals = [s[k] for s in per_rep if isinstance(s.get(k), (int, float)) and s[k] == s[k]]
+        vals = [s[k] for s in per_rep if isinstance(s.get(k), (int, float)) and s[k] == s[k]]   # s[k]==s[k]: NaN 제외
         if not vals:
             continue
         m = statistics.fmean(vals)
@@ -166,12 +182,13 @@ def _agg(per_rep: list[dict]) -> dict:
 def aggregate(name: str, rows: list[dict], reps: int) -> dict:
     """반복별·split 별 summary 를 만들고, 전체 평균을 최상위 키로 둔다 (report 호환)."""
     def summarize(sub):
+        """행 묶음 1개(반복 1회분 또는 그 split) → 지표 dict."""
         ok = [r for r in sub if "error" not in r]
         rec = [{"retrieved": r["retrieved"], "gold": r["gold"], "fed": r["fed_runbooks"],
                 "route": r["route"]} for r in ok if r["gold"]]
         s = build_summary(name, sub, rec)
         tot = sum(r["must_total"] for r in ok)
-        s["must_phrase_rate"] = sum(r["must_hit"] for r in ok) / tot if tot else float("nan")
+        s["must_phrase_rate"] = sum(r["must_hit"] for r in ok) / tot if tot else float("nan")   # 어구 단위 미시 평균
         withm = [r for r in ok if r["must_total"]]
         s["must_all_rate"] = (sum(r["must_hit"] == r["must_total"] for r in withm) / len(withm)
                               if withm else float("nan"))
@@ -207,6 +224,11 @@ def _pct(values: list[float], p: float) -> float:
 
 
 def build_summary(name: str, rows: list[dict], retrieval_records: list[dict]) -> dict:
+    """평가 Judge 지표·통과율, 지연 백분위, 비용·토큰·캐시, 검색 지표를 한 dict 로.
+
+    Judge 판정 불가(ParseError·호출 오류, judge_passed=None) 행은 통과율 분모에서 뺀다 (n_judged 로 공개).
+    retrieval_records 는 정답 런북이 있는 질의만 — 정답이 없는 질의는 Recall 이 정의되지 않는다.
+    """
     ok = [r for r in rows if "error" not in r]
     judged = [r for r in ok if r["judge_passed"] is not None]
     lat = [r["latency_ms"] for r in ok]
@@ -279,6 +301,8 @@ def main():
         queries = [q for q in queries if q.get("split") == args.split]
     kw = dict(use_judge=not args.no_judge, backend=args.backend, reps=args.reps,
               workers=args.workers, tag=args.tag,
+              # 저장 조건: --no-save·--ids(일부 실행)·fake 백엔드는 저장 안 함. 판정 없는(--no-judge) 결과는
+              # --tag 를 붙여 별도 파일로만 저장 — 본 측정 <구성>_latest.json 을 덮지 않게 한다
               save=(not args.no_save and not args.ids and (not args.no_judge or bool(args.tag))
                     and args.backend != "fake"))   # 판정 없는 결과는 --tag 를 붙여 별도 파일로만 저장 (_latest 보호)
     if args.all:

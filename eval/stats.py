@@ -8,6 +8,10 @@
     python -m eval.stats                 # holdout (기본)
     python -m eval.stats --split all
     python -m eval.stats --tag _latctl   # 지연 통제 재측정 (results/*_latctl_latest.json)
+
+입력: results/<구성><tag>_latest.json 의 rows. 출력: results/stats_<split><tag>.json (+ 표 출력).
+이 파일의 pairs 가 README 기여도 표·fig6·CLAIMS 의 '짝지은 차이'의 출처다.
+질의마다 두 구성 모두 값이 있어야 짝이 되므로, 지표마다 n(공통 질의 수)이 다를 수 있다.
 """
 from __future__ import annotations
 
@@ -32,7 +36,17 @@ PAIRS = [   # (A, B, 이 비교가 보여주는 것)
 
 
 def _per_query(rows: list[dict]) -> dict:
-    """질의별 지표 (반복 평균)."""
+    """질의별 지표 (반복 평균).
+
+    지표 정의 (None = 이 질의는 그 지표의 대상이 아님 → 짝에서 빠짐)
+      pass     평가 Judge 합격 (판정 불가 행 제외)
+      must     must_include 어구 포함 비율
+      hit1     1순위 런북이 정답 (정답 있는 질의만)
+      miss     장애 경로 + 정답 있는 질의에서, 넣은 런북에 정답이 하나도 없음
+      wrong    장애 경로 질의에서, 정답 아닌 런북이 섞임 (정답 없는 질의에 런북을 넣은 것 포함)
+      cost     질의 비용(USD), latency 지연(초)
+    miss·wrong 의 정의는 eval/extra_metrics.py 의 _miss·_wrong 과 같다.
+    """
     by = {}
     for r in rows:
         if "error" in r:
@@ -59,18 +73,24 @@ def _per_query(rows: list[dict]) -> dict:
 
 
 def bootstrap(a: dict, b: dict, metric: str, n: int = 2000, seed: int = 0) -> dict | None:
+    """질의 단위 paired bootstrap: 짝 차이(b - a)를 복원 추출 n번 → 평균 차이의 백분위 95% 구간.
+
+    seed 고정이라 다시 돌려도 같은 구간이 나온다. 구간이 0을 포함하지 않으면 significant=True.
+    Returns: {n(짝 수), diff(평균 차이), lo, hi, significant} 또는 짝이 없으면 None.
+    """
     ids = [q for q in a if q in b and a[q][metric] is not None and b[q][metric] is not None]
     if not ids:
         return None
     diffs = [b[q][metric] - a[q][metric] for q in ids]
     rnd = random.Random(seed)
     boots = sorted(statistics.fmean(rnd.choices(diffs, k=len(diffs))) for _ in range(n))
-    lo, hi = boots[int(0.025 * n)], boots[int(0.975 * n) - 1]
+    lo, hi = boots[int(0.025 * n)], boots[int(0.975 * n) - 1]   # n=2000 → 정렬된 boots[50]·boots[1949]
     return {"n": len(ids), "diff": statistics.fmean(diffs), "lo": lo, "hi": hi,
             "significant": lo > 0 or hi < 0}
 
 
 def run(split: str | None, tag: str = "") -> dict:
+    """PAIRS 의 모든 비교 x 7개 지표에 bootstrap 을 돌린다. split=None 이면 dev+holdout 전체."""
     data = {}
     for nm in {x for p in PAIRS for x in p[:2]}:
         rows = json.loads((RESULTS / f"{nm}{tag}_latest.json").read_text())["rows"]
@@ -92,6 +112,7 @@ FMT = {"pass": ("평가 Judge 통과", 100, "%p"), "must": ("런북 어구 포�
 
 
 def fmt(r: dict | None, metric: str) -> str:
+    """'차이 [하한, 상한]' 문자열. 비율은 %p, 비용은 $, 지연은 초. 유의하면 끝에 *."""
     if not r:
         return "-"
     _, k, u = FMT[metric]
