@@ -173,6 +173,13 @@ add("sim_fault", f"{ff['base']['completed_among_faulted']}/{ff['base']['queries_
     "장애 주입 완주 (모의 LLM, 코드 경로만)", "고장 맞은 질문 수", "벤치 질문 세트", "모의 환경 (API 없음)", "results/fault_bench_fake_latest.json",
     "python -m eval.fault_bench --backend fake")
 
+mk = js("mock_llm_bench_latest.json")["results"]
+for sc, lab in [("e503", "LLM 호출 30%가 503"), ("badjson", "JSON 요청 30%가 깨진 JSON"), ("hang", "LLM 호출 15%가 65초 멈춤(클라이언트 60초 타임아웃)")]:
+    b, f = mk[f"{sc}/base"], mk[f"{sc}/final"]
+    add(f"mock_{sc}", f"완주 원본 {b['completed']}/{b['n']} · 최종 {f['completed']}/{f['n']}, 지연 중앙값 {b['latency_median_s']:.1f}초 · {f['latency_median_s']:.1f}초, 최대 {b['latency_max_s']:.1f}초 · {f['latency_max_s']:.1f}초",
+        f"모의 LLM 서버 장애 주입: {lab}. 완주 여부와 지연만 측정 (답 품질 미측정)", f"holdout normal 질문 {f['n']}개, 1회",
+        "holdout", "모의 환경 (로컬 모의 OpenAI 서버, API 없음)", "results/mock_llm_bench_latest.json", "python -m eval.mock_llm_bench")
+
 # ── 평가자 대조 (AI 독립 평가자, 사람 아님) ──
 sys.path.insert(0, str(ROOT))
 from eval.agreement import summary_dict  # noqa: E402

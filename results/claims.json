@@ -370,6 +370,36 @@
   "재현 명령": "python -m eval.fault_bench --backend fake"
  },
  {
+  "id": "mock_e503",
+  "값": "완주 원본 8/8 · 최종 8/8, 지연 중앙값 17.3초 · 13.8초, 최대 23.5초 · 75.5초",
+  "의미": "모의 LLM 서버 장애 주입: LLM 호출 30%가 503. 완주 여부와 지연만 측정 (답 품질 미측정)",
+  "분모": "holdout normal 질문 8개, 1회",
+  "데이터셋": "holdout",
+  "환경": "모의 환경 (로컬 모의 OpenAI 서버, API 없음)",
+  "결과 파일": "results/mock_llm_bench_latest.json",
+  "재현 명령": "python -m eval.mock_llm_bench"
+ },
+ {
+  "id": "mock_badjson",
+  "값": "완주 원본 8/8 · 최종 8/8, 지연 중앙값 5.2초 · 5.0초, 최대 6.5초 · 6.8초",
+  "의미": "모의 LLM 서버 장애 주입: JSON 요청 30%가 깨진 JSON. 완주 여부와 지연만 측정 (답 품질 미측정)",
+  "분모": "holdout normal 질문 8개, 1회",
+  "데이터셋": "holdout",
+  "환경": "모의 환경 (로컬 모의 OpenAI 서버, API 없음)",
+  "결과 파일": "results/mock_llm_bench_latest.json",
+  "재현 명령": "python -m eval.mock_llm_bench"
+ },
+ {
+  "id": "mock_hang",
+  "값": "완주 원본 4/4 · 최종 4/4, 지연 중앙값 100.5초 · 69.4초, 최대 132.5초 · 133.5초",
+  "의미": "모의 LLM 서버 장애 주입: LLM 호출 15%가 65초 멈춤(클라이언트 60초 타임아웃). 완주 여부와 지연만 측정 (답 품질 미측정)",
+  "분모": "holdout normal 질문 4개, 1회",
+  "데이터셋": "holdout",
+  "환경": "모의 환경 (로컬 모의 OpenAI 서버, API 없음)",
+  "결과 파일": "results/mock_llm_bench_latest.json",
+  "재현 명령": "python -m eval.mock_llm_bench"
+ },
+ {
   "id": "rater_agree",
   "값": "일치 70%, kappa 0.39",
   "의미": "평가 Judge(gpt-4o) vs 독립 평가자 Claude, 종합 PASS/FAIL",
