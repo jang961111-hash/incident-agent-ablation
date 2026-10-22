@@ -6,3 +6,6 @@ langchain-openai>=0.2.0
 pyyaml>=6.0
 tabulate>=0.9
 pytest>=8.0
+
+# 수치 일관성 게이트 (scripts/check_claims.py --strict 가 덱 pptx 를 읽을 때) — 로컬 .venv 와 같은 버전
+markitdown[pptx]==0.1.8

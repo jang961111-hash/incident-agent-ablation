@@ -1,0 +1,64 @@
+# 오프라인 CI — API 비용 0. 실제 OpenAI·Ollama·LangSmith 호출이 없다.
+#   1) 단위·통합 테스트 (fake 백엔드 · 모의 HTTP 서버 · 소켓 차단, tests/conftest.py)
+#   2) 수치 일관성 게이트: results/ → CLAIMS 재생성 결과가 커밋본과 같고, 문서 수치가 전부 허용 목록 안
+#   3) 오프라인 스모크 평가: 7개 구성 x 3문항을 fake 백엔드로 끝까지 실행 (results/ 에 쓰지 않음)
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  LANGCHAIN_TRACING_V2: "false"
+  LANGSMITH_TRACING: "false"
+  OPENAI_API_KEY: "dummy-not-a-real-key"   # 비밀값 아님 — 클래스 생성만 통과시키는 자리표시자
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            src/requirements.txt
+
+      - name: 의존성 설치
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 테스트 (pytest)
+        run: pytest -q
+
+      - name: 수치 일관성 게이트 — CLAIMS 재생성 결과가 커밋본과 같은지
+        run: |
+          python scripts/claims.py
+          git diff --exit-code -- CLAIMS.md results/claims.json
+
+      - name: 수치 일관성 게이트 — 문서 수치 대조 (불일치·못 읽은 문서 있으면 실패)
+        run: python scripts/check_claims.py --strict
+
+      - name: 오프라인 스모크 평가 (fake 백엔드, 7개 구성 x 3문항)
+        run: |
+          python -m eval.run_ablation --all --backend fake --no-judge --no-save --ids Q05,Q16,Q19 | tee smoke.log
+          test "$(grep -c '"errors": 0.0' smoke.log)" -eq 7
+          test -z "$(git status --porcelain -- results/)"   # 결과 파일을 새로 쓰거나 바꾸지 않았는지
