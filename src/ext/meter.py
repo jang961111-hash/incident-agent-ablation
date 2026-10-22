@@ -40,6 +40,7 @@ class Meter:
     """질의 1건 동안의 LLM 호출 기록."""
 
     def __init__(self):
+        """모델별 누적 토큰(by_model), 호출 목록(calls), 캐시 조회와 적중 수, 재시도 수를 0 으로 시작한다."""
         self.by_model: dict[str, dict] = {}
         self.calls: list[dict] = []
         self.cache_lookups = 0
@@ -47,6 +48,7 @@ class Meter:
         self.retries = 0   # 429, 5xx, 타임아웃 재시도 횟수 — 지연 해석용
 
     def add(self, model: str, prompt: int, completion: int, stage: str):
+        """API 호출 1회의 입력, 출력 토큰을 모델별 합계와 호출 목록(단계 이름 포함)에 더한다."""
         m = self.by_model.setdefault(model, {"prompt": 0, "completion": 0, "calls": 0})
         m["prompt"] += prompt
         m["completion"] += completion
@@ -80,6 +82,7 @@ def start_meter() -> Meter:
 
 
 def current_meter() -> Meter | None:
+    """현재 컨텍스트의 Meter 를 돌려준다. start_meter 를 부르기 전이면 None 이다."""
     return _meter.get()
 
 
@@ -189,6 +192,7 @@ class QueryCache:
     """프로세스 수명 동안 유지되는 TTL 캐시. 런북이 바뀌어도 TTL 동안은 옛 결과를 쓴다."""
 
     def __init__(self, ttl_seconds: float = 600.0):
+        """ttl_seconds 가 지난 항목은 get 에서 없는 것으로 본다. 저장소 키는 (kind, 정규화 질의)다."""
         self.ttl = ttl_seconds
         self._store: dict[tuple, tuple[float, object]] = {}
 
@@ -205,6 +209,10 @@ class QueryCache:
         return copy.deepcopy(hit[1])   # 노드가 결과(tasks 등)를 고쳐 써도 캐시 원본은 그대로 두려고 복사
 
     def put(self, kind: str, query: str, value) -> None:
+        """(kind, 정규화 질의) 키로 값을 저장한다.
+
+        저장할 때도 깊은 복사를 한다. 호출한 쪽이 넘긴 객체를 나중에 고쳐도 캐시 값이 바뀌지 않게 하려는 것이다.
+        """
         self._store[(kind, normalize(query))] = (time.monotonic(), copy.deepcopy(value))
 
 
@@ -220,10 +228,12 @@ class MeteredFastLLM(MeteredChatMixin, OpenAIFastLLM):
     """
 
     def __init__(self, model: str, usd_per_1k_tokens: float, cache: QueryCache | None = None):
+        """원본 생성자에 더해 캐시를 받는다. cache 가 None 이면 캐시 없이 원본과 같게 동작한다."""
         super().__init__(model, usd_per_1k_tokens)
         self.cache = cache
 
     def route(self, query):
+        """캐시에 있으면 토큰 0 으로 돌려주고, 없으면 원본 route 를 "route" 단계로 계측해 부른 뒤 저장한다."""
         if self.cache and (hit := self.cache.get("route", query)) is not None:
             return hit, {"model": self.name, **_ZERO}
         with stage("route"):
@@ -233,6 +243,10 @@ class MeteredFastLLM(MeteredChatMixin, OpenAIFastLLM):
         return result, usage
 
     def plan(self, query, procedure_prompt):
+        """캐시에 있으면 토큰 0 으로 돌려주고, 없으면 원본 plan 을 "plan" 단계로 계측해 부른 뒤 저장한다.
+
+        캐시 키에 procedure_prompt 가 빠진 이유는 클래스 설명에 있다.
+        """
         if self.cache and (hit := self.cache.get("plan", query)) is not None:
             return hit, {"model": self.name, **_ZERO}
         with stage("plan"):
@@ -242,10 +256,12 @@ class MeteredFastLLM(MeteredChatMixin, OpenAIFastLLM):
         return result, usage
 
     def analyze(self, collected):
+        """원본 analyze 를 "analyze" 단계로 계측한다. 수집 데이터가 매번 달라 캐시하지 않는다."""
         with stage("analyze"):
             return super().analyze(collected)
 
     async def chat(self, query, history, on_token=None):
+        """원본 chat 을 "chat" 단계로 계측한다. 캐시하지 않는다."""
         with stage("chat"):
             return await super().chat(query, history, on_token=on_token)
 
@@ -254,5 +270,6 @@ class MeteredQualityLLM(MeteredChatMixin, OpenAIQualityLLM):
     """write 담당 모델. 캐시하지 않고, 몇 번째 초안인지(write#1, write#2…)를 단계 이름에 남긴다."""
 
     async def write(self, query, collected, attempt, feedback, on_token=None):
+        """원본 write 를 "write#시도번호" 단계로 계측해 부른다. 재작성 비용을 시도별로 나눠 보기 위함이다."""
         with stage(f"write#{attempt}"):
             return await super().write(query, collected, attempt, feedback, on_token=on_token)

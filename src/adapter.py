@@ -188,6 +188,11 @@ async def _run(query: str, cfg: dict) -> dict:
 
         @traceable(name=f"ablation:{cfg['name']}")
         async def invoke(q: str):
+            """그래프를 1회 실행하고 (최종 상태, LangSmith run id) 를 돌려준다.
+
+            traceable 로 감싸 실행 1건이 트레이스 하나로 묶이게 한다. 인자 q 는 본문에서 쓰지 않고
+            (실행은 바깥의 state 를 쓴다) 트레이스 입력으로만 남는다. 현재 run tree 가 없으면 run id 는 None 이다.
+            """
             res = await graph.ainvoke(state)
             rt = get_current_run_tree()
             return res, (str(rt.id) if rt else None)

@@ -85,16 +85,20 @@ class ThreadedWriter:
     """
 
     def __init__(self, inner):
+        """원본 LLM 객체를 감싸고 name 을 그대로 복사해 둔다."""
         self._inner = inner
         self.name = inner.name
 
     def __getattr__(self, item):
+        """write, chat 외의 속성(route, plan, analyze 등)은 원본 객체에 그대로 위임한다."""
         return getattr(self._inner, item)
 
     async def write(self, *args, **kwargs):
+        """원본 write 코루틴을 작업 스레드의 새 이벤트 루프에서 끝까지 돌리고 결과를 돌려준다."""
         return await asyncio.to_thread(asyncio.run, self._inner.write(*args, **kwargs))
 
     async def chat(self, *args, **kwargs):
+        """원본 chat 코루틴을 작업 스레드의 새 이벤트 루프에서 끝까지 돌리고 결과를 돌려준다."""
         return await asyncio.to_thread(asyncio.run, self._inner.chat(*args, **kwargs))
 
 
@@ -145,6 +149,10 @@ async def research_tolerant_node(state: ExtState, deps: ExtDeps) -> dict:
         runbook_server, tmpl = await deps.mcp.find_resource_template("get_incident_runbook")
 
     async def run_one(idx: int) -> dict:
+        """태스크 1개(모니터링 조회 또는 런북 읽기)를 실행해 결과 dict 를 돌려준다.
+
+        예외를 밖으로 던지지 않고 error 키에 담아 돌려준다. 그래야 gather 가 다른 태스크까지 함께 실패시키지 않는다.
+        """
         task = tasks[idx]
         await asyncio.sleep(0.35)   # 원본과 같은 고정 지연
         try:

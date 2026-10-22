@@ -22,22 +22,27 @@ class SlowFastLLM(FastLLM):
     """원본 FastLLM 의 route, plan, analyze, chat 앞에 동기 지연을 넣은 것."""
 
     def __init__(self, name, usd_per_1k_tokens, delay: float):
+        """원본 생성자에 더해 호출마다 넣을 지연(초)을 받는다."""
         super().__init__(name, usd_per_1k_tokens)
         self.delay = delay
 
     def route(self, query):
+        """delay 초 동안 동기로 멈춘 뒤 원본 route 를 부른다."""
         time.sleep(self.delay)
         return super().route(query)
 
     def plan(self, query, procedure_prompt):
+        """delay 초 동안 동기로 멈춘 뒤 원본 plan 을 부른다."""
         time.sleep(self.delay)
         return super().plan(query, procedure_prompt)
 
     def analyze(self, collected):
+        """delay 초 동안 동기로 멈춘 뒤 원본 analyze 를 부른다."""
         time.sleep(self.delay)
         return super().analyze(collected)
 
     async def chat(self, query, history, on_token=None):
+        """async 함수지만 time.sleep 으로 이벤트 루프를 막은 뒤 원본 chat 을 부른다."""
         time.sleep(self.delay)   # 원본처럼 async 함수 안의 동기 블로킹
         return await super().chat(query, history, on_token=on_token)
 
@@ -46,10 +51,12 @@ class SlowQualityLLM(QualityLLM):
     """원본 QualityLLM 의 write 앞에 동기 지연(2배)을 넣은 것. 캐스케이드 저가 writer 로도 쓴다."""
 
     def __init__(self, name, usd_per_1k_tokens, delay: float):
+        """원본 생성자에 더해 기준 지연(초)을 받는다. write 는 이 값의 2배를 쓴다."""
         super().__init__(name, usd_per_1k_tokens)
         self.delay = delay
 
     async def write(self, query, collected, attempt, feedback, on_token=None):
+        """async 함수지만 time.sleep(delay x 2)로 이벤트 루프를 막은 뒤 원본 write 를 부른다."""
         time.sleep(self.delay * 2)   # 작성은 다른 단계보다 오래 걸린다고 가정
         return await super().write(query, collected, attempt, feedback, on_token=on_token)
 
@@ -58,8 +65,10 @@ class SlowJudge(FakeJudge):
     """FakeJudge(원본 규칙과 같은 판정) 앞에 동기 지연을 넣은 것."""
 
     def __init__(self, delay: float):
+        """호출마다 넣을 지연(초)을 저장한다. FakeJudge 에는 생성자가 없어 부모 생성자를 부르지 않는다."""
         self.delay = delay
 
     def evaluate(self, query, context, answer):
+        """delay 초 동안 동기로 멈춘 뒤 FakeJudge 와 같은 판정을 돌려준다."""
         time.sleep(self.delay)
         return super().evaluate(query, context, answer)

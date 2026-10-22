@@ -28,11 +28,13 @@ class FaultyMCP:
     """
 
     def __init__(self, inner, tool: str, rate: float, seed: int, query: str):
+        """실제 클라이언트와 주입 조건을 저장한다. injected 는 실제로 실패시킨 호출 수다."""
         self._inner = inner
         self.tool, self.rate, self.seed, self.query = tool, rate, seed, query
         self.injected = 0
 
     def __getattr__(self, item):   # call_tool 외의 메서드(read_resource 등)는 그대로 위임
+        """call_tool 외의 메서드(read_resource 등)는 실제 클라이언트에 그대로 위임한다."""
         return getattr(self._inner, item)
 
     def _hit(self, arguments: dict) -> bool:
@@ -45,6 +47,11 @@ class FaultyMCP:
         return int(hashlib.sha1(key).hexdigest(), 16) % 10_000 < self.rate * 10_000
 
     async def call_tool(self, name: str, arguments: dict, server: str = "ops") -> dict:
+        """대상 도구이고 _hit 에 걸리면 ConnectionError 를 던지고, 아니면 실제 클라이언트로 넘긴다.
+
+        ConnectionError 를 고른 이유는 원본 with_retry 가 TimeoutError 만 재시도하기 때문이다.
+        재시도로 가려지지 않는 영구 실패를 만들어야 부분 실패 복구를 볼 수 있다.
+        """
         if name == self.tool and self._hit(arguments):
             self.injected += 1   # adapter 가 faults_injected 로 결과 행에 남긴다
             raise ConnectionError(f"injected fault: {name}({arguments})")

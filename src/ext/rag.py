@@ -37,6 +37,7 @@ class OpenAIEmbedder:
     """OpenAI 임베딩 API. 런북 색인 벡터만 .cache/emb_<모델>.json 에 남겨 재실행 비용을 없앤다."""
 
     def __init__(self, model: str, api_key: str, cache_dir: Path):
+        """모델 이름, API 키를 저장하고 디스크 캐시 파일(emb_<모델>.json)이 있으면 읽어 둔다."""
         self.model = model
         self.name = f"openai:{model}"
         self.api_key = api_key
@@ -73,9 +74,14 @@ class LocalNgramEmbedder:
     name = "local-ngram"
 
     def __init__(self, dim: int = 1024):
+        """dim 은 해시 버킷 수(벡터 차원)다. 버킷이 겹치는 n-gram 은 같은 칸에 더해진다."""
         self.dim = dim
 
     def embed(self, texts: list[str], persist: bool = False) -> list[list[float]]:
+        """각 문장의 공백을 지우고 글자 2, 3-gram 을 md5 해시로 dim 칸에 세어 단위 벡터로 만든다.
+
+        persist 는 인터페이스를 맞추려고 받기만 한다. 계산이 결정적이고 비용이 없어 캐시하지 않는다.
+        """
         out = []
         for t in texts:
             v = [0.0] * self.dim
@@ -99,6 +105,7 @@ class LocalTfidfEmbedder:
     name = "local-tfidf"
 
     def __init__(self, runbook_dir: Path, ns: tuple[int, ...] = (2, 3)):
+        """runbook_dir 의 런북 본문만으로 어휘(vocab)와 평활 IDF 를 만든다. ns 는 쓸 n-gram 길이다."""
         self.ns = ns
         docs = [self._grams(p.read_text(encoding="utf-8")) for p in sorted(runbook_dir.glob("*.md"))]
         df: dict[str, int] = {}
@@ -119,6 +126,10 @@ class LocalTfidfEmbedder:
         return out
 
     def embed(self, texts: list[str], persist: bool = False) -> list[list[float]]:
+        """각 문장을 (1 + log TF) x IDF 벡터로 만들어 단위 벡터로 돌려준다. 어휘에 없는 n-gram 은 버린다.
+
+        persist 는 인터페이스를 맞추려고 받기만 한다.
+        """
         out = []
         for t in texts:
             v = [0.0] * len(self.vocab)
@@ -138,6 +149,10 @@ class OllamaEmbedder:
 
     def __init__(self, model: str, cache_dir: Path, url: str = "http://127.0.0.1:11434/api/embed",
                  timeout: float = 120.0):
+        """Ollama 모델 이름, 엔드포인트 URL, 타임아웃을 저장하고 디스크 캐시 파일이 있으면 읽어 둔다.
+
+        캐시 파일 이름에는 모델 이름의 ':' 와 '/' 를 '_' 로 바꿔 넣는다 (파일 이름에 쓸 수 없는 문자).
+        """
         self.model = model
         self.name = f"ollama:{model}"
         self.url = url
@@ -147,6 +162,10 @@ class OllamaEmbedder:
         self._disk = json.loads(self.cache_path.read_text()) if self.cache_path.exists() else {}
 
     def embed(self, texts: list[str], persist: bool = False) -> list[list[float]]:
+        """Ollama /api/embed 로 임베딩을 받아 단위 벡터로 돌려준다.
+
+        OpenAIEmbedder.embed 와 같은 규칙이다. persist=True(런북 색인)일 때만 디스크 캐시를 읽고 쓴다.
+        """
         import httpx
         keys = [hashlib.sha1(t.encode()).hexdigest() for t in texts]
         todo = [t for t, k in zip(texts, keys) if not (persist and k in self._disk)]
@@ -173,6 +192,7 @@ class RunbookRetriever:
     """
 
     def __init__(self, runbook_dir: Path, embedder, cache: QueryCache | None = None):
+        """runbook_dir 의 *.md 를 이름순으로 읽어 둔다. 벡터 색인은 _index 를 처음 부를 때 만든다."""
         self.embedder = embedder
         self.cache = cache
         self.docs = {p.stem: p.read_text(encoding="utf-8")

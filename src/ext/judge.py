@@ -95,6 +95,7 @@ class OpenAIJudge(MeteredChatMixin, OpenAILLM):
     """파이프라인 내부 Judge. 한 번의 JSON 모드 호출로 4지표 Pass/Fail, 사유(+v2 는 fixable)를 받는다."""
 
     def __init__(self, model: str, usd_per_1k_tokens: float, version: int = 1):
+        """version 이 2 이상이면 SYSTEM_V2 프롬프트를 쓰고 응답의 fixable 값을 읽는다."""
         super().__init__(model, usd_per_1k_tokens)
         self.version = version
 
@@ -125,6 +126,10 @@ class FakeJudge:
     name = "fake-judge"
 
     def evaluate(self, query: str, context: str, answer: str) -> dict:
+        """답이 30자 이상이고 "1)" 를 포함하면 4지표 모두 Pass, 아니면 모두 Fail 을 돌려준다.
+
+        query, context 는 보지 않는다. fixable 은 항상 True 라 재작성 루프는 가드(횟수, 시간)로만 끝난다.
+        """
         ok = len(answer) >= 30 and "1)" in answer
         v = "Pass" if ok else "Fail"
         return {"verdicts": {m: v for m in METRICS},
