@@ -61,6 +61,7 @@ def main():
     ap.add_argument("--ns", default="1,3,5,10")
     ap.add_argument("--backend", choices=["openai", "fake", "fake_slow"])
     ap.add_argument("--latency", type=float, default=0.5, help="fake_slow 호출당 지연(초)")
+    ap.add_argument("--tag", default="", help="결과 파일 접미사 (반복 측정 시 기존 결과 보존, 예: _rep2)")
     args = ap.parse_args()
     ns = [int(x) for x in args.ns.split(",")]
 
@@ -90,7 +91,7 @@ def main():
     if args.backend == "fake_slow":
         out["note"] = f"모의 LLM(호출당 동기 지연 {args.latency}초, 작성 {args.latency * 2}초) — 이벤트 루프 블로킹 메커니즘 검증, 실제 API 지연 아님"
     if args.backend != "fake":
-        tag = "_simulated" if args.backend == "fake_slow" else ""
+        tag = ("_simulated" if args.backend == "fake_slow" else "") + args.tag
         p = ROOT / "results" / f"concurrency_bench{tag}_{datetime.now():%Y%m%d_%H%M}.json"
         p.write_text(json.dumps(out, ensure_ascii=False, indent=1))
         (ROOT / f"results/concurrency_bench{tag}_latest.json").write_text(p.read_text())

@@ -26,6 +26,7 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--backend", choices=["openai", "fake"])
+    ap.add_argument("--tag", default="", help="결과 파일 접미사 (반복 측정 시 기존 결과 보존, 예: _seed11)")
     args = ap.parse_args()
 
     from src.adapter import run_once
@@ -68,7 +69,7 @@ def main():
     if args.backend == "fake":
         out["note"] = ("LLM 없이(fake 백엔드) 코드 경로만 측정 — 도구 실패 시 완주 여부는 LLM 품질과 무관. "
                        "fake 라우터 대신 모든 질의를 장애 경로로 보냄")
-    tag = "_fake" if args.backend == "fake" else ""
+    tag = ("_fake" if args.backend == "fake" else "") + args.tag
     p = ROOT / "results" / f"fault_bench{tag}_{datetime.now():%Y%m%d_%H%M}.json"
     p.write_text(json.dumps(out, ensure_ascii=False, indent=1))
     (ROOT / f"results/fault_bench{tag}_latest.json").write_text(p.read_text())
