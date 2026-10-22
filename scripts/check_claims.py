@@ -2,6 +2,7 @@
 
     .venv/bin/python scripts/check_claims.py            # 불일치 목록 출력, 있으면 exit 1
     .venv/bin/python scripts/check_claims.py --show     # 파일별 추출 수치 전체
+    .venv/bin/python scripts/check_claims.py --strict   # CI: 못 읽은 문서(덱 등)가 있어도 exit 1
 
 허용 값 = CLAIMS.md 의 값 + README AUTO 표(결과 파일에서 생성) + 구성별 표 값 + 지연 재측정 집계 + 설계 상수.
 허용 목록에 없는 수치는 '확인 필요'로 보고한다. 히스토리를 일부러 남긴 줄(철회·처음 측정·부록)은 빼고 본다.
@@ -77,10 +78,12 @@ def deck_text() -> str:
     return ""
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--show", action="store_true")
-    a = ap.parse_args()
+    ap.add_argument("--strict", action="store_true",
+                    help="CI용: 대조할 문서를 하나라도 못 읽으면(빈 텍스트, 예: markitdown 미설치로 덱 누락) 실패")
+    a = ap.parse_args(argv)
     ok = allowed()
     docs = {"README.md": (ROOT / "README.md").read_text(),
             "docs/발표/발표_대본_이전안.md": (ROOT / "docs/발표/발표_대본_이전안.md").read_text(),
@@ -105,7 +108,10 @@ def main():
     for b in bad:
         print(f"확인 필요  {b[0]}:{b[1]}  {b[2]}  | {b[3]}")
     print(f"\n대조 문서 {len(docs)}개, 확인 필요 {len(bad)}건")
-    sys.exit(1 if bad else 0)
+    unread = [name for name, text in docs.items() if not text.strip()] if a.strict else []
+    for name in unread:
+        print(f"읽기 실패  {name}  (--strict: 대조하지 못한 문서는 실패로 본다)")
+    sys.exit(1 if bad or unread else 0)
 
 
 if __name__ == "__main__":
