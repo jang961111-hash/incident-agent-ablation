@@ -508,7 +508,7 @@ scripts/run_all.sh                                  # 7구성 x 60문제 x 3회 
 .venv/bin/python scripts/demo_side_by_side.py --id Q01   # 원본 vs 최종을 나란히 시연
 .venv/bin/python scripts/make_figs.py               # 그림 다시 그리기
 .venv/bin/python scripts/gen_readme_tables.py       # README 표 다시 만들기
-.venv/bin/python scripts/label.py --only $(cat eval/human_sample_ids.txt)   # 사람 표본 채점
+.venv/bin/python scripts/label_web.py                # 사람 표본 채점 페이지 (http://127.0.0.1:8765, 블라인드)
 ```
 
 ```
