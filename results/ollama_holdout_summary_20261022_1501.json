@@ -1,0 +1,126 @@
+{
+ "environment": "로컬 Ollama qwen3:8b, holdout 36문제, 구성별 1회, API 비용 0. OpenAI 수치와 비교 대상 아님.",
+ "files": {
+  "base_local": "results/ollama_holdout_base_local_20261022_1357.json",
+  "final_local_bge": "results/ollama_holdout_final_local_bge_20261022_1454.json"
+ },
+ "configs": {
+  "base_local": {
+   "embedding": null,
+   "min_score": null,
+   "selection": "keyword",
+   "validator": "rule"
+  },
+  "final_local_bge": {
+   "embedding": "ollama:bge-m3",
+   "min_score": 0.5741,
+   "selection": "rag",
+   "validator": "judge"
+  }
+ },
+ "summary": {
+  "base_local": {
+   "n": 36,
+   "errors": 0,
+   "error_ids": [],
+   "completed_n": 36,
+   "routed_incident": 36,
+   "miss_n": 13,
+   "miss_den": 28,
+   "miss_rate": 0.4642857142857143,
+   "wrong_n": 21,
+   "wrong_den": 36,
+   "wrong_rate": 0.5833333333333334,
+   "hit1_n": 15,
+   "hit1_den": 28,
+   "must_phrase_rate": 0.47368421052631576,
+   "must_all_n": 10,
+   "must_den": 22,
+   "unsupported_answer_n": 1,
+   "latency_median_s": 57.67962316700141,
+   "latency_p95_s": 95.51860567775293,
+   "latency_max_s": 114.17381779101561,
+   "wall_median_s": 59.35,
+   "rewrites_total": 1,
+   "rewritten_n": 1,
+   "judge_judged_n": 0,
+   "judge_first_pass_n": 0,
+   "judge_final_pass_n": 0,
+   "judge_guard": {}
+  },
+  "final_local_bge": {
+   "n": 36,
+   "errors": 0,
+   "error_ids": [],
+   "completed_n": 36,
+   "routed_incident": 36,
+   "miss_n": 14,
+   "miss_den": 28,
+   "miss_rate": 0.5,
+   "wrong_n": 1,
+   "wrong_den": 36,
+   "wrong_rate": 0.027777777777777776,
+   "hit1_n": 25,
+   "hit1_den": 28,
+   "must_phrase_rate": 0.39473684210526316,
+   "must_all_n": 8,
+   "must_den": 22,
+   "unsupported_answer_n": 1,
+   "latency_median_s": 78.81035060450085,
+   "latency_p95_s": 163.0441256252525,
+   "latency_max_s": 225.17988037498435,
+   "wall_median_s": 80.2,
+   "rewrites_total": 11,
+   "rewritten_n": 9,
+   "judge_judged_n": 36,
+   "judge_first_pass_n": 22,
+   "judge_final_pass_n": 29,
+   "judge_guard": {
+    "시간 상한 120초": 3,
+    "근거 밖 요구 — 재작성 생략": 3,
+    "재시도 상한 2회": 1
+   }
+  }
+ },
+ "paired_bootstrap": {
+  "a": "base_local",
+  "b": "final_local_bge",
+  "n_boot": 2000,
+  "seed": 0,
+  "miss": {
+   "n": 28,
+   "diff": 0.03571428571428571,
+   "lo": -0.14285714285714285,
+   "hi": 0.17857142857142858,
+   "significant": false
+  },
+  "wrong": {
+   "n": 36,
+   "diff": -0.5555555555555556,
+   "lo": -0.7222222222222222,
+   "hi": -0.3888888888888889,
+   "significant": true
+  },
+  "must": {
+   "n": 22,
+   "diff": -0.09090909090909091,
+   "lo": -0.25,
+   "hi": 0.022727272727272728,
+   "significant": false
+  },
+  "hit1": {
+   "n": 28,
+   "diff": 0.35714285714285715,
+   "lo": 0.14285714285714285,
+   "hi": 0.5714285714285714,
+   "significant": true
+  },
+  "latency": {
+   "n": 36,
+   "diff": 37.96750539010665,
+   "lo": 24.934945333443466,
+   "hi": 51.97744870596378,
+   "significant": true
+  }
+ }
+}
