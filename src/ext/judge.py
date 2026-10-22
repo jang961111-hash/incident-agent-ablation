@@ -10,6 +10,11 @@
 
 주의: 이 Judge 는 파이프라인 내부 검증용이다. 평가용 Judge(eval/judge.py)는 다른 모델
 (gpt-4o)로 고정해, 자기 기준에 맞춰 고친 답을 같은 기준으로 다시 채점하는 순환을 피한다.
+
+켜는 스위치: validator=judge (Judge 객체 주입은 src/adapter.py, 판정·가드는 src/ext/graph_ext.py
+validate_judge_node). judge.version 으로 SYSTEM(v1)·SYSTEM_V2 를 고른다.
+모델: models.judge (구성 기본 gpt-4o-mini). 호출은 원본 OpenAILLM 의 요청 형식 그대로이고,
+토큰은 MeteredChatMixin 이 stage="judge" 로 Meter 에 적는다.
 """
 from __future__ import annotations
 
@@ -58,7 +63,12 @@ SYSTEM_V2 = (
 
 
 def facts_from_prompt(prompt: str | None) -> str | None:
-    """write 노드가 받은 프롬프트에서 '## 수집된 사실' 구간만 꺼낸다."""
+    """write 노드가 받은 프롬프트에서 '## 수집된 사실' 구간만 꺼낸다.
+
+    재작성 프롬프트 뒤에 붙는 '## 이전 초안에 대한 검증 반려 사유' 는 잘라 낸다. 반려 사유는 근거가
+    아니므로, Judge·평가 Judge·factcheck 가 모두 '실제로 수집된 사실'만 근거로 보게 하려는 것이다.
+    프롬프트가 없으면(fake 백엔드 등) None.
+    """
     if not prompt or "## 수집된 사실" not in prompt:
         return None
     body = prompt.split("## 수집된 사실", 1)[1]
@@ -82,26 +92,35 @@ def facts_from_collected(collected: list[dict]) -> str:
 
 
 class OpenAIJudge(MeteredChatMixin, OpenAILLM):
+    """파이프라인 내부 Judge. 한 번의 JSON 모드 호출로 4지표 Pass/Fail·사유(+v2 는 fixable)를 받는다."""
+
     def __init__(self, model: str, usd_per_1k_tokens: float, version: int = 1):
         super().__init__(model, usd_per_1k_tokens)
         self.version = version
 
     def evaluate(self, query: str, context: str, answer: str) -> dict:
+        """Returns: {"verdicts": {지표: Pass|Fail}, "reasons": {지표: 문장}, "fixable": bool}."""
         user = f"[Query]\n{query}\n\n[Context]\n{context}\n\n[Answer]\n{answer}"
         with stage("judge"):
             content, _ = self._chat(SYSTEM_V2 if self.version >= 2 else SYSTEM, user, json_mode=True)
         try:
             data = json.loads(content)
         except json.JSONDecodeError:
-            data = {}
+            data = {}   # 깨진 응답은 아래에서 전 지표 Fail → 반려·재작성 (가드가 루프를 끊는다)
+        # 빠진 지표도 Fail 로 본다 — 판정이 없으면 합격으로 넘기지 않는다
         verdicts = {m: (data.get(m) or {}).get("verdict", "Fail") for m in METRICS}
         reasons = {m: (data.get(m) or {}).get("reason", "") for m in METRICS}
+        # fixable 은 v2 에서만 읽는다. 값이 없거나 이상하면 True(재작성 허용) — 명시적 false 일 때만 생략
         fixable = data.get("fixable", True) if self.version >= 2 else True
         return {"verdicts": verdicts, "reasons": reasons, "fixable": fixable is not False}
 
 
 class FakeJudge:
-    """오프라인 테스트용. 원본 규칙과 같은 기준을 4지표 형식으로 돌려준다."""
+    """오프라인 테스트용. 원본 규칙과 같은 기준을 4지표 형식으로 돌려준다.
+
+    backend=fake 에서 쓴다. 원본 validate_node 규칙(30자 이상 + "1)" 포함)을 그대로 4지표에 복사하므로
+    fake 로 돌린 judge 구성은 합격·반려가 원본 규칙과 같다 — 배관(루프·가드) 점검용이다.
+    """
 
     name = "fake-judge"
 
