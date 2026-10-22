@@ -111,46 +111,62 @@ fig.savefig(OUT / "fig2_bias.png", dpi=180)
 plt.close(fig)
 
 # 3. 정답 런북 누락 / 4. 무관 런북 혼입
-bars("fig3_miss.png", "맞는 매뉴얼을 놓치는 비율 — RAG가 크게 줄였다",
+bars("fig3_miss.png", "맞는 매뉴얼을 놓치는 비율: RAG가 크게 줄였다",
      "정답 런북을 근거에 못 넣은 비율 (낮을수록 좋음) · holdout, 3회 평균",
      [X[n]["miss_runbook_rate"] for n in ORDER], lambda v: f"{round(v * 100)}%",
      color_by({"rag", "rag_judge", "rag_judge_cost", "rag_judge_v2", "final"}), (0, 0.7))
-bars("fig4_wrong.png", "엉뚱한 매뉴얼이 섞이는 비율 — v2 보완이 줄였다",
+bars("fig4_wrong.png", "엉뚱한 매뉴얼이 섞이는 비율: v2 보완이 줄였다",
      "질문과 무관한 런북이 근거에 섞인 비율 (낮을수록 좋음) · holdout, 3회 평균",
      [X[n]["wrong_runbook_rate"] for n in ORDER], lambda v: f"{round(v * 100)}%",
      color_by({"rag_judge_v2", "final"}), (0, 0.8))
 
 # 5. 비용
-bars("fig5_cost.png", "장애 1건 처리 비용 — 최종 구성이 가장 싸다",
+bars("fig5_cost.png", "장애 1건 처리 비용: 최종 구성이 가장 싸다",
      "OpenAI 공개 단가 x 실측 토큰 (USD, 추정) · holdout, 3회 평균",
      [X[n]["cost_per_incident"] for n in ORDER], lambda v: f"${v:.4f}",
      color_by({"rag_judge_cost", "final"}), None)
 
 # 6. 기여도 — 같은 질문끼리 비교한 차이와 95% 신뢰구간 (정답 누락 · 엉뚱한 매뉴얼 혼입)
 st = json.loads((R / "stats_holdout.json").read_text())["pairs"]
-fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
+fig, axes = plt.subplots(1, 2, figsize=(12, 5.6), sharey=True)
 ys = list(range(len(st)))[::-1]
-for ax, key, xlabel in ((axes[0], "miss", "맞는 매뉴얼 누락 변화 (%p)"), (axes[1], "wrong", "엉뚱한 매뉴얼 혼입 변화 (%p)")):
+lo_all = min(min(p[k]["lo"] for p in st) for k in ("miss", "wrong")) * 100
+hi_all = max(max(p[k]["hi"] for p in st) for k in ("miss", "wrong")) * 100
+XL = (min(lo_all, 0) - 8, max(hi_all, 0) + 28)   # 두 패널 같은 눈금, 오른쪽은 글자 자리
+for ax, key, ptitle in ((axes[0], "miss", "① 맞는 매뉴얼 누락"), (axes[1], "wrong", "② 엉뚱한 매뉴얼 혼입")):
+    ax.axvspan(XL[0], 0, color=BLUE, alpha=0.06, lw=0)
+    ax.axvspan(0, XL[1], color=ORANGE, alpha=0.06, lw=0)
+    ax.text(XL[0] + 1.5, len(st) - 0.35, "← 좋아짐", fontsize=11, color=BLUE, fontweight="bold", va="center")
+    ax.text(XL[1] - 1.5, len(st) - 0.35, "나빠짐 →", fontsize=11, color=ORANGE, fontweight="bold", va="center", ha="right")
     for y, p in zip(ys, st):
         r = p[key]
+        d = round(r["diff"] * 100)
         c = BLUE if r["significant"] and r["diff"] < 0 else (ORANGE if r["significant"] else GRAY)
-        ax.plot([r["lo"] * 100, r["hi"] * 100], [y, y], color=c, lw=3, solid_capstyle="round")
-        ax.plot(r["diff"] * 100, y, "o", color=c, ms=9, mec=SURF, mew=2)
-        ax.text(max(r["hi"] * 100, 0) + 3, y, f"{round(r['diff'] * 100):+d}%p" + (" 효과 확인" if r["significant"] else ""),
-                va="center", fontsize=10, color=INK if r["significant"] else INK2)
-    ax.axvline(0, color=INK2, lw=1)
-    ax.set_xlim(-80, 45)
-    ax.set_xlabel(xlabel + " · 왼쪽일수록 좋아짐")
+        ax.plot([r["lo"] * 100, r["hi"] * 100], [y, y], color=c, lw=4 if r["significant"] else 3, solid_capstyle="round")
+        ax.plot(r["diff"] * 100, y, "o", color=c if r["significant"] else SURF, ms=10, mec=c if not r["significant"] else SURF,
+                mew=2)
+        if r["significant"]:
+            lab, kw = f"{d:+d}%p 효과 확인", dict(color=c, fontweight="bold", fontsize=12)
+        elif d == 0 and r["lo"] <= 0 <= r["hi"]:
+            lab, kw = "변화 없음", dict(color=INK2, fontsize=11)
+        else:
+            lab, kw = f"{d:+d}%p (불확실)", dict(color=INK2, fontsize=11)
+        ax.text(max(r["hi"] * 100, 0) + 3, y, lab, va="center", **kw)
+    ax.axvline(0, color=INK2, lw=1.2)
+    ax.set_xlim(*XL)
+    ax.set_ylim(-0.6, len(st) - 0.1)
+    ax.set_title(ptitle, loc="left", fontsize=14, color=INK, fontweight="bold", pad=10)
+    ax.set_xlabel("변화 (%p) · 왼쪽일수록 좋아짐", fontsize=11.5)
     for sp in ("top", "right", "left"):
         ax.spines[sp].set_visible(False)
-    ax.tick_params(left=False)
+    ax.tick_params(left=False, labelsize=11)
     ax.xaxis.grid(True, color=GRID, lw=0.8)
     ax.set_axisbelow(True)
-axes[0].set_yticks(ys, [p["label"] for p in st])
-fig.suptitle("어떤 개선이 효과였나 — 같은 질문끼리 짝지어 비교", x=0.01, ha="left", fontsize=15, color=INK, fontweight="bold")
-fig.text(0.01, 0.905, "점 = 평균 변화, 선 = 95% 신뢰구간. 선이 0을 지나지 않으면 '효과 확인' (holdout 36건, 3회 평균)",
-         fontsize=10.5, color=INK2)
-fig.tight_layout(rect=(0, 0, 1, 0.88))
+axes[0].set_yticks(ys, [p["label"] for p in st], fontsize=13, color=INK)
+fig.suptitle("어떤 개선이 효과였나: 같은 질문끼리 짝지어 비교", x=0.01, ha="left", fontsize=16, color=INK, fontweight="bold")
+fig.text(0.01, 0.905, "점 = 평균 변화, 막대 = 95% 신뢰구간(진짜 효과가 있을 법한 범위). "
+         "막대가 0선에 닿지 않으면 '효과 확인'. holdout 36문제 × 3회", fontsize=11, color=INK2)
+fig.tight_layout(rect=(0, 0, 1, 0.9))
 fig.savefig(OUT / "fig6_contrib.png", dpi=180)
 plt.close(fig)
 
@@ -202,7 +218,7 @@ ax.set_xticks(range(len(ORDER)), [LABEL[n] for n in ORDER])
 ax.set_yticks([])
 ax.set_ylim(0, 1.18)
 ax.legend(frameon=False, loc="upper left", fontsize=10, ncol=2)
-frame(ax, "AI 채점관은 후하다 — 그래서 코드로 센 지표를 함께 봤다", "holdout, 3회 평균 (%)")
+frame(ax, "AI 채점관은 후하다: 그래서 코드로 센 지표를 함께 봤다", "holdout, 3회 평균 (%)")
 fig.tight_layout()
 fig.savefig(OUT / "fig9_judge.png", dpi=180)
 plt.close(fig)
