@@ -1,0 +1,4314 @@
+{
+ "split": "holdout",
+ "n": 36,
+ "note": "검색 단독 평가 (LLM·라우팅 없음). 기준값은 dev 보정값 그대로 — holdout 으로 튜닝하지 않음.",
+ "thresholds_from": "results/calibrate_rag_local_bge_latest.json",
+ "dev_pick": {
+  "embedding": "ollama:bge-m3",
+  "min_score": 0.5741,
+  "margin": 0.02
+ },
+ "embedders": {
+  "local": {
+   "embedder": "local",
+   "min_score": 0.1683,
+   "margin": 0.02,
+   "n": 36,
+   "n_gold": 28,
+   "n_nogold": 8,
+   "recall@1": 0.5714,
+   "hit@1": 0.6429,
+   "recall@3": 0.8036,
+   "hit@3": 0.8571,
+   "mrr": 0.7643,
+   "hit@1_n": 18,
+   "hit@3_n": 24,
+   "gold_kept": 0.9286,
+   "nogold_filtered": 0.75,
+   "balanced_acc": 0.8393,
+   "miss_n": 6,
+   "miss_rate": 0.2143,
+   "wrong_n": 14,
+   "wrong_rate": 0.3889,
+   "rows": [
+    {
+     "id": "Q25",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.2388
+      ],
+      [
+       "disk-full",
+       0.1918
+      ],
+      [
+       "cpu-spike",
+       0.1917
+      ],
+      [
+       "memory-leak",
+       0.1847
+      ],
+      [
+       "network-timeout",
+       0.1654
+      ],
+      [
+       "db-down",
+       0.1424
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.2388,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q26",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.2578
+      ],
+      [
+       "memory-leak",
+       0.243
+      ],
+      [
+       "cpu-spike",
+       0.2153
+      ],
+      [
+       "high-latency",
+       0.2078
+      ],
+      [
+       "network-timeout",
+       0.1876
+      ],
+      [
+       "db-down",
+       0.1665
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.2578,
+     "fed": [
+      "disk-full",
+      "memory-leak"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q27",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.2051
+      ],
+      [
+       "network-timeout",
+       0.1774
+      ],
+      [
+       "disk-full",
+       0.1512
+      ],
+      [
+       "cpu-spike",
+       0.1497
+      ],
+      [
+       "db-down",
+       0.1306
+      ],
+      [
+       "memory-leak",
+       0.1219
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.2051,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q28",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.2681
+      ],
+      [
+       "high-latency",
+       0.2255
+      ],
+      [
+       "memory-leak",
+       0.2229
+      ],
+      [
+       "network-timeout",
+       0.205
+      ],
+      [
+       "disk-full",
+       0.1845
+      ],
+      [
+       "db-down",
+       0.1445
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.2681,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q29",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.2282
+      ],
+      [
+       "memory-leak",
+       0.2149
+      ],
+      [
+       "high-latency",
+       0.2111
+      ],
+      [
+       "network-timeout",
+       0.1978
+      ],
+      [
+       "disk-full",
+       0.1975
+      ],
+      [
+       "db-down",
+       0.1704
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.2282,
+     "fed": [
+      "cpu-spike",
+      "memory-leak",
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q30",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1651
+      ],
+      [
+       "disk-full",
+       0.155
+      ],
+      [
+       "cpu-spike",
+       0.1525
+      ],
+      [
+       "network-timeout",
+       0.1465
+      ],
+      [
+       "high-latency",
+       0.1251
+      ],
+      [
+       "db-down",
+       0.1152
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1651,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q31",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.1984
+      ],
+      [
+       "network-timeout",
+       0.1982
+      ],
+      [
+       "disk-full",
+       0.1977
+      ],
+      [
+       "memory-leak",
+       0.1841
+      ],
+      [
+       "high-latency",
+       0.1727
+      ],
+      [
+       "db-down",
+       0.1713
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.1984,
+     "fed": [
+      "cpu-spike",
+      "network-timeout",
+      "disk-full"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q32",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.219
+      ],
+      [
+       "cpu-spike",
+       0.2189
+      ],
+      [
+       "network-timeout",
+       0.211
+      ],
+      [
+       "db-down",
+       0.2007
+      ],
+      [
+       "disk-full",
+       0.1911
+      ],
+      [
+       "high-latency",
+       0.1825
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.219,
+     "fed": [
+      "memory-leak",
+      "cpu-spike",
+      "network-timeout"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q33",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.1975
+      ],
+      [
+       "high-latency",
+       0.1859
+      ],
+      [
+       "memory-leak",
+       0.178
+      ],
+      [
+       "db-down",
+       0.1704
+      ],
+      [
+       "cpu-spike",
+       0.1687
+      ],
+      [
+       "network-timeout",
+       0.1607
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.1975,
+     "fed": [
+      "disk-full",
+      "high-latency",
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q34",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.3221
+      ],
+      [
+       "memory-leak",
+       0.2402
+      ],
+      [
+       "cpu-spike",
+       0.2105
+      ],
+      [
+       "network-timeout",
+       0.1999
+      ],
+      [
+       "disk-full",
+       0.1928
+      ],
+      [
+       "db-down",
+       0.1531
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.3221,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q35",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.272
+      ],
+      [
+       "cpu-spike",
+       0.2422
+      ],
+      [
+       "network-timeout",
+       0.2229
+      ],
+      [
+       "disk-full",
+       0.2019
+      ],
+      [
+       "memory-leak",
+       0.2012
+      ],
+      [
+       "db-down",
+       0.1603
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.272,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q36",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.194
+      ],
+      [
+       "high-latency",
+       0.192
+      ],
+      [
+       "memory-leak",
+       0.18
+      ],
+      [
+       "network-timeout",
+       0.1635
+      ],
+      [
+       "disk-full",
+       0.1575
+      ],
+      [
+       "db-down",
+       0.1524
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.194,
+     "fed": [
+      "cpu-spike",
+      "high-latency",
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q37",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.2402
+      ],
+      [
+       "network-timeout",
+       0.2096
+      ],
+      [
+       "high-latency",
+       0.2005
+      ],
+      [
+       "disk-full",
+       0.1762
+      ],
+      [
+       "cpu-spike",
+       0.176
+      ],
+      [
+       "db-down",
+       0.158
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.2402,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q38",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.2715
+      ],
+      [
+       "high-latency",
+       0.2306
+      ],
+      [
+       "network-timeout",
+       0.1948
+      ],
+      [
+       "db-down",
+       0.1876
+      ],
+      [
+       "cpu-spike",
+       0.1648
+      ],
+      [
+       "disk-full",
+       0.1522
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.2715,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q39",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.2093
+      ],
+      [
+       "network-timeout",
+       0.1639
+      ],
+      [
+       "disk-full",
+       0.1483
+      ],
+      [
+       "db-down",
+       0.1383
+      ],
+      [
+       "high-latency",
+       0.1364
+      ],
+      [
+       "cpu-spike",
+       0.1325
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.2093,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q40",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.2749
+      ],
+      [
+       "memory-leak",
+       0.2508
+      ],
+      [
+       "high-latency",
+       0.2313
+      ],
+      [
+       "disk-full",
+       0.2208
+      ],
+      [
+       "cpu-spike",
+       0.1984
+      ],
+      [
+       "db-down",
+       0.1958
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.2749,
+     "fed": [
+      "network-timeout"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q41",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.1756
+      ],
+      [
+       "disk-full",
+       0.1706
+      ],
+      [
+       "high-latency",
+       0.1618
+      ],
+      [
+       "memory-leak",
+       0.1543
+      ],
+      [
+       "cpu-spike",
+       0.1482
+      ],
+      [
+       "db-down",
+       0.1034
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.1756,
+     "fed": [
+      "network-timeout",
+      "disk-full"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q42",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.2073
+      ],
+      [
+       "network-timeout",
+       0.2003
+      ],
+      [
+       "high-latency",
+       0.1908
+      ],
+      [
+       "memory-leak",
+       0.1728
+      ],
+      [
+       "db-down",
+       0.1458
+      ],
+      [
+       "disk-full",
+       0.1455
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.2073,
+     "fed": [
+      "cpu-spike",
+      "network-timeout",
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q43",
+     "category": "constrained",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1793
+      ],
+      [
+       "db-down",
+       0.1351
+      ],
+      [
+       "cpu-spike",
+       0.1288
+      ],
+      [
+       "network-timeout",
+       0.1284
+      ],
+      [
+       "high-latency",
+       0.1268
+      ],
+      [
+       "disk-full",
+       0.1199
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1793,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q44",
+     "category": "constrained",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.2133
+      ],
+      [
+       "high-latency",
+       0.1884
+      ],
+      [
+       "memory-leak",
+       0.18
+      ],
+      [
+       "cpu-spike",
+       0.175
+      ],
+      [
+       "db-down",
+       0.1742
+      ],
+      [
+       "disk-full",
+       0.1575
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.2133,
+     "fed": [
+      "network-timeout"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q45",
+     "category": "constrained",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.2261
+      ],
+      [
+       "memory-leak",
+       0.214
+      ],
+      [
+       "network-timeout",
+       0.1965
+      ],
+      [
+       "disk-full",
+       0.1797
+      ],
+      [
+       "cpu-spike",
+       0.1764
+      ],
+      [
+       "db-down",
+       0.165
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.2261,
+     "fed": [
+      "high-latency",
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q46",
+     "category": "constrained",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.1512
+      ],
+      [
+       "db-down",
+       0.1442
+      ],
+      [
+       "disk-full",
+       0.1359
+      ],
+      [
+       "high-latency",
+       0.1344
+      ],
+      [
+       "network-timeout",
+       0.1224
+      ],
+      [
+       "memory-leak",
+       0.1075
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.1512,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q47",
+     "category": "constrained",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.2139
+      ],
+      [
+       "high-latency",
+       0.1685
+      ],
+      [
+       "cpu-spike",
+       0.1581
+      ],
+      [
+       "memory-leak",
+       0.1467
+      ],
+      [
+       "db-down",
+       0.1131
+      ],
+      [
+       "network-timeout",
+       0.1055
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.2139,
+     "fed": [
+      "disk-full"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q48",
+     "category": "composite",
+     "gold": [
+      "db-down",
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.2243
+      ],
+      [
+       "high-latency",
+       0.2235
+      ],
+      [
+       "memory-leak",
+       0.221
+      ],
+      [
+       "network-timeout",
+       0.2096
+      ],
+      [
+       "db-down",
+       0.1926
+      ],
+      [
+       "disk-full",
+       0.1762
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.2243,
+     "fed": [
+      "cpu-spike",
+      "high-latency",
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q49",
+     "category": "composite",
+     "gold": [
+      "cpu-spike",
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.253
+      ],
+      [
+       "network-timeout",
+       0.214
+      ],
+      [
+       "high-latency",
+       0.2052
+      ],
+      [
+       "cpu-spike",
+       0.1936
+      ],
+      [
+       "db-down",
+       0.1756
+      ],
+      [
+       "disk-full",
+       0.1707
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.253,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q50",
+     "category": "composite",
+     "gold": [
+      "network-timeout",
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.2695
+      ],
+      [
+       "memory-leak",
+       0.2359
+      ],
+      [
+       "disk-full",
+       0.2338
+      ],
+      [
+       "high-latency",
+       0.2312
+      ],
+      [
+       "cpu-spike",
+       0.2113
+      ],
+      [
+       "db-down",
+       0.1675
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.2695,
+     "fed": [
+      "network-timeout"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q51",
+     "category": "composite",
+     "gold": [
+      "db-down",
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.2271
+      ],
+      [
+       "cpu-spike",
+       0.1919
+      ],
+      [
+       "network-timeout",
+       0.1855
+      ],
+      [
+       "db-down",
+       0.1751
+      ],
+      [
+       "high-latency",
+       0.1701
+      ],
+      [
+       "disk-full",
+       0.1434
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.2271,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q52",
+     "category": "composite",
+     "gold": [
+      "cpu-spike",
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.2368
+      ],
+      [
+       "disk-full",
+       0.1927
+      ],
+      [
+       "memory-leak",
+       0.1919
+      ],
+      [
+       "high-latency",
+       0.1747
+      ],
+      [
+       "network-timeout",
+       0.1527
+      ],
+      [
+       "db-down",
+       0.105
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.2368,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q53",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "memory-leak",
+       0.2298
+      ],
+      [
+       "network-timeout",
+       0.1928
+      ],
+      [
+       "cpu-spike",
+       0.1899
+      ],
+      [
+       "high-latency",
+       0.1494
+      ],
+      [
+       "db-down",
+       0.1417
+      ],
+      [
+       "disk-full",
+       0.1352
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.2298,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": null,
+     "wrong": true
+    },
+    {
+     "id": "Q54",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.1568
+      ],
+      [
+       "memory-leak",
+       0.1417
+      ],
+      [
+       "disk-full",
+       0.1193
+      ],
+      [
+       "network-timeout",
+       0.1157
+      ],
+      [
+       "high-latency",
+       0.1101
+      ],
+      [
+       "db-down",
+       0.1004
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.1568,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q55",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1831
+      ],
+      [
+       "network-timeout",
+       0.1768
+      ],
+      [
+       "cpu-spike",
+       0.1732
+      ],
+      [
+       "high-latency",
+       0.1573
+      ],
+      [
+       "disk-full",
+       0.1435
+      ],
+      [
+       "db-down",
+       0.1267
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1831,
+     "fed": [
+      "memory-leak",
+      "network-timeout",
+      "cpu-spike"
+     ],
+     "miss": null,
+     "wrong": true
+    },
+    {
+     "id": "Q56",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1633
+      ],
+      [
+       "disk-full",
+       0.1613
+      ],
+      [
+       "cpu-spike",
+       0.1503
+      ],
+      [
+       "high-latency",
+       0.1472
+      ],
+      [
+       "db-down",
+       0.1413
+      ],
+      [
+       "network-timeout",
+       0.1284
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1633,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q57",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.1203
+      ],
+      [
+       "network-timeout",
+       0.1071
+      ],
+      [
+       "disk-full",
+       0.0993
+      ],
+      [
+       "db-down",
+       0.0902
+      ],
+      [
+       "memory-leak",
+       0.0851
+      ],
+      [
+       "high-latency",
+       0.0709
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.1203,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q58",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "memory-leak",
+       0.164
+      ],
+      [
+       "db-down",
+       0.1298
+      ],
+      [
+       "cpu-spike",
+       0.1242
+      ],
+      [
+       "high-latency",
+       0.1137
+      ],
+      [
+       "network-timeout",
+       0.1116
+      ],
+      [
+       "disk-full",
+       0.0874
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.164,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q59",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "disk-full",
+       0.0938
+      ],
+      [
+       "memory-leak",
+       0.0904
+      ],
+      [
+       "cpu-spike",
+       0.0802
+      ],
+      [
+       "high-latency",
+       0.0764
+      ],
+      [
+       "network-timeout",
+       0.0749
+      ],
+      [
+       "db-down",
+       0.0738
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.0938,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q60",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1668
+      ],
+      [
+       "disk-full",
+       0.1088
+      ],
+      [
+       "db-down",
+       0.1029
+      ],
+      [
+       "high-latency",
+       0.1028
+      ],
+      [
+       "network-timeout",
+       0.0864
+      ],
+      [
+       "cpu-spike",
+       0.0771
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1668,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    }
+   ]
+  },
+  "local-tfidf": {
+   "embedder": "local-tfidf",
+   "min_score": 0.0782,
+   "margin": 0.05,
+   "n": 36,
+   "n_gold": 28,
+   "n_nogold": 8,
+   "recall@1": 0.6607,
+   "hit@1": 0.75,
+   "recall@3": 0.9107,
+   "hit@3": 0.9286,
+   "mrr": 0.8571,
+   "hit@1_n": 21,
+   "hit@3_n": 26,
+   "gold_kept": 0.8571,
+   "nogold_filtered": 0.875,
+   "balanced_acc": 0.8661,
+   "miss_n": 8,
+   "miss_rate": 0.2857,
+   "wrong_n": 7,
+   "wrong_rate": 0.1944,
+   "rows": [
+    {
+     "id": "Q25",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.1172
+      ],
+      [
+       "cpu-spike",
+       0.0564
+      ],
+      [
+       "network-timeout",
+       0.0479
+      ],
+      [
+       "db-down",
+       0.0286
+      ],
+      [
+       "disk-full",
+       0.0203
+      ],
+      [
+       "memory-leak",
+       0.0194
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.1172,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q26",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.0699
+      ],
+      [
+       "db-down",
+       0.0565
+      ],
+      [
+       "cpu-spike",
+       0.0564
+      ],
+      [
+       "memory-leak",
+       0.0088
+      ],
+      [
+       "high-latency",
+       0.004
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.0699,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q27",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "db-down",
+       0.0927
+      ],
+      [
+       "disk-full",
+       0.0441
+      ],
+      [
+       "high-latency",
+       0.0222
+      ],
+      [
+       "network-timeout",
+       0.01
+      ],
+      [
+       "memory-leak",
+       0.0096
+      ],
+      [
+       "cpu-spike",
+       0.0003
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.0927,
+     "fed": [
+      "db-down"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q28",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.2401
+      ],
+      [
+       "high-latency",
+       0.1022
+      ],
+      [
+       "db-down",
+       0.0172
+      ],
+      [
+       "disk-full",
+       0.0148
+      ],
+      [
+       "memory-leak",
+       0.0142
+      ],
+      [
+       "network-timeout",
+       0.0113
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.2401,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q29",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.1742
+      ],
+      [
+       "high-latency",
+       0.0831
+      ],
+      [
+       "db-down",
+       0.0438
+      ],
+      [
+       "disk-full",
+       0.0156
+      ],
+      [
+       "memory-leak",
+       0.0149
+      ],
+      [
+       "network-timeout",
+       0.0069
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.1742,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q30",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.0747
+      ],
+      [
+       "memory-leak",
+       0.0668
+      ],
+      [
+       "high-latency",
+       0.0258
+      ],
+      [
+       "network-timeout",
+       0.021
+      ],
+      [
+       "disk-full",
+       0.0177
+      ],
+      [
+       "db-down",
+       0.0
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.0747,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q31",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "db-down",
+       0.1257
+      ],
+      [
+       "disk-full",
+       0.0468
+      ],
+      [
+       "memory-leak",
+       0.0083
+      ],
+      [
+       "cpu-spike",
+       0.0068
+      ],
+      [
+       "network-timeout",
+       0.0062
+      ],
+      [
+       "high-latency",
+       0.0038
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.1257,
+     "fed": [
+      "db-down"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q32",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.0578
+      ],
+      [
+       "disk-full",
+       0.0341
+      ],
+      [
+       "cpu-spike",
+       0.0287
+      ],
+      [
+       "network-timeout",
+       0.0111
+      ],
+      [
+       "high-latency",
+       0.0068
+      ],
+      [
+       "db-down",
+       0.0
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.0578,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q33",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "db-down",
+       0.1593
+      ],
+      [
+       "disk-full",
+       0.0485
+      ],
+      [
+       "high-latency",
+       0.036
+      ],
+      [
+       "memory-leak",
+       0.0263
+      ],
+      [
+       "network-timeout",
+       0.0235
+      ],
+      [
+       "cpu-spike",
+       0.0036
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.1593,
+     "fed": [
+      "db-down"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q34",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.2453
+      ],
+      [
+       "memory-leak",
+       0.0512
+      ],
+      [
+       "db-down",
+       0.0443
+      ],
+      [
+       "disk-full",
+       0.0229
+      ],
+      [
+       "cpu-spike",
+       0.0089
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.2453,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q35",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.2674
+      ],
+      [
+       "cpu-spike",
+       0.0313
+      ],
+      [
+       "db-down",
+       0.0182
+      ],
+      [
+       "disk-full",
+       0.0044
+      ],
+      [
+       "network-timeout",
+       0.0025
+      ],
+      [
+       "memory-leak",
+       0.0
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.2674,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q36",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.068
+      ],
+      [
+       "cpu-spike",
+       0.0536
+      ],
+      [
+       "disk-full",
+       0.0428
+      ],
+      [
+       "high-latency",
+       0.0056
+      ],
+      [
+       "db-down",
+       0.0
+      ],
+      [
+       "memory-leak",
+       0.0
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.068,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q37",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1385
+      ],
+      [
+       "db-down",
+       0.0568
+      ],
+      [
+       "disk-full",
+       0.0219
+      ],
+      [
+       "network-timeout",
+       0.0188
+      ],
+      [
+       "cpu-spike",
+       0.004
+      ],
+      [
+       "high-latency",
+       0.0038
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1385,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q38",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.162
+      ],
+      [
+       "db-down",
+       0.0437
+      ],
+      [
+       "high-latency",
+       0.0323
+      ],
+      [
+       "cpu-spike",
+       0.0061
+      ],
+      [
+       "disk-full",
+       0.0042
+      ],
+      [
+       "network-timeout",
+       0.0041
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.162,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q39",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.0921
+      ],
+      [
+       "memory-leak",
+       0.0644
+      ],
+      [
+       "db-down",
+       0.0521
+      ],
+      [
+       "cpu-spike",
+       0.018
+      ],
+      [
+       "disk-full",
+       0.0152
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.0921,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q40",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.1691
+      ],
+      [
+       "db-down",
+       0.0427
+      ],
+      [
+       "memory-leak",
+       0.029
+      ],
+      [
+       "high-latency",
+       0.0276
+      ],
+      [
+       "disk-full",
+       0.0138
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.1691,
+     "fed": [
+      "network-timeout"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q41",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.1276
+      ],
+      [
+       "disk-full",
+       0.0627
+      ],
+      [
+       "memory-leak",
+       0.0163
+      ],
+      [
+       "cpu-spike",
+       0.0048
+      ],
+      [
+       "high-latency",
+       0.0039
+      ],
+      [
+       "db-down",
+       0.0
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.1276,
+     "fed": [
+      "network-timeout"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q42",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.1998
+      ],
+      [
+       "high-latency",
+       0.0508
+      ],
+      [
+       "cpu-spike",
+       0.0192
+      ],
+      [
+       "memory-leak",
+       0.0135
+      ],
+      [
+       "db-down",
+       0.0008
+      ],
+      [
+       "disk-full",
+       0.0007
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.1998,
+     "fed": [
+      "network-timeout"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q43",
+     "category": "constrained",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1934
+      ],
+      [
+       "db-down",
+       0.0276
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ],
+      [
+       "disk-full",
+       0.0
+      ],
+      [
+       "high-latency",
+       0.0
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1934,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q44",
+     "category": "constrained",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.1124
+      ],
+      [
+       "high-latency",
+       0.1039
+      ],
+      [
+       "db-down",
+       0.0345
+      ],
+      [
+       "cpu-spike",
+       0.0004
+      ],
+      [
+       "disk-full",
+       0.0004
+      ],
+      [
+       "memory-leak",
+       0.0
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.1124,
+     "fed": [
+      "network-timeout",
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q45",
+     "category": "constrained",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.0962
+      ],
+      [
+       "network-timeout",
+       0.0556
+      ],
+      [
+       "db-down",
+       0.0243
+      ],
+      [
+       "disk-full",
+       0.0173
+      ],
+      [
+       "memory-leak",
+       0.0165
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.0962,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q46",
+     "category": "constrained",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "db-down",
+       0.0998
+      ],
+      [
+       "disk-full",
+       0.0162
+      ],
+      [
+       "memory-leak",
+       0.0155
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ],
+      [
+       "high-latency",
+       0.0
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.0998,
+     "fed": [
+      "db-down"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q47",
+     "category": "constrained",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.2686
+      ],
+      [
+       "high-latency",
+       0.0063
+      ],
+      [
+       "cpu-spike",
+       0.0034
+      ],
+      [
+       "network-timeout",
+       0.0031
+      ],
+      [
+       "db-down",
+       0.0003
+      ],
+      [
+       "memory-leak",
+       0.0
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.2686,
+     "fed": [
+      "disk-full"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q48",
+     "category": "composite",
+     "gold": [
+      "db-down",
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.1175
+      ],
+      [
+       "db-down",
+       0.0595
+      ],
+      [
+       "network-timeout",
+       0.0187
+      ],
+      [
+       "memory-leak",
+       0.0092
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ],
+      [
+       "disk-full",
+       0.0
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.1175,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q49",
+     "category": "composite",
+     "gold": [
+      "cpu-spike",
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1546
+      ],
+      [
+       "cpu-spike",
+       0.1213
+      ],
+      [
+       "db-down",
+       0.028
+      ],
+      [
+       "disk-full",
+       0.0236
+      ],
+      [
+       "high-latency",
+       0.0118
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1546,
+     "fed": [
+      "memory-leak",
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q50",
+     "category": "composite",
+     "gold": [
+      "network-timeout",
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.1218
+      ],
+      [
+       "high-latency",
+       0.0907
+      ],
+      [
+       "network-timeout",
+       0.0709
+      ],
+      [
+       "db-down",
+       0.0556
+      ],
+      [
+       "cpu-spike",
+       0.0031
+      ],
+      [
+       "memory-leak",
+       0.0
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.1218,
+     "fed": [
+      "disk-full",
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": true
+    },
+    {
+     "id": "Q51",
+     "category": "composite",
+     "gold": [
+      "db-down",
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.1292
+      ],
+      [
+       "high-latency",
+       0.0564
+      ],
+      [
+       "disk-full",
+       0.0358
+      ],
+      [
+       "cpu-spike",
+       0.0352
+      ],
+      [
+       "db-down",
+       0.0346
+      ],
+      [
+       "network-timeout",
+       0.0205
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.1292,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q52",
+     "category": "composite",
+     "gold": [
+      "cpu-spike",
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.2853
+      ],
+      [
+       "disk-full",
+       0.0796
+      ],
+      [
+       "high-latency",
+       0.0271
+      ],
+      [
+       "memory-leak",
+       0.012
+      ],
+      [
+       "network-timeout",
+       0.007
+      ],
+      [
+       "db-down",
+       0.0
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.2853,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q53",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "memory-leak",
+       0.0972
+      ],
+      [
+       "network-timeout",
+       0.0511
+      ],
+      [
+       "disk-full",
+       0.0416
+      ],
+      [
+       "cpu-spike",
+       0.0298
+      ],
+      [
+       "high-latency",
+       0.0043
+      ],
+      [
+       "db-down",
+       0.0
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.0972,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": null,
+     "wrong": true
+    },
+    {
+     "id": "Q54",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "disk-full",
+       0.0643
+      ],
+      [
+       "network-timeout",
+       0.031
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ],
+      [
+       "db-down",
+       0.0
+      ],
+      [
+       "high-latency",
+       0.0
+      ],
+      [
+       "memory-leak",
+       0.0
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.0643,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q55",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "high-latency",
+       0.0393
+      ],
+      [
+       "memory-leak",
+       0.0376
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ],
+      [
+       "db-down",
+       0.0
+      ],
+      [
+       "disk-full",
+       0.0
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.0393,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q56",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "high-latency",
+       0.045
+      ],
+      [
+       "disk-full",
+       0.0375
+      ],
+      [
+       "cpu-spike",
+       0.0079
+      ],
+      [
+       "memory-leak",
+       0.0071
+      ],
+      [
+       "db-down",
+       0.0
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.045,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q57",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "disk-full",
+       0.0586
+      ],
+      [
+       "memory-leak",
+       0.0351
+      ],
+      [
+       "network-timeout",
+       0.0301
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ],
+      [
+       "db-down",
+       0.0
+      ],
+      [
+       "high-latency",
+       0.0
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.0586,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q58",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "high-latency",
+       0.0547
+      ],
+      [
+       "db-down",
+       0.0536
+      ],
+      [
+       "memory-leak",
+       0.0364
+      ],
+      [
+       "disk-full",
+       0.0264
+      ],
+      [
+       "cpu-spike",
+       0.0034
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.0547,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q59",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "disk-full",
+       0.0556
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ],
+      [
+       "db-down",
+       0.0
+      ],
+      [
+       "high-latency",
+       0.0
+      ],
+      [
+       "memory-leak",
+       0.0
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.0556,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q60",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "disk-full",
+       0.0606
+      ],
+      [
+       "db-down",
+       0.0584
+      ],
+      [
+       "memory-leak",
+       0.0397
+      ],
+      [
+       "cpu-spike",
+       0.0
+      ],
+      [
+       "high-latency",
+       0.0
+      ],
+      [
+       "network-timeout",
+       0.0
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.0606,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    }
+   ]
+  },
+  "ollama:bge-m3": {
+   "embedder": "ollama:bge-m3",
+   "min_score": 0.5741,
+   "margin": 0.02,
+   "n": 36,
+   "n_gold": 28,
+   "n_nogold": 8,
+   "recall@1": 0.8214,
+   "hit@1": 0.8929,
+   "recall@3": 1.0,
+   "hit@3": 1.0,
+   "mrr": 0.9464,
+   "hit@1_n": 25,
+   "hit@3_n": 28,
+   "gold_kept": 0.5357,
+   "nogold_filtered": 1.0,
+   "balanced_acc": 0.7679,
+   "miss_n": 14,
+   "miss_rate": 0.5,
+   "wrong_n": 1,
+   "wrong_rate": 0.0278,
+   "rows": [
+    {
+     "id": "Q25",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "db-down",
+       0.4912
+      ],
+      [
+       "high-latency",
+       0.4448
+      ],
+      [
+       "disk-full",
+       0.4392
+      ],
+      [
+       "memory-leak",
+       0.4353
+      ],
+      [
+       "cpu-spike",
+       0.4339
+      ],
+      [
+       "network-timeout",
+       0.4258
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.4912,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q26",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "db-down",
+       0.5358
+      ],
+      [
+       "disk-full",
+       0.484
+      ],
+      [
+       "memory-leak",
+       0.4808
+      ],
+      [
+       "network-timeout",
+       0.4796
+      ],
+      [
+       "high-latency",
+       0.4718
+      ],
+      [
+       "cpu-spike",
+       0.4434
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.5358,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q27",
+     "category": "normal",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "db-down",
+       0.5475
+      ],
+      [
+       "network-timeout",
+       0.4965
+      ],
+      [
+       "disk-full",
+       0.4625
+      ],
+      [
+       "high-latency",
+       0.4606
+      ],
+      [
+       "memory-leak",
+       0.4548
+      ],
+      [
+       "cpu-spike",
+       0.4539
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.5475,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q28",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.6113
+      ],
+      [
+       "high-latency",
+       0.5838
+      ],
+      [
+       "memory-leak",
+       0.5063
+      ],
+      [
+       "disk-full",
+       0.5049
+      ],
+      [
+       "network-timeout",
+       0.4765
+      ],
+      [
+       "db-down",
+       0.4572
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.6113,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q29",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.6449
+      ],
+      [
+       "high-latency",
+       0.6209
+      ],
+      [
+       "memory-leak",
+       0.5531
+      ],
+      [
+       "db-down",
+       0.5419
+      ],
+      [
+       "network-timeout",
+       0.5068
+      ],
+      [
+       "disk-full",
+       0.505
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.6449,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q30",
+     "category": "normal",
+     "gold": [
+      "cpu-spike"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.5342
+      ],
+      [
+       "memory-leak",
+       0.5183
+      ],
+      [
+       "high-latency",
+       0.5127
+      ],
+      [
+       "disk-full",
+       0.4963
+      ],
+      [
+       "network-timeout",
+       0.4886
+      ],
+      [
+       "db-down",
+       0.4859
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.5342,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q31",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.6669
+      ],
+      [
+       "memory-leak",
+       0.5718
+      ],
+      [
+       "db-down",
+       0.5372
+      ],
+      [
+       "high-latency",
+       0.5139
+      ],
+      [
+       "cpu-spike",
+       0.509
+      ],
+      [
+       "network-timeout",
+       0.5012
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.6669,
+     "fed": [
+      "disk-full"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q32",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.5639
+      ],
+      [
+       "memory-leak",
+       0.5152
+      ],
+      [
+       "high-latency",
+       0.4752
+      ],
+      [
+       "cpu-spike",
+       0.4548
+      ],
+      [
+       "network-timeout",
+       0.4499
+      ],
+      [
+       "db-down",
+       0.4316
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.5639,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q33",
+     "category": "normal",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.5359
+      ],
+      [
+       "disk-full",
+       0.5297
+      ],
+      [
+       "high-latency",
+       0.4604
+      ],
+      [
+       "cpu-spike",
+       0.4603
+      ],
+      [
+       "db-down",
+       0.4519
+      ],
+      [
+       "network-timeout",
+       0.441
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.5359,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q34",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.6485
+      ],
+      [
+       "cpu-spike",
+       0.5516
+      ],
+      [
+       "memory-leak",
+       0.5136
+      ],
+      [
+       "disk-full",
+       0.4986
+      ],
+      [
+       "network-timeout",
+       0.4566
+      ],
+      [
+       "db-down",
+       0.4407
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.6485,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q35",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.63
+      ],
+      [
+       "cpu-spike",
+       0.5242
+      ],
+      [
+       "network-timeout",
+       0.5095
+      ],
+      [
+       "memory-leak",
+       0.503
+      ],
+      [
+       "disk-full",
+       0.4963
+      ],
+      [
+       "db-down",
+       0.4201
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.63,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q36",
+     "category": "normal",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.5717
+      ],
+      [
+       "cpu-spike",
+       0.5138
+      ],
+      [
+       "network-timeout",
+       0.5111
+      ],
+      [
+       "disk-full",
+       0.4927
+      ],
+      [
+       "memory-leak",
+       0.4728
+      ],
+      [
+       "db-down",
+       0.4665
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.5717,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q37",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.639
+      ],
+      [
+       "cpu-spike",
+       0.5656
+      ],
+      [
+       "disk-full",
+       0.5474
+      ],
+      [
+       "high-latency",
+       0.5282
+      ],
+      [
+       "db-down",
+       0.5
+      ],
+      [
+       "network-timeout",
+       0.4908
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.639,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q38",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.6324
+      ],
+      [
+       "high-latency",
+       0.5659
+      ],
+      [
+       "disk-full",
+       0.543
+      ],
+      [
+       "cpu-spike",
+       0.5262
+      ],
+      [
+       "network-timeout",
+       0.5223
+      ],
+      [
+       "db-down",
+       0.4793
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.6324,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q39",
+     "category": "normal",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.5069
+      ],
+      [
+       "network-timeout",
+       0.4659
+      ],
+      [
+       "cpu-spike",
+       0.4543
+      ],
+      [
+       "db-down",
+       0.4529
+      ],
+      [
+       "high-latency",
+       0.4167
+      ],
+      [
+       "disk-full",
+       0.3991
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.5069,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q40",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.5657
+      ],
+      [
+       "memory-leak",
+       0.5216
+      ],
+      [
+       "db-down",
+       0.507
+      ],
+      [
+       "high-latency",
+       0.4972
+      ],
+      [
+       "cpu-spike",
+       0.457
+      ],
+      [
+       "disk-full",
+       0.4331
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.5657,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q41",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.5653
+      ],
+      [
+       "high-latency",
+       0.5017
+      ],
+      [
+       "disk-full",
+       0.4759
+      ],
+      [
+       "memory-leak",
+       0.4724
+      ],
+      [
+       "cpu-spike",
+       0.456
+      ],
+      [
+       "db-down",
+       0.4519
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.5653,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q42",
+     "category": "normal",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.583
+      ],
+      [
+       "high-latency",
+       0.5738
+      ],
+      [
+       "db-down",
+       0.5129
+      ],
+      [
+       "cpu-spike",
+       0.492
+      ],
+      [
+       "memory-leak",
+       0.4882
+      ],
+      [
+       "disk-full",
+       0.4586
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.583,
+     "fed": [
+      "network-timeout"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q43",
+     "category": "constrained",
+     "gold": [
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.6244
+      ],
+      [
+       "network-timeout",
+       0.533
+      ],
+      [
+       "disk-full",
+       0.5192
+      ],
+      [
+       "high-latency",
+       0.5128
+      ],
+      [
+       "db-down",
+       0.508
+      ],
+      [
+       "cpu-spike",
+       0.5067
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.6244,
+     "fed": [
+      "memory-leak"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q44",
+     "category": "constrained",
+     "gold": [
+      "network-timeout"
+     ],
+     "ranking": [
+      [
+       "network-timeout",
+       0.5992
+      ],
+      [
+       "high-latency",
+       0.5461
+      ],
+      [
+       "db-down",
+       0.496
+      ],
+      [
+       "memory-leak",
+       0.484
+      ],
+      [
+       "cpu-spike",
+       0.4446
+      ],
+      [
+       "disk-full",
+       0.4424
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.5992,
+     "fed": [
+      "network-timeout"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q45",
+     "category": "constrained",
+     "gold": [
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.5879
+      ],
+      [
+       "network-timeout",
+       0.5654
+      ],
+      [
+       "memory-leak",
+       0.5496
+      ],
+      [
+       "db-down",
+       0.5395
+      ],
+      [
+       "disk-full",
+       0.5197
+      ],
+      [
+       "cpu-spike",
+       0.5071
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.5879,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q46",
+     "category": "constrained",
+     "gold": [
+      "db-down"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.566
+      ],
+      [
+       "db-down",
+       0.5483
+      ],
+      [
+       "high-latency",
+       0.5274
+      ],
+      [
+       "memory-leak",
+       0.5228
+      ],
+      [
+       "network-timeout",
+       0.5156
+      ],
+      [
+       "cpu-spike",
+       0.4728
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.566,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q47",
+     "category": "constrained",
+     "gold": [
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "disk-full",
+       0.7296
+      ],
+      [
+       "db-down",
+       0.6121
+      ],
+      [
+       "memory-leak",
+       0.5919
+      ],
+      [
+       "cpu-spike",
+       0.5584
+      ],
+      [
+       "network-timeout",
+       0.5559
+      ],
+      [
+       "high-latency",
+       0.5435
+      ]
+     ],
+     "top": "disk-full",
+     "score": 0.7296,
+     "fed": [
+      "disk-full"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q48",
+     "category": "composite",
+     "gold": [
+      "db-down",
+      "high-latency"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.5098
+      ],
+      [
+       "db-down",
+       0.5041
+      ],
+      [
+       "memory-leak",
+       0.4952
+      ],
+      [
+       "disk-full",
+       0.4884
+      ],
+      [
+       "cpu-spike",
+       0.4589
+      ],
+      [
+       "network-timeout",
+       0.4562
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.5098,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q49",
+     "category": "composite",
+     "gold": [
+      "cpu-spike",
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.5762
+      ],
+      [
+       "memory-leak",
+       0.527
+      ],
+      [
+       "high-latency",
+       0.4954
+      ],
+      [
+       "disk-full",
+       0.461
+      ],
+      [
+       "db-down",
+       0.411
+      ],
+      [
+       "network-timeout",
+       0.3875
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.5762,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q50",
+     "category": "composite",
+     "gold": [
+      "network-timeout",
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "high-latency",
+       0.6254
+      ],
+      [
+       "network-timeout",
+       0.5792
+      ],
+      [
+       "disk-full",
+       0.5655
+      ],
+      [
+       "cpu-spike",
+       0.5365
+      ],
+      [
+       "memory-leak",
+       0.5312
+      ],
+      [
+       "db-down",
+       0.5031
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.6254,
+     "fed": [
+      "high-latency"
+     ],
+     "miss": true,
+     "wrong": true
+    },
+    {
+     "id": "Q51",
+     "category": "composite",
+     "gold": [
+      "db-down",
+      "memory-leak"
+     ],
+     "ranking": [
+      [
+       "memory-leak",
+       0.5649
+      ],
+      [
+       "disk-full",
+       0.5558
+      ],
+      [
+       "db-down",
+       0.5452
+      ],
+      [
+       "high-latency",
+       0.5079
+      ],
+      [
+       "cpu-spike",
+       0.5067
+      ],
+      [
+       "network-timeout",
+       0.4873
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.5649,
+     "fed": [],
+     "miss": true,
+     "wrong": false
+    },
+    {
+     "id": "Q52",
+     "category": "composite",
+     "gold": [
+      "cpu-spike",
+      "disk-full"
+     ],
+     "ranking": [
+      [
+       "cpu-spike",
+       0.5975
+      ],
+      [
+       "disk-full",
+       0.5599
+      ],
+      [
+       "high-latency",
+       0.5393
+      ],
+      [
+       "memory-leak",
+       0.5288
+      ],
+      [
+       "network-timeout",
+       0.4645
+      ],
+      [
+       "db-down",
+       0.4504
+      ]
+     ],
+     "top": "cpu-spike",
+     "score": 0.5975,
+     "fed": [
+      "cpu-spike"
+     ],
+     "miss": false,
+     "wrong": false
+    },
+    {
+     "id": "Q53",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "db-down",
+       0.4677
+      ],
+      [
+       "cpu-spike",
+       0.4664
+      ],
+      [
+       "memory-leak",
+       0.4637
+      ],
+      [
+       "network-timeout",
+       0.452
+      ],
+      [
+       "disk-full",
+       0.4448
+      ],
+      [
+       "high-latency",
+       0.4444
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.4677,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q54",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "memory-leak",
+       0.5033
+      ],
+      [
+       "high-latency",
+       0.4713
+      ],
+      [
+       "cpu-spike",
+       0.4695
+      ],
+      [
+       "db-down",
+       0.4586
+      ],
+      [
+       "disk-full",
+       0.4495
+      ],
+      [
+       "network-timeout",
+       0.4367
+      ]
+     ],
+     "top": "memory-leak",
+     "score": 0.5033,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q55",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "high-latency",
+       0.4884
+      ],
+      [
+       "network-timeout",
+       0.4783
+      ],
+      [
+       "memory-leak",
+       0.437
+      ],
+      [
+       "cpu-spike",
+       0.431
+      ],
+      [
+       "disk-full",
+       0.4285
+      ],
+      [
+       "db-down",
+       0.4031
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.4884,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q56",
+     "category": "unregistered",
+     "gold": [],
+     "ranking": [
+      [
+       "network-timeout",
+       0.5098
+      ],
+      [
+       "db-down",
+       0.4696
+      ],
+      [
+       "memory-leak",
+       0.4654
+      ],
+      [
+       "high-latency",
+       0.4542
+      ],
+      [
+       "disk-full",
+       0.4359
+      ],
+      [
+       "cpu-spike",
+       0.4211
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.5098,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q57",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "network-timeout",
+       0.5144
+      ],
+      [
+       "memory-leak",
+       0.5114
+      ],
+      [
+       "high-latency",
+       0.4973
+      ],
+      [
+       "cpu-spike",
+       0.4941
+      ],
+      [
+       "db-down",
+       0.4927
+      ],
+      [
+       "disk-full",
+       0.4714
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.5144,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q58",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "high-latency",
+       0.416
+      ],
+      [
+       "disk-full",
+       0.4099
+      ],
+      [
+       "network-timeout",
+       0.3984
+      ],
+      [
+       "db-down",
+       0.3947
+      ],
+      [
+       "cpu-spike",
+       0.394
+      ],
+      [
+       "memory-leak",
+       0.3925
+      ]
+     ],
+     "top": "high-latency",
+     "score": 0.416,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q59",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "network-timeout",
+       0.4769
+      ],
+      [
+       "memory-leak",
+       0.4536
+      ],
+      [
+       "cpu-spike",
+       0.4481
+      ],
+      [
+       "db-down",
+       0.4418
+      ],
+      [
+       "disk-full",
+       0.4358
+      ],
+      [
+       "high-latency",
+       0.4322
+      ]
+     ],
+     "top": "network-timeout",
+     "score": 0.4769,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    },
+    {
+     "id": "Q60",
+     "category": "ambiguous",
+     "gold": [],
+     "ranking": [
+      [
+       "db-down",
+       0.5482
+      ],
+      [
+       "network-timeout",
+       0.5463
+      ],
+      [
+       "disk-full",
+       0.4957
+      ],
+      [
+       "memory-leak",
+       0.4905
+      ],
+      [
+       "high-latency",
+       0.4901
+      ],
+      [
+       "cpu-spike",
+       0.4583
+      ]
+     ],
+     "top": "db-down",
+     "score": 0.5482,
+     "fed": [],
+     "miss": null,
+     "wrong": false
+    }
+   ]
+  }
+ }
+}

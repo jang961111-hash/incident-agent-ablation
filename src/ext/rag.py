@@ -116,6 +116,40 @@ class LocalTfidfEmbedder:
         return out
 
 
+class OllamaEmbedder:
+    """로컬 Ollama 임베딩 모델 (rag.embedding: "ollama:<모델>", 예: ollama:bge-m3). 로컬 Ollama 데모용.
+
+    POST http://127.0.0.1:11434/api/embed {"model", "input": [...]} — API 키·외부 전송 없음, 비용 0.
+    런북 색인(persist=True)만 .cache/emb_ollama_<모델>.json 에 남긴다 (OpenAI 캐시 파일과 이름이 다름).
+    """
+
+    def __init__(self, model: str, cache_dir: Path, url: str = "http://127.0.0.1:11434/api/embed",
+                 timeout: float = 120.0):
+        self.model = model
+        self.name = f"ollama:{model}"
+        self.url = url
+        self.timeout = timeout
+        self.cache_path = cache_dir / f"emb_ollama_{model.replace(':', '_').replace('/', '_')}.json"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        self._disk = json.loads(self.cache_path.read_text()) if self.cache_path.exists() else {}
+
+    def embed(self, texts: list[str], persist: bool = False) -> list[list[float]]:
+        import httpx
+        keys = [hashlib.sha1(t.encode()).hexdigest() for t in texts]
+        todo = [t for t, k in zip(texts, keys) if not (persist and k in self._disk)]
+        fresh = {}
+        if todo:
+            with stage("embed"):
+                resp = httpx.post(self.url, json={"model": self.model, "input": todo}, timeout=self.timeout)
+            resp.raise_for_status()
+            for t, vec in zip(todo, resp.json()["embeddings"]):
+                fresh[hashlib.sha1(t.encode()).hexdigest()] = _unit(vec)
+        if persist and fresh:
+            self._disk.update(fresh)
+            self.cache_path.write_text(json.dumps(self._disk))
+        return [fresh.get(k) or self._disk[k] for k in keys]
+
+
 _INDEX: dict[str, list[list[float]]] = {}   # 임베더 이름 → 런북 벡터 (프로세스당 1회)
 
 

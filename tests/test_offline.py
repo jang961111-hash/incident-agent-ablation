@@ -110,3 +110,24 @@ def test_local_tfidf_embedder_ranks_db_down():
     ret = RunbookRetriever(rb, LocalTfidfEmbedder(rb))
     assert ret.rank("DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.", top_k=3)[0][0] == "db-down"
     assert ret.rank("전혀 관계없는 문장 xyz", top_k=1)[0][1] < 0.0782   # final_local.yaml min_score 미만
+
+
+def test_ollama_embedder_offline(tmp_path, monkeypatch):
+    """rag.embedding: ollama:<모델> — /api/embed 형식으로 부르고, 런북 색인만 별도 캐시 파일에 남긴다 (네트워크 없이 확인)."""
+    import httpx
+    from ext.rag import OllamaEmbedder
+    calls = []
+
+    def fake_post(url, json=None, timeout=None, **kw):
+        calls.append((url, json))
+        return httpx.Response(200, json={"embeddings": [[float(len(t)), 1.0] for t in json["input"]]},
+                              request=httpx.Request("POST", url))
+    monkeypatch.setattr(httpx, "post", fake_post)
+    emb = OllamaEmbedder("bge-m3", tmp_path)
+    assert emb.name == "ollama:bge-m3"
+    v = emb.embed(["abc", "de"], persist=True)
+    assert calls[0][0].endswith("/api/embed") and calls[0][1] == {"model": "bge-m3", "input": ["abc", "de"]}
+    assert abs(sum(x * x for x in v[0]) - 1) < 1e-9                     # 단위 벡터
+    assert (tmp_path / "emb_ollama_bge-m3.json").exists()                # OpenAI 캐시와 다른 파일
+    emb.embed(["abc"], persist=True)
+    assert len(calls) == 1                                               # 색인은 캐시 재사용

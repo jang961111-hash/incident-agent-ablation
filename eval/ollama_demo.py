@@ -85,7 +85,7 @@ def main():
         cfg = copy.deepcopy(yaml.safe_load((ROOT / f"eval/configs/{name}.yaml").read_text()))
         cfg["name"] = f"{name}_local"
         cfg["models"] = {k: a.model for k in ("fast", "quality", "cascade_writer", "judge")}
-        if not str(cfg.setdefault("rag", {}).get("embedding", "")).startswith("local"):
+        if not str(cfg.setdefault("rag", {}).get("embedding", "")).startswith(("local", "ollama:")):
             cfg["rag"]["embedding"] = "local"      # OpenAI 임베딩 구성은 LocalNgram 으로 (API 호출 없음)
         cfg.setdefault("cost", {})["cache"] = False
         t0 = time.perf_counter()

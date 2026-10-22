@@ -10,6 +10,10 @@
         # 점수 척도가 OpenAI 임베딩과 달라 기준값을 따로 정한다. margin 도 dev 에서만 고르고
         # (넣은 런북 F1 최대, 동점이면 0.05 에 가까운 값), dev 검색 지표(Recall@1·3, MRR)를 함께 남긴다.
         # 결과: results/calibrate_rag_local_<YYYYMMDD_HHMM>.json, results/calibrate_rag_local_latest.json
+    python -m eval.calibrate_rag --embedding ollama:bge-m3
+        # 로컬 Ollama 임베딩 모델(bge-m3)을 로컬 임베더 2종과 같은 dev 보정·같은 선택 규칙으로 비교한다.
+        # Ollama(127.0.0.1:11434)에 모델이 받아져 있어야 한다 (ollama pull bge-m3). 기존 보정 파일은 덮지 않는다.
+        # 결과: results/calibrate_rag_local_bge_<YYYYMMDD_HHMM>.json, results/calibrate_rag_local_bge_latest.json
 """
 from __future__ import annotations
 
@@ -27,8 +31,8 @@ sys.path.insert(0, str(ROOT / "src"))
 from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv(ROOT / ".env")
-from ext.rag import (LocalNgramEmbedder, LocalTfidfEmbedder, OpenAIEmbedder,  # noqa: E402
-                     RunbookRetriever, select_feed)
+from ext.rag import (LocalNgramEmbedder, LocalTfidfEmbedder, OllamaEmbedder,  # noqa: E402
+                     OpenAIEmbedder, RunbookRetriever, select_feed)
 from eval.retrieval_metrics import summarize  # noqa: E402
 
 MARGINS = (0.02, 0.03, 0.05, 0.08, 0.1)
@@ -36,9 +40,12 @@ MARGINS = (0.02, 0.03, 0.05, 0.08, 0.1)
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--embedding", choices=["openai", "local"], default="openai")
-    if ap.parse_args().embedding == "local":
+    ap.add_argument("--embedding", choices=["openai", "local", "ollama:bge-m3"], default="openai")
+    emb = ap.parse_args().embedding
+    if emb == "local":
         return main_local()
+    if emb.startswith("ollama:"):
+        return main_local_ollama(emb.split(":", 1)[1])
     qs = [q for q in yaml.safe_load((ROOT / "eval/queries.yaml").read_text())["queries"]
           if q.get("split") == "dev"]
     assert len(qs) == 24, "dev 24건만 써야 한다"
@@ -163,6 +170,38 @@ def main_local():
             print(f"  {r['score']:.4f}  {r['id']} {r['category']:12} gold={r['gold']}  top={r['top']}  fed={r['fed']}")
     print("pick", out["pick"])
     print("saved", f"results/calibrate_rag_local_{ts}.json")
+
+def main_local_ollama(model: str):
+    """로컬 임베더 2종 + Ollama 임베딩 모델을 dev 24건으로 보정·비교. holdout 은 읽지 않는다.
+
+    선택 규칙은 main_local 과 같다 (결과를 보기 전에 정함): dev Hit@1 최대 → 균형 정확도 최대.
+    둘 다 같으면 먼저 정해 둔 local-tfidf 를 유지한다 (후보 순서: local, local-tfidf, ollama:<모델>).
+    """
+    qs = _dev_queries()
+    name = f"ollama:{model}"
+    cands = {"local": _calibrate(LocalNgramEmbedder(), qs),
+             "local-tfidf": _calibrate(LocalTfidfEmbedder(ROOT / "src/data/runbooks"), qs),
+             name: _calibrate(OllamaEmbedder(model, ROOT / ".cache"), qs)}
+    pick = max(cands, key=lambda k: (cands[k]["retrieval_dev_gold"]["hit@1"], cands[k]["best"]["balanced_acc"]))
+    out = {"split": "dev", "n": len(qs),
+           "note": "로컬 Ollama 데모 전용 보정. 로컬 임베더 2종과 Ollama 임베딩 모델을 같은 dev 기준으로 비교.",
+           "rule": "dev Hit@1 최대 → 균형 정확도 최대 (둘 다 같으면 local-tfidf 유지). min_score 는 균형 정확도 최대"
+                   "(동점이면 낮은 값), margin 은 넣은 런북 F1 최대(동점이면 0.05 에 가까운 값).",
+           "pick": {"embedding": pick, "min_score": cands[pick]["best"]["min_score"],
+                    "margin": cands[pick]["margin"]["pick"]},
+           "candidates": cands}
+    ts = f"{datetime.now():%Y%m%d_%H%M}"
+    (ROOT / "results").mkdir(exist_ok=True)
+    for p in (ROOT / f"results/calibrate_rag_local_bge_{ts}.json", ROOT / "results/calibrate_rag_local_bge_latest.json"):
+        p.write_text(json.dumps(out, ensure_ascii=False, indent=2))
+    for k, c in cands.items():
+        print(f"== {k}: min_score={c['best']['min_score']} bal_acc={c['best']['balanced_acc']:.3f} "
+              f"margin={c['margin']['pick']}  dev gold {c['retrieval_dev_gold']}")
+        for r in sorted(c["rows"], key=lambda r: r["score"]):
+            print(f"  {r['score']:.4f}  {r['id']} {r['category']:12} gold={r['gold']}  top={r['top']}  fed={r['fed']}")
+    print("pick", out["pick"])
+    print("saved", f"results/calibrate_rag_local_bge_{ts}.json")
+
 
 if __name__ == "__main__":
     main()

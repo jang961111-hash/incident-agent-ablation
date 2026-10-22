@@ -1,0 +1,33 @@
+name: final_local_bge
+description: final_local 과 같은 파이프라인, 임베딩만 로컬 Ollama bge-m3. 정량 비교 대상 아님 (eval/ollama_demo.py · eval/ollama_holdout.py 전용).
+# backend 는 openai 그대로 둔다 — eval/ollama_holdout.py 가 프로세스 안에서 API 주소를 Ollama 로 바꿔 끼운다.
+backend: openai
+runbook_selection: rag
+validator: judge
+cost:
+  model_tiering: true
+  cache: false
+  cache_ttl: 600
+models:
+  fast: qwen3:8b
+  quality: qwen3:8b
+  cascade_writer: qwen3:8b
+  judge: qwen3:8b
+rag:
+  top_k: 3
+  # dev 24건만으로 보정 (python -m eval.calibrate_rag --embedding ollama:bge-m3).
+  # 근거: results/calibrate_rag_local_bge_20261022_1318.json — 선택 규칙(dev Hit@1 → 균형 정확도)으로
+  # bge-m3 (Hit@1 17/18, 균형 정확도 0.972)가 local-tfidf (17/18, 0.889)를 앞섰다.
+  margin: 0.02
+  min_score: 0.5741
+  notices: true
+  embedding: ollama:bge-m3
+judge:
+  version: 2
+  factcheck: true
+  threshold: 0.75
+  max_retries: 2
+  max_seconds: 120
+runtime:
+  async_io: true
+  tolerant_research: true
