@@ -1,5 +1,5 @@
 name: final
-description: rag_judge_v2 + 비용(캐스케이드·캐시) + 런타임(비동기 I/O·도구 부분 실패 허용). 최종 After.
+description: rag_judge_v2 + 비용(캐스케이드, 캐시) + 런타임(비동기 I/O, 도구 부분 실패 허용). 최종 After.
 backend: openai
 runbook_selection: rag
 validator: judge

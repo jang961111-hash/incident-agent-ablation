@@ -1,5 +1,5 @@
-# 오프라인 CI — API 비용 0. 실제 OpenAI·Ollama·LangSmith 호출이 없다.
-#   1) 단위·통합 테스트 (fake 백엔드 · 모의 HTTP 서버 · 소켓 차단, tests/conftest.py)
+# 오프라인 CI — API 비용 0. 실제 OpenAI, Ollama, LangSmith 호출이 없다.
+#   1) 단위, 통합 테스트 (fake 백엔드, 모의 HTTP 서버, 소켓 차단, tests/conftest.py)
 #   2) 수치 일관성 게이트: results/ → CLAIMS 재생성 결과가 커밋본과 같고, 문서 수치가 전부 허용 목록 안
 #   3) 오프라인 스모크 평가: 7개 구성 x 3문항을 fake 백엔드로 끝까지 실행 (results/ 에 쓰지 않음)
 name: CI
@@ -54,7 +54,7 @@ jobs:
           python scripts/claims.py
           git diff --exit-code -- CLAIMS.md results/claims.json
 
-      - name: 수치 일관성 게이트 — 문서 수치 대조 (불일치·못 읽은 문서 있으면 실패)
+      - name: 수치 일관성 게이트 — 문서 수치 대조 (불일치, 못 읽은 문서 있으면 실패)
         run: python scripts/check_claims.py --strict
 
       - name: 오프라인 스모크 평가 (fake 백엔드, 7개 구성 x 3문항)

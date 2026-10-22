@@ -1,5 +1,5 @@
 name: final_local_bge
-description: final_local 과 같은 파이프라인, 임베딩만 로컬 Ollama bge-m3. 정량 비교 대상 아님 (eval/ollama_demo.py · eval/ollama_holdout.py 전용).
+description: final_local 과 같은 파이프라인, 임베딩만 로컬 Ollama bge-m3. 정량 비교 대상 아님 (eval/ollama_demo.py, eval/ollama_holdout.py 전용).
 # backend 는 openai 그대로 둔다 — eval/ollama_holdout.py 가 프로세스 안에서 API 주소를 Ollama 로 바꿔 끼운다.
 backend: openai
 runbook_selection: rag

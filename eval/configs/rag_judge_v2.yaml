@@ -1,5 +1,5 @@
 name: rag_judge_v2
-description: 1차 실측 약점 보완 — RAG 최소 유사도·미등록 안내 + Judge v2(근거 밖 요구 금지·fixable) + 수치 코드 검증.
+description: 1차 실측 약점 보완 — RAG 최소 유사도, 미등록 안내 + Judge v2(근거 밖 요구 금지, fixable) + 수치 코드 검증.
 backend: openai
 runbook_selection: rag
 validator: judge

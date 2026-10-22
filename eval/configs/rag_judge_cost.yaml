@@ -5,7 +5,7 @@ runbook_selection: rag
 validator: judge
 cost:
   model_tiering: true           # write 캐스케이드: 1차 gpt-4o-mini → Judge 반려 시 gpt-4o
-  cache: true                   # 정규화 질의 키로 route·plan·질의 임베딩 캐시 (모니터링·답변은 캐시 안 함)
+  cache: true                   # 정규화 질의 키로 route, plan, 질의 임베딩 캐시 (모니터링, 답변은 캐시 안 함)
   cache_ttl: 600
 models:
   fast: gpt-4o-mini
