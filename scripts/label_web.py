@@ -28,6 +28,13 @@ from eval.agreement import LABELS_PATH, METRICS, load_human, render, summary_dic
 from label import BASE, CRITERIA, KO_NAME, QY, make_entry, save_labels  # noqa: E402
 
 LOCK = threading.Lock()
+# 전문 지식 없이 근거 상자와 비교만으로 판단하는 방법 (docs/라벨링_가이드.md 와 같은 기준)
+HOWTO = {
+    "relevance": "질문 속 시스템 이름과 증상(예: 504, 패킷 손실, DB 응답 없음)이 답의 앞부분에서 다뤄지나 보세요. 다른 증상 이야기로 흘렀으면 Fail.",
+    "completeness": "답에 나온 숫자와 시스템 이름을 근거 상자에서 찾아보세요 (Cmd+F). 근거에 없는 숫자나 원인을 지어냈으면 Fail.",
+    "domain_appropriateness": "근거 상자의 굵은 '# Runbook:' 제목이 질문의 증상과 맞나, 답의 조치가 그 런북 단계에서 왔나 보세요. 다른 장애의 런북이면 Fail.",
+    "clarity": "번호 매긴 단계로 읽히나, 질문이 요구한 형식(길이, 표 등)을 지켰나 보세요.",
+}
 LABELS = LABELS_PATH   # --labels 로 바꿀 수 있다 (시험용)
 
 
@@ -83,7 +90,8 @@ class H(BaseHTTPRequestHandler):
         if self.path in ("/", "/index.html"):
             self._send(200, PAGE.encode(), "text/html; charset=utf-8")
         elif self.path == "/api/items":
-            self._json({"items": ITEMS, "metrics": [{"key": m, "name": KO_NAME[m], "criteria": CRITERIA[m]} for m in METRICS],
+            self._json({"items": ITEMS, "metrics": [{"key": m, "name": KO_NAME[m], "criteria": CRITERIA[m], "howto": HOWTO[m]}
+                                                    for m in METRICS],
                         **state()})
         elif self.path == "/api/agreement":
             st = state()
@@ -139,11 +147,14 @@ h2{font-size:13px;color:var(--ink2);margin:14px 0 4px;font-weight:600}h2:first-c
 .skip{width:100%;margin-top:6px;padding:8px;border:1px solid var(--line);border-radius:8px;background:none;color:var(--ink2);cursor:pointer;font:inherit}
 .overall{margin-top:10px;font-size:14px}.msg{margin-top:8px;font-size:13px;color:var(--ok)}.err{color:var(--red)}
 .keys{font-size:12px;color:var(--ink2);margin-top:10px}kbd{border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:11px}
+.how{font-size:12px;color:var(--ink2);background:var(--bg);border-radius:6px;padding:6px 8px;margin:0 0 8px}
+.guide table{border-collapse:collapse;width:100%;font-size:14px}.guide td,.guide th{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}.guide .P{color:var(--blue);font-weight:600}.guide .F{color:var(--red);font-weight:600}
+.rb{color:var(--ink);font-weight:700}
 #agr{white-space:pre-wrap;font:12px/1.5 ui-monospace,Menlo,monospace;overflow:auto}
 @media (max-width:1100px){main{grid-template-columns:1fr}.list{max-height:none;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px}.list button{width:auto;flex:0 0 auto;gap:6px}.list .sec{display:none}.list .meta{display:none}}
 </style></head><body>
 <header><h1>사람 채점 (블라인드)</h1><div class="bar"><i id="pb" style="width:0"></i></div><span class="meta" id="prog"></span>
-<button class="skip" style="width:auto;margin:0" id="agrBtn">일치도 보기</button></header>
+<button class="skip" style="width:auto;margin:0" id="guideBtn">채점 가이드</button><button class="skip" style="width:auto;margin:0" id="agrBtn">일치도 보기</button></header>
 <main>
 <nav class="card list" id="list" aria-label="채점 목록"></nav>
 <section class="card" id="view"></section>
@@ -153,7 +164,7 @@ h2{font-size:13px;color:var(--ink2);margin:14px 0 4px;font-weight:600}h2:first-c
 let D, cur = 0, pick = {};
 const $ = s => document.querySelector(s);
 const esc = s => (s ?? "").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-async function load(){ D = await (await fetch("/api/items")).json(); const i = D.items.findIndex(x => !(x.id in D.done)); cur = i < 0 ? 0 : i; draw(); }
+async function load(){ D = await (await fetch("/api/items")).json(); const i = D.items.findIndex(x => !(x.id in D.done)); cur = i < 0 ? 0 : i; draw(); if (!Object.keys(D.done).length) showGuide(); }
 function prog(){ $("#prog").textContent = `표본 ${D.sample_done}/${D.sample_total}, 전체 ${Object.keys(D.done).length}/${D.total}`;
   $("#pb").style.width = (100 * D.sample_done / D.sample_total) + "%"; }
 function draw(){
@@ -165,11 +176,11 @@ function draw(){
   const it = D.items[cur], done = D.done[it.id];
   $("#view").innerHTML = `<h2>${it.id}, ${esc(it.category||'')}${it.split?', '+it.split:''}, 경로 ${esc(it.route||'')}</h2>`
     + `<div class="q">${esc(it.query)}</div>` + (it.expect?`<h2>기대 행동</h2><div class="pre">${esc(it.expect)}</div>`:'')
-    + `<h2>에이전트 답변</h2><div class="ans pre">${esc(it.answer)}</div><h2>근거 (작성 단계가 받은 자료)</h2><div class="ctx pre">${esc(it.context)}</div>`;
+    + `<h2>에이전트 답변</h2><div class="ans pre">${esc(it.answer)}</div><h2>근거 (작성 단계가 받은 자료)</h2><div class="ctx pre">${esc(it.context).replace(/^(# Runbook:.*)$/gm, '<span class="rb">$1</span>')}</div>`;
   if (done){ $("#panel").innerHTML = `<h2>채점 완료</h2><p>overall <span class="tag ${done[0]}">${done}</span></p><p class="meta">한 번 매긴 라벨은 고치지 않습니다.</p><button class="go" id="nx">다음 미채점 건 →</button>`; $("#nx").onclick = next; return; }
   let p = '<h2>지표별로 고르세요</h2>';
   D.metrics.forEach((m, i) => { const v = pick[m.key];
-    p += `<div class="m"><b>${i+1}. ${m.name}</b><small>${esc(m.criteria)}</small><div class="seg">`
+    p += `<div class="m"><b>${i+1}. ${m.name}</b><small>${esc(m.criteria)}</small><div class="how">확인 방법: ${esc(m.howto)}</div><div class="seg">`
       + `<button class="P ${v==='Pass'?'on':''}" data-m="${m.key}" data-v="Pass">Pass</button><button class="F ${v==='Fail'?'on':''}" data-m="${m.key}" data-v="Fail">Fail</button></div></div>`; });
   const n = Object.keys(pick).length, np = Object.values(pick).filter(v => v==='Pass').length;
   p += `<div class="overall">overall: ${n<4?'<span class="meta">4개를 모두 고르면 표시</span>':`<span class="tag ${np>=3?'P':'F'}">${np>=3?'Pass':'Fail'}</span> (Pass ${np}/4, 3개 이상이면 Pass)`}</div>`
@@ -193,6 +204,31 @@ document.addEventListener("keydown", e => {
   else if (e.key === "p" || e.key === "f"){ pick[D.metrics[focusM].key] = e.key === "p" ? "Pass" : "Fail"; focusM = Math.min(3, focusM + 1); draw(); }
   else if (e.key === "Enter") save(); else if (e.key === "ArrowRight") next();
 });
+const GUIDE = `<div class="guide"><h2>채점 가이드</h2>
+<p><b>장애 대응 지식이 없어도 됩니다.</b> 4개 지표는 모두 "답이 질문과 근거 상자에 맞게 쓰였나"를 보는 독해 문제입니다. 정답을 알아야 하는 게 아니라, 화면에 있는 <b>질문, 답, 근거</b>를 서로 대조하면 됩니다.</p>
+<table><tr><th>지표</th><th>질문</th><th>Fail인 경우</th></tr>
+<tr><td>관련성</td><td>물어본 것에 답했나?</td><td>다른 장애 이야기로 답함. 등록 안 된 시스템인데 "없다"고 안 하고 엉뚱하게 진단함</td></tr>
+<tr><td>완전성</td><td>근거에 없는 숫자, 사실을 지어내지 않았나?</td><td>근거에 없는 수치나 원인을 만들어냄. 근거의 핵심 수치가 빠짐</td></tr>
+<tr><td>도메인 적합성</td><td>질문에 맞는 런북(대처 매뉴얼) 절차를 썼나?</td><td>질문과 무관한 런북 절차를 씀 (예: DB 다운에 응답 지연 절차)</td></tr>
+<tr><td>명확성</td><td>요청한 형식, 길이를 지켰고 정리돼 있나?</td><td>"50자 이내", "표로" 같은 요청을 어김. 뒤죽박죽</td></tr></table>
+<h2>예시: Q02 (표본에는 없는 문항)</h2>
+<p><b>질문</b>: auth-service DB 커넥션이 다 끊겼고 DB 프라이머리가 응답이 없습니다. 어떻게 복구하죠?<br>
+<b>근거</b>: auth-service 모니터링 (p95 latency 2.4s, connection pool 92%) + <b>응답 지연(High Latency) 런북</b><br>
+<b>답</b>: 1) p95 2.4초, 커넥션 풀 92% 확인 2) 풀 크기 늘리기, 타임아웃 3) 캐시, 읽기 복제본으로 트래픽 분산</p>
+<table><tr><th>지표</th><th>판정</th><th>이유</th></tr>
+<tr><td>관련성</td><td class="F">Fail</td><td>DB가 응답이 없다고 물었는데 응답 지연 대응을 답했다</td></tr>
+<tr><td>완전성</td><td class="P">Pass</td><td>2.4초, 92% 모두 근거에 있는 숫자다. 지어낸 건 없다</td></tr>
+<tr><td>도메인 적합성</td><td class="F">Fail</td><td>근거의 런북 제목이 "응답 지연"이다. DB 다운 절차가 아니다</td></tr>
+<tr><td>명확성</td><td class="P">Pass</td><td>번호 매겨 정리돼 있다</td></tr></table>
+<p>→ 2/4 통과라 종합 Fail.</p>
+<h2>헷갈릴 때</h2><ul>
+<li><b>맞는 런북이 없는 질문</b>: "등록된 런북, 모니터링에 없다"고 밝히고 추측하지 않았으면 관련성, 도메인 Pass. 엉뚱한 런북 절차를 그럴듯하게 붙였으면 Fail.</li>
+<li><b>모호한 질문</b>("서버가 이상해요"): 무엇을 확인했는지 밝히거나 대상, 증상을 되물었으면 관련성 Pass.</li>
+<li><b>완전성</b>은 "틀린 말을 지어냈나"만 봅니다. 근거가 빈약해도 지어낸 게 없으면 Pass.</li>
+<li>그래도 모르겠으면 이렇게 물어보세요: <b>"당직자가 이 답만 보고 바로 움직여도 되나?"</b> 아니면 Fail. 첫 판단으로, 한 건에 1분이면 충분합니다.</li></ul>
+<p class="meta">전체 문서: docs/라벨링_가이드.md</p><button class="go" id="startBtn">채점 화면으로</button></div>`;
+function showGuide(){ $("#view").innerHTML = GUIDE; $("#startBtn").onclick = () => draw(); window.scrollTo(0, 0); }
+$("#guideBtn").onclick = showGuide;
 $("#agrBtn").onclick = async () => { const r = await fetch("/api/agreement"), j = await r.json();
   $("#view").innerHTML = r.ok ? `<h2>사람 vs 평가 Judge 일치도</h2><div id="agr">${esc(j.text)}</div>` : `<p class="err">${esc(j.error)}</p>`; };
 load();
