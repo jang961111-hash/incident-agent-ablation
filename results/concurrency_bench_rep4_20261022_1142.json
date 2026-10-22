@@ -1,0 +1,90 @@
+{
+ "config": "final (cache off)",
+ "queries": [
+  "DB 프라이머리가 다운됐습니다. 대응 절차를 알려주세요.",
+  "auth-service DB 커넥션이 다 끊겼고 DB 프라이머리가 응답이 없습니다. 어떻게 복구하죠?",
+  "auth-service 응답이 느립니다. p95 지연이 2초를 넘는데 어떻게 대응해야 하나요?",
+  "로그인할 때 화면이 한참 걸린다는 문의가 계속 들어옵니다. 지연 원인 확인 순서를 알려주세요.",
+  "log-service의 /var/log 디스크 사용률이 95%입니다. 지금 뭘 해야 하나요?",
+  "서버 저장공간이 거의 꽉 찼다고 알람이 왔어요. 로그가 계속 쌓이는 것 같은데 급한 조치가 뭔가요?",
+  "payments-service CPU가 91%입니다. 어떻게 대응하나요?",
+  "결제 서버 인스턴스 하나가 계속 버벅이고 CPU가 한계 근처에 붙어 있어요. 배포 직후부터 그런 것 같은데 어떻게 하죠?",
+  "cache-service 메모리가 6시간째 계속 올라가고 힙이 한계에 가깝습니다. 대응 절차를 알려주세요.",
+  "캐시 서버가 몇 시간째 메모리를 계속 먹고 있어서 곧 OOM 날 것 같아요. 일단 뭘 해야 하나요?"
+ ],
+ "runs": [
+  {
+   "n": 1,
+   "wall_ms": 9470.53970801062,
+   "throughput_qps": 0.10559060315793342,
+   "latency_mean_ms": 9469.884624995757,
+   "latency_max_ms": 9469.884624995757,
+   "cost_usd": 0.00045958,
+   "async_io": false
+  },
+  {
+   "n": 1,
+   "wall_ms": 9119.064791011624,
+   "throughput_qps": 0.10966036791247152,
+   "latency_mean_ms": 9118.800917000044,
+   "latency_max_ms": 9118.800917000044,
+   "cost_usd": 0.00051103,
+   "async_io": true
+  },
+  {
+   "n": 3,
+   "wall_ms": 26997.199375007767,
+   "throughput_qps": 0.11112263751243778,
+   "latency_mean_ms": 23150.299444668537,
+   "latency_max_ms": 26995.8842920023,
+   "cost_usd": 0.00135272,
+   "async_io": false
+  },
+  {
+   "n": 3,
+   "wall_ms": 8534.547957999166,
+   "throughput_qps": 0.35151246612753445,
+   "latency_mean_ms": 8198.86973632189,
+   "latency_max_ms": 8527.865249983734,
+   "cost_usd": 0.00133742,
+   "async_io": true
+  },
+  {
+   "n": 5,
+   "wall_ms": 43430.141958000604,
+   "throughput_qps": 0.11512741553631765,
+   "latency_mean_ms": 32541.803958197124,
+   "latency_max_ms": 43428.05550000048,
+   "cost_usd": 0.0023256799999999997,
+   "async_io": false
+  },
+  {
+   "n": 5,
+   "wall_ms": 9676.931207999587,
+   "throughput_qps": 0.5166927295986843,
+   "latency_mean_ms": 8931.780600000639,
+   "latency_max_ms": 9666.179292020388,
+   "cost_usd": 0.0023121799999999996,
+   "async_io": true
+  },
+  {
+   "n": 10,
+   "wall_ms": 79432.02924999059,
+   "throughput_qps": 0.12589379994973735,
+   "latency_mean_ms": 58864.58940010343,
+   "latency_max_ms": 79427.47945801239,
+   "cost_usd": 0.00485706,
+   "async_io": false
+  },
+  {
+   "n": 10,
+   "wall_ms": 9964.476791006746,
+   "throughput_qps": 1.0035649848695833,
+   "latency_mean_ms": 9101.095420806087,
+   "latency_max_ms": 9958.995541994227,
+   "cost_usd": 0.00482496,
+   "async_io": true
+  }
+ ],
+ "backend": "openai"
+}

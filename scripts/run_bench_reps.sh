@@ -5,6 +5,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PY=.venv/bin/python
+# LangSmith 월 기록 한도 초과(429) 재시도가 측정을 오염시키므로 반복 측정에서는 기록을 끈다
+export LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false
 for i in 2 3 4 5; do
   echo "=== concurrency rep $i $(date +%H:%M:%S)"
   $PY -m eval.concurrency_bench --tag "_rep$i"

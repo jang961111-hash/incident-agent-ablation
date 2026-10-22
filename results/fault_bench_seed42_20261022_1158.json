@@ -1,0 +1,782 @@
+{
+ "rate": 0.3,
+ "seed": 42,
+ "n_queries": 38,
+ "variants": {
+  "base": {
+   "completed": 26,
+   "n": 38,
+   "queries_with_fault": 12,
+   "completed_among_faulted": 0,
+   "rows": [
+    {
+     "id": "Q01",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인하여 p95 지연시간이 2.4초로 임계치(1.0초)를 초과하고, 커넥션 풀 사용률이 92%임을 확인합니다.\n\n2) 커넥션 풀 사용률이 90%를 넘으므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정합니다.\n\n3) 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않으면, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산합니다.\n\n4) 문제가 해결된 후, 느린 쿼리 로그를 분석하여 근본 원인을 문서화하고 후속 최적화 티켓을 등록합니다."
+    },
+    {
+     "id": "Q02",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 높은 상태입니다.\n\n2) 커넥션 풀 사용률이 90%를 넘었으므로, 우선 커넥션 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않으면, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 문제를 완화합니다. 이후, 정상화되면 느린 쿼리 로그를 분석하여 근본 원인을 문서화하고 최적화 티켓을 등록합니"
+    },
+    {
+     "id": "Q03",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 확인되었습니다.\n\n2) 커넥션 풀 사용률이 90%를 넘었으므로, 우선적으로 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않을 경우, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 대응합니다. 이후, 정상화가 되면 느린 쿼리 로그를 분석하여 근본 원인을 문서화하고 최적화 티켓을 등록합니다."
+    },
+    {
+     "id": "Q04",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q05",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 log-service의 /var/log 디스크 사용률이 95%로 임계 수준(90% 이상)을 초과하여 상태가 degraded로 확인되었습니다.\n\n2) 로그 파일, 임시 파일, 오래된 백업 등 안전하게 삭제할 수 있는 항목을 정리하여 즉시 여유 공간을 확보하십시오.\n\n3) 특정 프로세스가 비정상적으로 로그를 쌓고 있는지 확인하고, 필요시 로그 레벨을 낮추거나 로테이션 주기를 단축하여 로그 생성량을 줄이십시오. 임시 조치로도 부족할 경우, 볼륨을 확장하거나 추가 스토리지를 연결하는 방안을 고려하십시오. \n\n4) 문제 해결 후,"
+    },
+    {
+     "id": "Q06",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태가 저하(degraded)되었으며, CPU 사용률은 83.5%, 메모리 사용률은 63.8%입니다. 알림으로는 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'가 있습니다.\n\n2) 우선적으로 커넥션 풀 사용률이 90%를 넘었으므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 5분 내에 p95 지연시간이 임계치(1.0s) 아래로 내려오지 않으면, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 문"
+    },
+    {
+     "id": "Q07",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과 payments-service의 CPU 사용률이 98.4%로 확인되었으며, 이는 임계치인 80%를 초과하여 알림이 발생했습니다. 또한, 'payments-service-3 instance responding slow'라는 알림도 수신되었습니다.\n\n2) 최근 로그를 확인하여 반복 호출이나 배치 작업 중복 실행 등 특정 요청 패턴이 원인인지 분석합니다.\n\n3) CPU 사용률이 90%를 넘고 지속되고 있으므로, 오토스케일링 그룹에서 인스턴스를 한 대 더 추가하여 부하를 분산시킵니다."
+    },
+    {
+     "id": "Q08",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service의 CPU 사용률이 84.7%로 높고, p95 지연시간이 2.4초로 임계치(1.0초)를 초과하고 있으며, 커넥션 풀 사용률이 92%로 확인되었습니다.\n\n2) Runbook에 따라, 커넥션 풀 사용률이 90%를 넘으므로 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 5분 내 p95 지연시간이 임계치 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 문제를 해결해야 합니다. 이후, 정상화되면 느린 쿼리 로그를 분석하여 근본 원인을 문서화하"
+    },
+    {
+     "id": "Q09",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) `get_monitoring_status`를 사용하여 메모리 사용률이 시간에 따라 꾸준히 증가하는지 확인합니다. 현재 메모리 사용률은 88.8%로, 6시간 동안 지속적으로 증가하고 있습니다.\n\n2) 메모리 사용률이 90%에 근접하므로, OOM(Out Of Memory) 상황을 방지하기 위해 cache-service 프로세스를 즉시 재시작합니다. 이 조치는 임시 방편임을 기록해 둡니다.\n\n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이고 있는지 확인합니다. 이를 통해 메모리 누수의 원인을 파악합니다.\n\n4)"
+    },
+    {
+     "id": "Q10",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q11",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'gateway-service'})"
+    },
+    {
+     "id": "Q12",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과에 따르면 auth-service의 상태가 'degraded'로 나타나고 있으며, CPU 사용률은 82.7%, 메모리 사용률은 63.4%입니다. 또한, 두 가지 알림이 발생했습니다: 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다.\n\n2) Runbook에 따르면, 우선 p95 지연시간과 커넥션 풀 사용률을 확인해야 합니다. 현재 커넥션 풀 사용률이 92%로 90%를 초과하므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정하는 것이"
+    },
+    {
+     "id": "Q16",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q17",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) **cache-service 대응 절차:**\n   - 메모리 사용량이 90.3%로 높고, 'memory usage climbing steadily over 6h' 및 'heap near limit' 알림이 발생했습니다.\n   - 메모리 사용량을 줄이기 위해 불필요한 캐시 항목을 정리하거나 캐시 크기를 조정합니다.\n   - 필요 시, 캐시 서비스의 메모리 할당량을 늘리거나 인스턴스를 추가하여 부하를 분산합니다.\n\n2) **auth-service 대응 절차:**\n   - 현재 p95 응답 지연 시간이 2.4초로 임계치(1.0초)를"
+    },
+    {
+     "id": "Q18",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) log-service의 디스크 사용량이 95%에 도달하여 상태가 저하되었습니다. 이를 해결하기 위해 불필요한 로그 파일을 삭제하거나 로그 보관 정책을 조정하여 디스크 공간을 확보해야 합니다.\n\n2) auth-service의 커넥션 풀 사용률이 92%로 높아져 응답 지연이 발생하고 있습니다. runbook에 따라 커넥션 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정하여 사용률을 낮추는 조치를 취해야 합니다.\n\n3) auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있습니다. 5분 "
+    },
+    {
+     "id": "Q25",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 높은 상태입니다.\n\n2) 커넥션 풀 사용률이 90%를 넘었으므로, 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않으면, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 시스템을 정상화합니다.\n\n4) 시스템이 정상화된 후에는 느린 쿼리 로그를 분석하여 근본 원인을 문서화하고, 후속 최적화 티"
+    },
+    {
+     "id": "Q26",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service와 payments-service의 CPU 사용량이 각각 83.5%와 95.6%로 매우 높으며, 이는 시스템 성능 저하의 주요 원인으로 보입니다. 특히 auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 높습니다.\n\n2) 우선적으로 auth-service의 커넥션 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정하여 커넥션 풀 사용률을 낮추는 조치를 취해야 합니다. 또한, payments-service의 CPU"
+    },
+    {
+     "id": "Q27",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service의 상태가 'degraded'로 확인되었으며, CPU 사용률은 81.8%, 메모리 사용률은 62.9%입니다. 알림으로는 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'가 발생했습니다.\n\n2) runbook에 따르면, 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다. 현재 커넥션 풀 사용률이 92%로, 이 기준을 초과했습니다.\n\n3) p95 지연시간이 임계치(1.0s)를"
+    },
+    {
+     "id": "Q28",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q29",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) get_monitoring_status를 사용하여 payments-service-3 인스턴스의 CPU 사용률이 91.3%로 높은 상태임을 확인하였습니다. 최근 배포나 트래픽 변화 시점도 함께 확인해야 합니다.\n\n2) 최근 로그를 검토하여 반복 호출이나 배치 작업 중복 실행 등 특정 요청 패턴이 CPU 사용률 급증의 원인인지 확인합니다.\n\n3) CPU 사용률이 90%를 넘고 지속되고 있으므로, 오토스케일링 그룹에서 인스턴스를 한 대 더 추가하여 부하를 분산시킵니다."
+    },
+    {
+     "id": "Q30",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q31",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 log-service의 디스크 사용률이 95%로 임계 수준(90% 이상)을 초과했음을 확인했습니다.\n\n2) 우선적으로 로그 파일, 임시 파일, 오래된 백업 파일 등 안전하게 삭제할 수 있는 항목을 정리하여 여유 공간을 확보합니다.\n\n3) 특정 프로세스가 비정상적으로 로그를 쌓고 있는 경우, 로그 레벨을 낮추거나 로그 로테이션 주기를 단축하여 로그 생성량을 줄입니다. 임시 조치로도 부족할 경우, 볼륨을 확장하거나 추가 스토리지를 연결하여 문제를 해결합니다.\n\n4) 문제 해결 후, 로그 보존 정책과 디스크 사용률 알림 임계값"
+    },
+    {
+     "id": "Q32",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태가 저하(degraded)되었으며, CPU 사용률은 85.7%, 메모리 사용률은 64.8%입니다. 또한, p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 높은 상태입니다.\n\n2) 커넥션 풀 사용률이 90%를 초과하였으므로, 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정하는 것이 필요합니다.\n\n3) p95 지연시간이 5분 내에 임계치 아래로 내려오지 않을 경우, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 문제를 해결해야 합니다"
+    },
+    {
+     "id": "Q33",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) auth-service의 상태가 'degraded'로 확인되었으며, CPU 사용률은 76.1%, 메모리 사용률은 60.0%입니다. 알림으로는 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'가 있습니다.\n\n2) 디버그 로그로 인해 저장공간이 급격히 줄어드는 문제를 해결하기 위해, 우선 auth-service의 높은 지연시간과 커넥션 풀 사용률 문제를 해결해야 합니다. runbook에 따라 다음 조치를 취합니다:\n   - 커넥션 풀 사용률이 90%를 넘으므로 풀 크"
+    },
+    {
+     "id": "Q34",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태를 모니터링한 결과, p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%에 도달했습니다.\n\n2) 우선적으로 커넥션 풀 사용률이 90%를 넘었으므로, 커넥션 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정하는 조치를 취해야 합니다.\n\n3) 만약 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않는다면, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 부하를 줄이는 방안을 고려해야 합니다. 이후, 정상화가 이루어지면 느린 쿼리 로그를 분"
+    },
+    {
+     "id": "Q35",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 높은 상태입니다.\n\n2) 커넥션 풀 사용률이 90%를 넘었으므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 5분 내 p95 지연시간이 임계치 아래로 내려오지 않았으므로, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 지연을 완화해야 합니다."
+    },
+    {
+     "id": "Q36",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service 서버의 상태가 저하(degraded)되었으며, p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고, 커넥션 풀 사용률이 92%로 확인되었습니다.\n\n2) 커넥션 풀 사용률이 90%를 넘었으므로, 우선적으로 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 만약 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않으면, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 문제를 해결해야 합니다. 이후, 정상화가 되면 느린 쿼리 로그를 분석하여 근본 원인을 문"
+    },
+    {
+     "id": "Q37",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 cache-service의 메모리 사용량이 88.5%로 높고, 알림이 두 건 발생했습니다. 먼저, 메모리 사용률이 꾸준히 증가하는지 get_monitoring_status를 통해 추세를 확인합니다.\n\n2) 메모리 사용량이 90% 이상으로 증가할 경우, OOM(Out Of Memory) 상황을 방지하기 위해 해당 프로세스를 즉시 재시작합니다. 이는 임시 조치임을 기록해둡니다.\n\n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이고 있는지 분석합니다. 이를 통해 메모리 누수의 원인을 파악합니다.\n\n4) 최근"
+    },
+    {
+     "id": "Q38",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'cache-service'})"
+    },
+    {
+     "id": "Q39",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과에 따르면 auth-service의 상태가 저하(degraded) 상태이며, CPU 사용률은 82.5%, 메모리 사용률은 63.3%로 나타났습니다. 또한, 두 가지 알림이 발생했으며, 이는 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다.\n\n2) Runbook에 따르면, p95 지연시간과 커넥션 풀 사용률을 확인한 후, 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다. 현재 커넥션 풀 사"
+    },
+    {
+     "id": "Q40",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'gateway-service'})"
+    },
+    {
+     "id": "Q41",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 높은 상태입니다.\n\n2) 임시 대응으로, 커넥션 풀 사용률이 90%를 넘었으므로 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정합니다. 또한, 지연이 특정 가용영역에 집중되어 있으므로 해당 인스턴스를 로드밸런서에서 일시적으로 제외합니다.\n\n3) 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않으면, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산하여 문제를 완화합니다. 이후, 정"
+    },
+    {
+     "id": "Q42",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 확인되었습니다.\n\n2) Runbook에 따라, 커넥션 풀 사용률이 90%를 넘었으므로 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 클라이언트 설정 문제일 가능성도 있지만, 우선적으로 서버 측의 커넥션 풀 문제를 해결하고, 이후에도 문제가 지속되면 클라이언트 설정을 점검하는 것이 좋습니다."
+    },
+    {
+     "id": "Q48",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'cache-service'})"
+    },
+    {
+     "id": "Q49",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q50",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'log-service'})"
+    },
+    {
+     "id": "Q51",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service의 상태가 저하(degraded)되었으며, CPU 사용률은 83.1%, 메모리 사용률은 63.6%로 확인되었습니다. 또한, p95 지연시간이 2.4초로 임계치(1.0초)를 초과하고, 커넥션 풀 사용률이 92%로 높은 상태입니다.\n\n2) Runbook에 따라, 우선 커넥션 풀 사용률이 90%를 넘었으므로 풀 크기를 늘리거나 느린 쿼리 및 외부 호출에 타임아웃을 설정해야 합니다. 또한, 지연이 특정 리전이나 인스턴스에 집중되어 있는지 확인하고, 해당 인스턴스를 로드밸런서에서 일시적으로 제외하는"
+    },
+    {
+     "id": "Q52",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    }
+   ]
+  },
+  "final_no_tolerance": {
+   "completed": 26,
+   "n": 38,
+   "queries_with_fault": 12,
+   "completed_among_faulted": 0,
+   "rows": [
+    {
+     "id": "Q01",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) DB 프라이머리가 다운된 상황을 인지하고, 모니터링 상태를 확인하여 auth-service의 상태가 degraded임을 확인한다. CPU는 79.6%, 메모리는 61.8%이며, 알림이 2건 발생했다.  \n2) 커넥션 풀 사용률이 92%로 높으므로, 커넥션 풀 및 리플리케이션 상태를 점검하고 필요 시 failover 노드로 전환한다.  \n3) 서비스 정상화 후 원인 분석과 재발 방지 대책을 문서화한다.  \n\n*주의: 질문에 등록된 모니터링 대상 시스템 이름이 없어 auth-service를 기본으로 조회하였으므로, 실제 DB 프라"
+    },
+    {
+     "id": "Q02",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 알람으로 장애를 즉시 인지하였으며, 현재 auth-service 상태는 degraded이고 CPU 사용률은 79.3%, 메모리 사용률은 61.7%입니다. 알림은 2건 발생하였습니다: ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'].\n\n2) 커넥션 풀과 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환하여 DB 연결을 복구합니다.\n\n3) 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화합니다."
+    },
+    {
+     "id": "Q03",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률이 92%로 확인되었습니다.  \n2) 커넥션 풀 사용률이 90%를 초과하므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.  \n3) 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산해야 합니다."
+    },
+    {
+     "id": "Q04",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q05",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, log-service의 디스크 사용률이 95%로 임계 수준(90% 이상)을 초과하였습니다.  \n2) 안전하게 지울 수 있는 로그 파일, 임시 파일, 오래된 백업 등을 정리하여 여유 공간을 즉시 확보합니다.  \n3) 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축합니다."
+    },
+    {
+     "id": "Q06",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 서버 디스크 사용률을 확인하여 임계 수준(90% 이상)인지 판단합니다. 현재 auth-service의 상태가 degraded이며, 로그가 계속 쌓이고 있는 것으로 보입니다.  \n2) 로그 파일, 임시 파일, 오래된 백업 등 안전하게 지울 수 있는 항목부터 정리하여 여유 공간을 즉시 확보합니다.  \n3) 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축합니다.  \n\n*참고: 질문에 등록된 모니터링 대상 시스템 이름이 없어 auth-service를 기본으로 조회하였으므로, 실제 문제의 시스"
+    },
+    {
+     "id": "Q07",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, payments-service의 CPU 사용률이 97.4%로 확인되었습니다. 이는 임계치인 80%를 초과한 상태입니다.  \n2) 최근 로그를 검토하여 반복 호출이나 배치 작업 중복 실행과 같은 특정 요청 패턴이 원인인지 확인합니다.  \n3) CPU 사용률이 90%를 넘고 지속되고 있으므로, 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산합니다.  "
+    },
+    {
+     "id": "Q08",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태 확인 결과, auth-service의 CPU 사용률이 81.6%로 나타났으며, 메모리 사용률은 62.8%입니다. 또한, p95 지연 시간이 2.4초로 설정된 임계값인 1.0초를 초과하였고, 연결 풀 사용률이 92%에 달했습니다.  \n2) 최근 배포 및 트래픽 변화 시점을 확인하기 위해 get_monitoring_status를 실행해야 합니다. 또한, 반복 호출이나 배치 작업 중복 실행과 같은 특정 요청 패턴이 원인인지 최근 로그를 분석해야 합니다.  \n3) CPU 사용률이 90%를 넘고 지속될 경우, 해당 인스턴"
+    },
+    {
+     "id": "Q09",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) cache-service의 메모리 사용률이 92.0%로 OOM 직전 상태이므로, 해당 프로세스를 즉시 재시작하여 서비스 중단을 방지합니다. 이 재시작은 임시 조치임을 기록합니다.  \n2) 메모리 사용률 추세를 확인하기 위해 get_monitoring_status를 실행하여 메모리 사용이 꾸준히 증가하는지 확인합니다.  \n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이는지 분석합니다."
+    },
+    {
+     "id": "Q10",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q11",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'gateway-service'})"
+    },
+    {
+     "id": "Q12",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 상태가 degraded이며 CPU 사용률은 78.6%, 메모리 사용률은 61.3%로 나타났습니다. 또한, 알림이 2건 발생하였고, 내용은 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다. 이는 타임아웃의 원인으로 작용할 수 있습니다.\n\n2) DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 등 최근 변경 사항이 있었는지 점검해야 합니다. 현재 auth-service에 대한 모니터링만 "
+    },
+    {
+     "id": "Q16",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q17",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) cache-service의 메모리 사용률이 90.6%로 OOM 직전 상태이므로, 해당 프로세스를 즉시 재시작하여 서비스 중단을 방지한다. 재시작은 임시 조치임을 기록한다.  \n2) auth-service의 p95 지연시간이 2.4초로 임계치(1.0초)를 초과하므로, 커넥션 풀 사용률이 92%로 90%를 넘기 때문에 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정한다.  \n3) 두 서비스 모두 모니터링 상태를 지속적으로 확인하고, 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 등의 패턴이 최근 배포에 있"
+    },
+    {
+     "id": "Q18",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) log-service의 디스크 사용률이 95%로 확인되었으므로, 즉시 로그 파일, 임시 파일, 오래된 백업 등을 정리하여 여유 공간을 확보해야 합니다.  \n2) auth-service의 커넥션 풀이 92% 사용 중이며, p95 지연 시간이 2.4초로 임계값인 1.0초를 초과하였으므로, 커넥션 풀의 사용량을 줄이기 위한 조치를 고려해야 합니다.  \n3) 두 서비스 모두 상태가 degraded이므로, 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토하여 조기에 감지될 수 있도록 조정해야 합니다."
+    },
+    {
+     "id": "Q25",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 알람으로 장애를 즉시 인지합니다. 현재 auth-service의 상태는 degraded이며, CPU 사용률은 85.3%, 메모리 사용률은 64.7%입니다. 알림은 2건 발생하였습니다: ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'].\n\n2) 커넥션 풀 및 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환합니다. 이 단계에서 auth-service가 질문 대상 시스템이 아닐 수 있음을 유의해야 합니다.\n\n3) 서비스 정상화 확인 후 "
+    },
+    {
+     "id": "Q26",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 알람으로 auth-service의 상태가 degraded이며, CPU 75.5%, 메모리 59.8%로 확인되었습니다. 알림 내용은 'p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'입니다. 이 상태는 주문 DB와 관련된 문제일 수 있으므로, 해당 서비스의 상태를 우선 점검해야 합니다.\n\n2) 커넥션 풀과 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환하여 서비스의 안정성을 확보해야 합니다. 레플리카가 살아 있는 것으로 보이므로, 이를 활"
+    },
+    {
+     "id": "Q27",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태는 degraded이며, CPU 사용률은 79.3%, 메모리 사용률은 61.6%입니다. 알림으로는 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'가 있습니다.  \n2) 데이터베이스 마스터가 내려간 경우, 커넥션 풀 및 리플리케이션 상태를 점검하고 필요 시 failover 노드로 전환해야 합니다.  \n3) 서비스 정상화 후 원인 분석과 재발 방지 대책을 문서화해야 합니다."
+    },
+    {
+     "id": "Q28",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q29",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) get_monitoring_status로 CPU 사용률(92.1%)과 최근 배포/트래픽 변화 시점을 확인한다.  \n2) 최근 로그에서 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 확인한다.  \n3) CPU가 90%를 넘고 지속되므로 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.  "
+    },
+    {
+     "id": "Q30",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    },
+    {
+     "id": "Q31",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 log-service의 상태를 확인한 결과, 현재 상태는 degraded이며 디스크 사용률이 95%로 임계 수준(90% 이상)을 초과하였습니다.  \n2) 안전하게 지울 수 있는 항목(로그 파일, 임시 파일, 오래된 백업 등)을 정리하여 여유 공간을 즉시 확보합니다.  \n3) 로그가 비정상적으로 쌓이는 프로세스가 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축하여 추가적인 공간 확보를 진행합니다.  \n4) 임시 조치로도 부족할 경우, 볼륨을 확장하거나 추가 스토리지를 연결합니다.  \n5) 정상화 후 로그 보존 정책과 "
+    },
+    {
+     "id": "Q32",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태가 degraded이며, CPU 사용률이 85.2%, 메모리 사용률이 64.6%로 확인되었습니다. 이 상태에서 No space left on device 에러가 발생한 것으로 보입니다. \n\n2) 디스크 용량 부족 문제를 해결하기 위해, 먼저 get_monitoring_status로 서버 디스크 사용률을 확인하여 임계 수준(90% 이상)인지 판단해야 합니다. \n\n3) 만약 디스크 사용률이 90% 이상이라면, 로그 파일, 임시 파일, 오래된 백업 등 안전하게 지울 수 있는 항목부터 정리하여 여유 "
+    },
+    {
+     "id": "Q33",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태는 'degraded'이며, CPU 사용률은 79.6%, 메모리 사용률은 61.8%입니다. 알림으로는 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'가 있습니다. 그러나, 질문에 명시된 애플리케이션 이름이 없어 auth-service를 기본으로 조회했음을 밝힙니다. 질문 대상과 다를 수 있습니다.\n\n2) 디스크 용량 부족 문제를 해결하기 위해 다음 절차를 따르십시오:\n   - 서버의 디스크 사용률을 확인하여 임계 수준(90% 이"
+    },
+    {
+     "id": "Q34",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 커넥션 풀 사용률이 92%로 확인되었으며, p95 지연시간이 2.4초로 임계치인 1.0초를 초과하고 있습니다.  \n2) 커넥션 풀 사용률이 90%를 넘으므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.  \n3) p95 지연시간이 5분 내에 임계치 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산해야 합니다."
+    },
+    {
+     "id": "Q35",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태는 degraded이며, p95 지연시간은 2.4초로 임계치인 1.0초를 초과하고 있습니다. 커넥션 풀 사용률은 92%입니다.  \n2) 커넥션 풀 사용률이 90%를 넘으므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.  \n3) p95 지연이 5분 이상 임계치를 초과하고 있으므로, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산해야 합니다."
+    },
+    {
+     "id": "Q36",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 모니터링된 auth-service의 상태는 degraded이며, CPU 사용률은 82.7%, 메모리 사용률은 63.3%입니다. 또한, 알림이 2건 발생하였으며, 내용은 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다.  \n2) 질문에 등록된 모니터링 대상 시스템 이름이 없으므로, auth-service가 질문의 대상 시스템과 다를 수 있음을 알려드립니다.  \n3) 특정 서버에서의 요청 지연 문제를 해결하기 위해, 해당 서버의 정확한 이름과 증상을 확인"
+    },
+    {
+     "id": "Q37",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) cache-service의 메모리 사용률이 89.5%로 OOM 직전 상태이므로, 해당 프로세스를 즉시 재시작하여 서비스 중단을 방지합니다. 이 조치는 임시 조치임을 기록합니다.  \n2) get_monitoring_status를 통해 메모리 사용률 추세를 확인하여, 사용량이 시간에 따라 꾸준히 증가하는지 분석합니다.  \n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이는지 확인하고, 최근 배포에서 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 등의 패턴이 있었는지 점검합니다."
+    },
+    {
+     "id": "Q38",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'cache-service'})"
+    },
+    {
+     "id": "Q39",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 CPU 사용률은 79.8%, 메모리 사용률은 61.9%로 나타났으며, 알림이 2건 발생했습니다. 알림 내용은 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다. \n\n2) OOMKilled 현상이 발생하는 자바 서비스의 메모리 사용률 추세를 확인하기 위해 get_monitoring_status를 통해 메모리 사용률이 시간에 따라 증가하는지 분석해야 합니다.\n\n3) OOM 발생 직전 메모리 사용률이 90% "
+    },
+    {
+     "id": "Q40",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'gateway-service'})"
+    },
+    {
+     "id": "Q41",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태가 degraded이며, CPU 사용률이 82.3%, 메모리 사용률이 63.2%로 확인되었습니다. 또한, p95 지연시간이 2.4s로 임계치인 1.0s를 초과하고, 커넥션 풀 사용률이 92%에 달하고 있습니다. \n\n2) 네트워크 타임아웃 문제를 해결하기 위해, 호출이 끊기는 특정 가용영역을 우회하는 라우팅으로 임시 전환하는 방법을 고려해야 합니다. \n\n3) 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우, 임시로 타임아웃 임계값을 상향 조정하여 2차 피해를 줄이는 방안을 검토해야 합"
+    },
+    {
+     "id": "Q42",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service의 상태가 degraded이며 CPU 사용률은 83.1%, 메모리 사용률은 63.5%입니다. p95 지연시간이 2.4s로 임계치인 1.0s를 초과하였고, 커넥션 풀 사용률이 92%로 높습니다. \n\n2) 내부 API의 타임아웃 문제는 클라이언트 설정 문제일 수도 있지만, 현재 auth-service의 성능 저하가 주요 원인으로 보입니다. 따라서, 커넥션 풀 사용률이 90%를 넘으므로 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.\n\n3) 추가적으로, DNS 해석 실패,"
+    },
+    {
+     "id": "Q48",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'cache-service'})"
+    },
+    {
+     "id": "Q49",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'payments-service'})"
+    },
+    {
+     "id": "Q50",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'log-service'})"
+    },
+    {
+     "id": "Q51",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태는 degraded이며, CPU 사용률은 84.9%, 메모리 사용률은 64.4%입니다. 알림이 2건 발생하였고, p95 latency는 2.4s로 임계값인 1.0s를 초과하였습니다. 커넥션 풀 사용률은 92%입니다.\n\n2) DB 연결이 끊긴 상태에서 메모리 사용률이 증가하고 있는 상황이므로, 메모리 누수 대응 절차를 따라야 합니다. 우선 get_monitoring_status로 메모리 사용률 추세를 확인하고, OOM 직전(90% 이상)이라면 해당 프로세스를 즉시 재시작해야 합니다. 이 재시작은"
+    },
+    {
+     "id": "Q52",
+     "ok": false,
+     "error": "ConnectionError: injected fault: get_monitoring_status({'system_name': 'auth-service'})"
+    }
+   ]
+  },
+  "final": {
+   "completed": 38,
+   "n": 38,
+   "queries_with_fault": 13,
+   "completed_among_faulted": 13,
+   "rows": [
+    {
+     "id": "Q01",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) DB 프라이머리가 다운된 상황을 인지하고, 모니터링 상태를 확인하여 auth-service의 상태가 degraded임을 확인한다. CPU 사용률은 81.2%, 메모리 사용률은 62.6%이며, 알림이 2건 발생하였다.  \n2) 커넥션 풀 상태를 점검하고, 사용률이 92%로 높으므로 필요 시 failover 노드로 전환한다.  \n3) 서비스 정상화 후 원인 분석과 재발 방지 대책을 문서화한다.  \n\n*주의: 질문에 등록된 모니터링 대상 시스템 이름이 없어 auth-service를 기본으로 조회하였으므로, 실제 DB 프라이머리와는 "
+    },
+    {
+     "id": "Q02",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 알람으로 장애를 즉시 인지하였으며, auth-service의 상태는 degraded이고 CPU 사용률은 83.8%, 메모리 사용률은 63.9%입니다. 현재 알림은 2건 발생하였습니다: ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'].\n\n2) 커넥션 풀과 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환하여 DB 연결을 복구합니다.\n\n3) 서비스 정상화 확인 후 원인 분석과 재발 방지 대책을 문서화합니다."
+    },
+    {
+     "id": "Q03",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 p95 지연시간은 2.4초로 임계치인 1.0초를 초과하고 있으며, 커넥션 풀 사용률은 92%로 90%를 넘습니다.  \n2) 커넥션 풀 사용률이 높으므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.  \n3) 5분 내에 p95 지연시간이 임계치 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산해야 합니다."
+    },
+    {
+     "id": "Q04",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) auth-service 모니터링 조회 결과, 지연 원인으로 추정되는 값은 없음. 질문에 등록된 모니터링 대상 시스템 이름이 없어 auth-service를 기본으로 조회했음을 밝힙니다.  \n2) get_monitoring_status를 통해 p95 지연시간과 커넥션 풀 사용률을 확인합니다.  \n3) 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정합니다.  \n4) 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외합니다.  \n5) 5분 내 p95가 임계치"
+    },
+    {
+     "id": "Q05",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) log-service의 상태를 확인한 결과, 디스크 사용률이 95%로 임계 수준(90% 이상)을 초과하였습니다.  \n2) 안전하게 지울 수 있는 로그 파일, 임시 파일, 오래된 백업 등을 정리하여 여유 공간을 즉시 확보해야 합니다.  \n3) 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축하는 조치를 취해야 합니다."
+    },
+    {
+     "id": "Q06",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태가 degraded이며, CPU 사용률이 83.6%, 메모리 사용률이 63.8%로 확인되었습니다. 디스크 사용률에 대한 정보는 수집되지 않았으나, 서버 저장공간이 거의 꽉 찼다는 알람이 발생했습니다. \n\n2) 즉각적으로 디스크 사용률을 확인하고, 90% 이상인지 판단해야 합니다. 만약 임계 수준에 도달했다면, 로그 파일, 임시 파일, 오래된 백업 등을 안전하게 삭제하여 여유 공간을 확보해야 합니다.\n\n3) 로그가 계속 쌓이고 있는 경우, 특정 프로세스의 로그 레벨을 낮추거나 로테이션 주기를 단"
+    },
+    {
+     "id": "Q07",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, payments-service의 CPU 사용률이 94.0%로 상태가 degraded이며, 알림이 2건 발생했습니다. CPU 사용률이 91%를 초과하였으므로, 즉시 대응이 필요합니다.  \n2) 최근 로그를 확인하여 반복 호출이나 배치 작업 중복 실행과 같은 특정 요청 패턴이 원인인지 분석합니다.  \n3) CPU 사용률이 90%를 넘고 지속되고 있으므로, 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산합니다."
+    },
+    {
+     "id": "Q08",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과 auth-service의 상태가 degraded이며, CPU 사용률이 83.4%로 확인되었습니다. 메모리 사용률은 63.7%이며, 알림이 2건 발생했습니다. 알림 내용은 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다. \n\n2) 질문에 등록된 모니터링 대상 시스템 이름이 없으므로, auth-service를 기본으로 조회한 결과입니다. 실제 문제의 시스템이 다를 수 있음을 유의해야 합니다.\n\n3) CPU 사용률이 90%를 넘고 지속될 경우, 해"
+    },
+    {
+     "id": "Q09",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 cache-service의 메모리 사용률이 89.3%로 OOM 직전 상태입니다. 즉시 해당 프로세스를 재시작하여 서비스 중단을 방지합니다. 이 조치는 임시 조치임을 기록합니다.  \n2) 메모리 사용률 추세를 확인하기 위해 get_monitoring_status를 실행하여 메모리 사용이 꾸준히 증가하는지 확인합니다.  \n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이는지 분석합니다."
+    },
+    {
+     "id": "Q10",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) 모니터링 cache-service의 상태가 degraded이며, 메모리 사용률이 90.0%로 OOM 직전 상태입니다. 따라서 즉시 해당 프로세스를 재시작하여 서비스 중단을 방지합니다. 이 재시작은 임시 조치임을 기록합니다.\n\n2) get_monitoring_status를 통해 메모리 사용률 추세를 확인하여, 메모리 사용이 시간에 따라 꾸준히 증가하고 있는지 점검합니다.\n\n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이는지 확인하고, 최근 배포에서 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록"
+    },
+    {
+     "id": "Q11",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) gateway-service에서 payments-service로의 호출에서 타임아웃이 발생하는지 확인하기 위해 get_monitoring_status를 실행한다.  \n2) DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.  \n3) payments-service의 상태가 degraded이며 CPU 사용률이 97.8%로 높으므로, 해당 서비스의 성능 문제를 해결하기 위해 임시로 라우팅을 조정하거나 CPU 임계값을 상향 조정한다.  "
+    },
+    {
+     "id": "Q12",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 상태가 degraded이며 CPU 사용률은 83.4%, 메모리 사용률은 63.7%로 나타났습니다. 또한, 알림이 2건 발생하였고, 내용은 'p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'입니다. 이는 타임아웃 발생의 원인으로 작용할 수 있습니다.\n\n2) DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검해야 합니다. 특히, auth-service 외의 시스템"
+    },
+    {
+     "id": "Q16",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) gateway-service에서 발생한 'upstream timeout to payments-service (504)'와 'network packet loss 3%' 알림을 확인하고, payments-service의 CPU 사용률이 91%로 높은 상태임을 고려하여, payments-service의 CPU 급증 대응 절차를 우선적으로 수행합니다.\n\n2) get_monitoring_status를 사용하여 payments-service의 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인합니다. 현재 payments-service의"
+    },
+    {
+     "id": "Q17",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) cache-service의 메모리 사용률이 90.1%로 OOM 직전 상태이므로, 해당 프로세스를 즉시 재시작하여 서비스 중단을 방지한다. 재시작은 임시 조치임을 기록한다.  \n2) auth-service의 p95 지연시간이 2.4초로 임계치(1.0초)를 초과하므로, 커넥션 풀 사용률이 92%로 높아 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정한다.  \n3) 두 서비스 모두 모니터링 상태를 지속적으로 확인하고, 원인 분석을 위해 힙 덤프 및 프로파일링 도구를 사용하여 메모리 누수 원인을 파악하고, 느린 쿼리 로그를"
+    },
+    {
+     "id": "Q18",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) log-service의 디스크 사용률이 95%로 임계 수준(90% 이상)에 도달했으므로, 즉시 로그 파일, 임시 파일, 오래된 백업 등을 정리하여 여유 공간을 확보해야 합니다.  \n2) auth-service의 커넥션 풀이 92% 사용 중이며, p95 지연 시간이 2.4초로 임계값(1.0초)을 초과하였으므로, 커넥션 풀 사용량을 줄이기 위해 불필요한 연결을 종료하거나 커넥션 풀 크기를 조정해야 합니다.  \n3) 두 서비스 모두 상태가 degraded이므로, 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토하여 조"
+    },
+    {
+     "id": "Q25",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 알람으로 장애를 즉시 인지한다. 현재 auth-service의 상태는 degraded이며, CPU 사용률은 76.9%, 메모리 사용률은 60.4%로 확인되었다. 알림은 2건 발생하였으며, 내용은 'p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'이다. 질문에 등록된 모니터링 대상 시스템 이름이 없어 auth-service를 기본으로 조회한 점을 유의해야 한다.  \n   \n2) 커넥션 풀 및 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환"
+    },
+    {
+     "id": "Q26",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 알람을 통해 auth-service, cache-service, gateway-service, log-service, payments-service가 모두 'degraded' 상태임을 확인하였고, CPU 사용량이 높은 서비스들이 성능 저하를 겪고 있어 리소스 부족이 의심됩니다.  \n2) 커넥션 풀과 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환하여 주문 DB 연결 문제를 해결해야 합니다.  \n3) 서비스 정상화 후 원인 분석과 재발 방지 대책을 문서화하여 향후 유사한 문제가 발생하지 않도록 합니다"
+    },
+    {
+     "id": "Q27",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태는 degraded이며, CPU 사용률은 81.9%, 메모리 사용률은 62.9%입니다. 알림으로는 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'가 있습니다.  \n2) 데이터베이스 마스터가 내려간 경우, 커넥션 풀 및 리플리케이션 상태를 점검하고 필요 시 failover 노드로 전환해야 합니다.  \n3) 서비스 정상화 후 원인 분석과 재발 방지 대책을 문서화해야 합니다.  \n\n*참고: 질문에 등록된 모니터링 대상 시스템 이름이 "
+    },
+    {
+     "id": "Q28",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) get_monitoring_status를 통해 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.  \n2) 최근 로그에서 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 확인한다.  \n3) CPU가 90%를 넘고 지속되므로, 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.  "
+    },
+    {
+     "id": "Q29",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) get_monitoring_status를 통해 payments-service-3 인스턴스의 CPU 사용률(88.8%)과 최근 배포/트래픽 변화 시점을 확인한다.  \n2) 최근 로그를 검토하여 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 확인한다.  \n3) CPU 사용률이 90%를 넘고 지속된다면, 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.  "
+    },
+    {
+     "id": "Q30",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) 현재 서버의 부하가 발생하는 원인을 확인하기 위해, auth-service 모니터링 조회 결과는 실패하였으며, 해당 대상의 값은 없습니다.  \n2) 등록된 런북 중 질문과 일치하는 절차가 없으며, 최고 유사도는 0.311로 기준 0.324에 미치지 못합니다. 따라서, 확인된 모니터링 범위에 대한 절차는 제공할 수 없습니다.  \n3) 질문에 등록된 모니터링 대상 시스템 이름이 auth-service로 확인되었으나, 이는 질문 대상과 다를 수 있습니다. 부하가 발생하는 시스템과 증상에 대한 추가 정보를 요청드립니다."
+    },
+    {
+     "id": "Q31",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 log-service의 상태를 확인한 결과, 디스크 사용률이 95%로 임계 수준(90% 이상)을 초과하였습니다.  \n2) 로그 파일, 임시 파일, 오래된 백업 등을 안전하게 삭제하여 여유 공간을 즉시 확보합니다.  \n3) 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축합니다.  \n4) 임시 조치로도 부족할 경우, 볼륨을 확장하거나 추가 스토리지를 연결합니다.  \n5) 정상화 후 로그 보존 정책과 디스크 사용률 알림 임계값을 재검토하여 조기에 감지될 수 있도록 조정합니다.  "
+    },
+    {
+     "id": "Q32",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태가 degraded이며, CPU 사용률이 80.7%, 메모리 사용률이 62.4%로 확인되었습니다. 알림이 2건 발생하였으며, 이는 p95 latency가 2.4s로 설정된 임계값 1.0s를 초과하고, 커넥션 풀 사용률이 92%에 달하고 있음을 나타냅니다. \n\n2) 디스크 용량 부족 문제를 해결하기 위해, get_monitoring_status를 통해 서버 디스크 사용률을 확인하고 임계 수준(90% 이상)인지 판단해야 합니다. 이후, 로그 파일, 임시 파일, 오래된 백업 등 안전하게 지울 수 있"
+    },
+    {
+     "id": "Q33",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) auth-service의 상태가 degraded이며, CPU 사용률이 75.2%, 메모리 사용률이 59.6%로 확인되었습니다. 알림이 2건 발생하였으며, 이는 p95 latency가 2.4s로 임계값인 1.0s를 초과하고, connection pool이 92% 사용 중임을 나타냅니다.\n\n2) 디스크 용량 부족 문제를 해결하기 위해, 로그 파일, 임시 파일, 오래된 백업 등을 안전하게 정리하여 여유 공간을 확보해야 합니다. 또한, 특정 프로세스가 비정상적으로 로그를 쌓고 있다면 로그 레벨을 낮추거나 로테이션 주기를 단축하는 조치"
+    },
+    {
+     "id": "Q34",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태는 degraded이며, CPU 사용률은 80.8%, 메모리 사용률은 62.4%입니다. p95 지연시간은 2.4초로 임계치인 1.0초를 초과하고, 커넥션 풀 사용률은 92%입니다.  \n2) 커넥션 풀 사용률이 90%를 초과하므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.  \n3) p95 지연시간이 5분 내에 임계치(1.0초) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산해야 합니다."
+    },
+    {
+     "id": "Q35",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태는 degraded이며, p95 지연시간은 2.4s로 임계치인 1.0s를 초과하고 있습니다. 커넥션 풀 사용률은 92%입니다.  \n2) 커넥션 풀 사용률이 90%를 초과하므로, 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정해야 합니다.  \n3) 5분 이상 p95 지연이 임계치 아래로 내려오지 않으므로, 캐시 계층 또는 읽기 복제본으로 트래픽을 분산해야 합니다."
+    },
+    {
+     "id": "Q36",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 모니터링 중인 auth-service의 상태는 degraded이며, CPU 사용률은 75.2%, 메모리 사용률은 59.6%입니다. 또한, 알림이 2건 발생하였으며, 내용은 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다.  \n2) 질문에 등록된 모니터링 대상 시스템 이름이 없어 auth-service를 기본으로 조회하였습니다. 따라서, 요청하신 특정 서버와 증상에 대한 추가 정보를 확인할 필요가 있습니다.  \n3) 해당 서버의 정확한 이름과 증상을 다"
+    },
+    {
+     "id": "Q37",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) cache-service의 메모리 사용률이 87.9%로 OOM 직전 상태이므로, 해당 프로세스를 즉시 재시작하여 서비스 중단을 방지합니다. 재시작은 임시 조치임을 기록합니다.  \n2) get_monitoring_status를 통해 메모리 사용률 추세를 확인하여, 사용량이 꾸준히 증가하는지 점검합니다.  \n3) 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이는지 분석합니다."
+    },
+    {
+     "id": "Q38",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) 현재 cache-service의 메모리 사용률이 89%로 유지되고 있으나, 모니터링 조회 실패로 인해 메모리 사용 추세를 확인할 수 없습니다. 따라서, 메모리 누수 여부를 판단하기 위해 힙 덤프 또는 프로파일링 도구를 사용하여 어떤 객체가 계속 쌓이는지 확인해야 합니다.\n\n2) 메모리 사용률이 90% 이상으로 증가할 경우, OOM(Out Of Memory) 상황을 방지하기 위해 해당 프로세스를 즉시 재시작하여 서비스 중단을 막아야 합니다. 이 조치는 임시 방편임을 기록해두어야 합니다.\n\n3) 최근 배포에서 캐시 무제한 증가, "
+    },
+    {
+     "id": "Q39",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 상태를 확인한 결과, auth-service의 CPU 사용률은 82.3%, 메모리 사용률은 63.1%로 나타났으며, 알림이 2건 발생했습니다. 알림 내용은 'p95 latency 2.4s (threshold 1.0s)'와 'connection pool 92% used'입니다. \n\n2) OOMKilled 현상이 발생하는 자바 서비스의 이름이 명시되지 않았으므로, auth-service를 기준으로 분석하였습니다. 이는 질문 대상과 다를 수 있음을 유의해야 합니다.\n\n3) 메모리 누수 가능성을 점검하기 위해, 다음 절차를 "
+    },
+    {
+     "id": "Q40",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.  \n2) DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.  \n3) 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.  \n4) 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.  \n5) 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다."
+    },
+    {
+     "id": "Q41",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 현재 auth-service의 상태가 degraded이며, CPU 사용률이 82.3%, 메모리 사용률이 63.2%로 확인되었습니다. 또한, p95 지연시간이 2.4s로 임계치인 1.0s를 초과하고, 커넥션 풀 사용률이 92%에 달하고 있습니다. \n\n2) 네트워크 타임아웃 문제를 해결하기 위해, 호출이 끊기는 특정 가용영역을 우회하는 라우팅으로 임시 전환하는 방법을 고려해야 합니다. \n\n3) 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우, 임시로 타임아웃 임계값을 상향 조정하여 2차 피해를 줄이는 방안을 검토해야 합"
+    },
+    {
+     "id": "Q42",
+     "ok": true,
+     "faults": 0,
+     "tool_failures": 0,
+     "answer": "1) 모니터링 결과, auth-service의 상태가 degraded이며 CPU 사용률은 81.1%, 메모리 사용률은 62.5%입니다. p95 지연시간이 2.4s로 임계치인 1.0s를 초과하고, 커넥션 풀 사용률이 92%로 높습니다. \n\n2) 내부 API의 타임아웃 문제는 커넥션 풀 사용률이 90%를 초과하여 발생할 수 있으며, 이는 클라이언트 설정 문제일 수도 있지만 현재 시스템의 상태가 주요 원인으로 보입니다.\n\n3) 다음 단계로는 커넥션 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 설정하여 문제를 해결해야 합니다. 추"
+    },
+    {
+     "id": "Q48",
+     "ok": true,
+     "faults": 4,
+     "tool_failures": 4,
+     "answer": "1) DB 프라이머리 장애로 인해 auth-service의 응답 지연이 발생하고 있으며, 현재 auth-service의 상태는 degraded입니다. CPU 사용률은 76.0%, 메모리 사용률은 60.0%입니다. 알림으로는 'p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used'가 있습니다.\n\n2) DB 장애에 대한 대응 절차를 따라 커넥션 풀 및 리플리케이션 상태를 점검하고, 필요 시 failover 노드로 전환합니다.\n\n3) 서비스 정상화 후 원인 분석과 재발 방지 대책을"
+    },
+    {
+     "id": "Q49",
+     "ok": true,
+     "faults": 2,
+     "tool_failures": 2,
+     "answer": "1) payments-service와 cache-service의 모니터링 조회가 실패하여 구체적인 CPU 및 메모리 사용률을 확인할 수 없습니다.  \n2) cache-service의 메모리 사용률이 꾸준히 증가하고 있으며, OOM 직전(90% 이상)일 경우 즉시 재시작하여 서비스 중단을 방지해야 합니다.  \n3) 메모리 누수 가능성을 고려하여 힙 덤프 또는 프로파일링 도구를 사용해 어떤 객체가 계속 쌓이는지 확인하고, 최근 배포에서 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 등의 패턴이 있었는지 점검해야 합니다."
+    },
+    {
+     "id": "Q50",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) **우선순위 결정**: 현재 gateway-service의 호출 타임아웃과 log-service의 디스크 사용률 문제 중, 시스템 전반에 더 큰 영향을 미칠 수 있는 log-service의 디스크 사용률 문제를 우선적으로 해결해야 합니다. 디스크 사용률이 90% 이상일 경우 심각한 성능 저하나 데이터 손실이 발생할 수 있습니다.\n\n2) **log-service 디스크 용량 문제 해결 절차**:\n   - 디스크 사용률이 90% 이상임을 확인했으므로, 즉시 로그 파일, 임시 파일, 오래된 백업 등을 정리하여 여유 공간을 확보합니다"
+    },
+    {
+     "id": "Q51",
+     "ok": true,
+     "faults": 2,
+     "tool_failures": 2,
+     "answer": "1) auth-service의 메모리 사용률이 64.7%로 증가하고 있으며, CPU 사용률은 85.4%로 높은 상태입니다. 이 서비스는 'degraded' 상태로, 커넥션 풀 사용률이 92%에 달하고 있습니다. 즉시 해당 프로세스를 재시작하여 서비스 중단을 방지해야 합니다.\n\n2) cache-service의 메모리 사용률이 92.2%로 임계 수준에 가까워지고 있으며, CPU 사용률은 48.3%입니다. 메모리 사용이 지속적으로 증가하고 있으므로, 힙 덤프를 통해 어떤 객체가 계속 쌓이는지 확인하고, 최근 배포에서 캐시 무제한 증가와 "
+    },
+    {
+     "id": "Q52",
+     "ok": true,
+     "faults": 1,
+     "tool_failures": 1,
+     "answer": "1) CPU 사용률이 90%를 초과한 상황에서, get_monitoring_status를 통해 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인합니다.  \n2) 로그 파일, 임시 파일, 오래된 백업 등 안전하게 지울 수 있는 항목을 정리하여 디스크 여유 공간을 확보합니다.  \n3) 배치 작업이 중복 실행된 원인을 확인하고, 필요 시 로그 레벨을 낮추거나 로테이션 주기를 단축하여 로그 쌓임을 방지합니다."
+    }
+   ]
+  }
+ },
+ "backend": "openai"
+}
