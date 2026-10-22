@@ -297,7 +297,7 @@ const rowsT = [[hdr("켠 것"), hdr("정답 누락"), hdr("무관 혼입"), hdr(
 st.forEach((p) => rowsT.push([{ text: p.label, options: { bold: p.a === "base" && p.b === "final" } },
   ...keys.map(([k, u]) => cellOf(p[k], k, u))]));
 s.addTable(rowsT, { ...TBL, x: 0.6, y: 1.4, w: 12.1, colW: [3.1, 1.45, 1.45, 1.45, 1.45, 1.6, 1.6], rowH: 0.5, objectName: "contrib-table" });
-T(s, "★ = 95% 신뢰구간이 0을 포함하지 않음 (holdout 36건, 질의 단위 paired bootstrap 2,000회). 초록 = 좋아짐, 주황 = 나빠짐. 표시 없는 칸은 차이가 있다고 말할 수 없음. 캐스케이드·v2 위 비용·전체 행의 지연은 재측정 부하(2프로세스 vs 7프로세스) 차이가 섞였을 수 있음.",
+T(s, "★ = 95% 신뢰구간이 0을 포함하지 않음 (holdout 36건, 질의 단위 paired bootstrap 2,000회). 초록 = 좋아짐, 주황 = 나빠짐. 표시 없는 칸은 차이가 있다고 말할 수 없음. " + (D.latctl ? "지연은 7구성을 같은 부하로 다시 잰 값(평가 Judge 생략, scripts/run_latency_ctrl.sh)." : "캐스케이드·v2 위 비용·전체 행의 지연은 재측정 부하(2프로세스 vs 7프로세스) 차이가 섞였을 수 있음."),
   { x: 0.6, y: 5.55, w: 12.1, h: 0.7, fontSize: 11.5 });
 src(s, "results/stats_holdout.json · eval/stats.py", 6.3);
 s.addNotes("이 표가 핵심입니다. RAG 행에 품질 별표가 몰려 있고, Judge 행에는 비용과 지연 별표만 있습니다.");
@@ -315,7 +315,7 @@ T(s, [
   { text: "Judge를 붙이면 비용과 지연이 오르지만, 품질 지표는 신뢰구간 안에서 움직이지 않았다.", options: { bullet: true, breakLine: true } },
   { text: `캐스케이드는 장애 1건당 비용을 크게 줄이는 대신 런북 어구 포함이 내려갔다 (${pp(pair("rag_judge", "rag_judge_cost").must.diff)}, 유의하지 않음). 이 대가를 받아들일지는 운영 정책의 선택이다.`, options: { bullet: true } },
 ], { x: 0.6, y: 5.45, w: 12.1, h: 1.15, fontSize: 13.5, paraSpaceAfter: 4, valign: "top" });
-src(s, "holdout 36건, 3회 평균. 비용은 OpenAI 공개 단가 x 실측 토큰 추정치 (평가 Judge 제외). 지연: 5구성은 7프로세스 동시 부하, +비용·final은 캐시 버그 수정 뒤 2프로세스로 재측정 → 두 구성의 지연 차이엔 부하 차이가 섞였을 수 있음", 6.68);
+src(s, "holdout 36건, 3회 평균. 비용은 OpenAI 공개 단가 x 실측 토큰 추정치 (평가 Judge 제외). " + (D.latctl ? "p95 지연은 7구성을 같은 부하(동시 7프로세스 x 2)로 다시 잰 값" : "지연: 5구성은 7프로세스 동시 부하, +비용·final은 2프로세스로 재측정 → 두 구성의 지연 차이엔 부하 차이가 섞였을 수 있음"), 6.68);
 
 // ── 11. v2 보완 ──────────────────────────────────────────────────────
 s = slide("CONTENT", "Before/After");

@@ -29,6 +29,18 @@ for n in ORDER:
 for sp in ("holdout", "dev", None):
     out[f"extra_{sp or 'all'}"] = extra(sp)
 out["stats_holdout"] = load(R / "stats_holdout.json")
+# 지연 통제 재측정(scripts/run_latency_ctrl.sh)이 있으면 지연만 그 값으로 바꾼다 (품질·비용은 원 측정)
+_lat = load(R / "stats_holdout_latctl.json")
+out["latctl"] = bool(_lat) and all((R / f"{n}_latctl_latest.json").exists() for n in ORDER)
+if out["latctl"]:
+    _lp = {(q["a"], q["b"]): q["latency"] for q in _lat["pairs"]}
+    for q in out["stats_holdout"]["pairs"]:
+        q["latency"] = _lp[(q["a"], q["b"])]
+    for n in ORDER:
+        _m = load(R / f"{n}_latctl_latest.json")["summary"]["by_split"]["holdout"]["mean"]
+        for k in ("latency_p50_ms", "latency_p95_ms"):
+            if k in _m:
+                out["holdout"][n][k] = _m[k]
 out["excluded"] = {n: load(R / f"{n}_latest.json")["summary"].get("excluded_reps") for n in ORDER}
 try:
     from eval.agreement import summary_dict as _sd

@@ -16,6 +16,8 @@ ORDER = ["base", "rag", "judge", "rag_judge", "rag_judge_cost", "rag_judge_v2", 
 LABEL = {"base": "base", "rag": "+RAG", "judge": "+Judge만", "rag_judge": "RAG+Judge",
          "rag_judge_cost": "+비용", "rag_judge_v2": "+v2 보완", "final": "**final**"}
 R = ROOT / "results"
+# 지연 통제 재측정(scripts/run_latency_ctrl.sh)이 7구성 모두 있으면 지연은 그 값을 쓴다
+LATCTL = all((R / f"{n}_latctl_latest.json").exists() for n in ORDER) and (R / "stats_holdout_latctl.json").exists()
 
 
 def pct(v):
@@ -32,6 +34,9 @@ def holdout_table() -> str:
             ("Recall@1", lambda n: pct(H[n]["recall@1"])),
             ("장애 1건당 비용 (USD)", lambda n: f"{X[n]['cost_per_incident']:.5f}"),
             ("p95 지연", lambda n: f"{H[n]['latency_p95_ms'] / 1000:.1f}초")]
+    if LATCTL:
+        Lc = {n: json.loads((R / f"{n}_latctl_latest.json").read_text())["summary"]["by_split"]["holdout"]["mean"] for n in ORDER}
+        rows[-1] = ("p95 지연 (같은 부하 재측정)", lambda n: f"{Lc[n]['latency_p95_ms'] / 1000:.1f}초")
     out = ["| | " + " | ".join(LABEL[n] for n in ORDER) + " |", "|---|" + "---|" * len(ORDER)]
     out += [f"| {lab} | " + " | ".join(f(n) for n in ORDER) + " |" for lab, f in rows]
     return "\n".join(out)
@@ -39,6 +44,9 @@ def holdout_table() -> str:
 
 def contrib_table() -> str:
     st = json.loads((R / "stats_holdout.json").read_text())["pairs"]
+    if LATCTL:   # 지연만 같은 부하 재측정 값으로 바꾼다 (품질·비용은 원 측정)
+        lat = {(q["a"], q["b"]): q["latency"] for q in json.loads((R / "stats_holdout_latctl.json").read_text())["pairs"]}
+        st = [{**q, "latency": lat[(q["a"], q["b"])]} for q in st]
 
     def c(r, k):
         if not r:
@@ -51,7 +59,8 @@ def contrib_table() -> str:
             lo, hi = round(r["lo"] * 100), round(r["hi"] * 100)
             s = f"{round(r['diff'] * 100):+d}%p [{lo:+d}, {hi:+d}]"
         return f"**{s}** ★" if r["significant"] else s
-    head = "| 켠 것 | 정답 누락 | 무관 혼입 | 어구 포함 | 질의당 비용 | 질의당 지연 |\n|---|---|---|---|---|---|"
+    lat_head = "질의당 지연 (같은 부하 재측정)" if LATCTL else "질의당 지연"
+    head = f"| 켠 것 | 정답 누락 | 무관 혼입 | 어구 포함 | 질의당 비용 | {lat_head} |\n|---|---|---|---|---|---|"
     lines = [f"| {'**' + p['label'] + '**' if p['a'] == 'base' and p['b'] == 'final' else p['label']} | "
              + " | ".join(c(p[k], k) for k in ("miss", "wrong", "must", "cost", "latency")) + " |" for p in st]
     return head + "\n" + "\n".join(lines)

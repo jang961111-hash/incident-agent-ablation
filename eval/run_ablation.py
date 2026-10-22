@@ -279,8 +279,8 @@ def main():
         queries = [q for q in queries if q.get("split") == args.split]
     kw = dict(use_judge=not args.no_judge, backend=args.backend, reps=args.reps,
               workers=args.workers, tag=args.tag,
-              save=(not args.no_save and not args.ids and not args.no_judge
-                    and args.backend != "fake"))   # 판정 없는 결과로 _latest 를 덮어쓰지 않는다
+              save=(not args.no_save and not args.ids and (not args.no_judge or bool(args.tag))
+                    and args.backend != "fake"))   # 판정 없는 결과는 --tag 를 붙여 별도 파일로만 저장 (_latest 보호)
     if args.all:
         for nm in ORDER:
             run_config(CONFIG_DIR / f"{nm}.yaml", queries, threshold, **kw)

@@ -7,6 +7,7 @@
 
     python -m eval.stats                 # holdout (기본)
     python -m eval.stats --split all
+    python -m eval.stats --tag _latctl   # 지연 통제 재측정 (results/*_latctl_latest.json)
 """
 from __future__ import annotations
 
@@ -44,7 +45,7 @@ def _per_query(rows: list[dict]) -> dict:
             return statistics.fmean(vals) if vals else None
         gold = rs[0]["gold"]
         out[qid] = {
-            "pass": avg(lambda r: None if r["judge_passed"] is None else float(r["judge_passed"])),
+            "pass": avg(lambda r: None if r.get("judge_passed") is None else float(r["judge_passed"])),
             "must": avg(lambda r: r["must_hit"] / r["must_total"] if r["must_total"] else None),
             "hit1": avg(lambda r: float(bool(r["retrieved"]) and r["retrieved"][0] in gold) if gold else None),
             "miss": avg(lambda r: float(not set(r["fed_runbooks"]) & set(gold))
@@ -69,10 +70,10 @@ def bootstrap(a: dict, b: dict, metric: str, n: int = 2000, seed: int = 0) -> di
             "significant": lo > 0 or hi < 0}
 
 
-def run(split: str | None) -> dict:
+def run(split: str | None, tag: str = "") -> dict:
     data = {}
     for nm in {x for p in PAIRS for x in p[:2]}:
-        rows = json.loads((RESULTS / f"{nm}_latest.json").read_text())["rows"]
+        rows = json.loads((RESULTS / f"{nm}{tag}_latest.json").read_text())["rows"]
         if split:
             rows = [r for r in rows if r.get("split") == split]
         data[nm] = _per_query(rows)
@@ -81,7 +82,7 @@ def run(split: str | None) -> dict:
         res = {m: bootstrap(data[a], data[b], m) for m in
                ("pass", "must", "hit1", "miss", "wrong", "cost", "latency")}
         out.append({"a": a, "b": b, "label": label, **res})
-    return {"split": split or "all", "n_boot": 2000, "pairs": out}
+    return {"split": split or "all", "tag": tag, "n_boot": 2000, "pairs": out}
 
 
 FMT = {"pass": ("평가 Judge 통과", 100, "%p"), "must": ("런북 어구 포함", 100, "%p"),
@@ -107,9 +108,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", default="holdout", choices=["holdout", "dev", "all"])
     ap.add_argument("--md", action="store_true")
+    ap.add_argument("--tag", default="", help="결과 파일 접미사 (예: _latctl = 지연 통제 재측정)")
     args = ap.parse_args()
-    res = run(None if args.split == "all" else args.split)
-    (RESULTS / f"stats_{res['split']}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
+    res = run(None if args.split == "all" else args.split, args.tag)
+    (RESULTS / f"stats_{res['split']}{args.tag}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
     metrics = ["hit1", "miss", "wrong", "must", "pass", "cost", "latency"]
     head = ["비교"] + [f"{FMT[m][0]} ({FMT[m][2]})" for m in metrics]
     lines = [[f"{p['label']}: {p['a']}→{p['b']}"] + [fmt(p[m], m) for m in metrics] for p in res["pairs"]]
