@@ -39,6 +39,8 @@ def holdout_table() -> str:
         rows[-1] = ("p95 지연 (같은 부하 재측정)", lambda n: f"{Lc[n]['latency_p95_ms'] / 1000:.1f}초")
     out = ["| | " + " | ".join(LABEL[n] for n in ORDER) + " |", "|---|" + "---|" * len(ORDER)]
     out += [f"| {lab} | " + " | ".join(f(n) for n in ORDER) + " |" for lab, f in rows]
+    if LATCTL:
+        out += ["", "p95 지연 행: 동일 부하·동시 실행 조건(7구성 동시, workers 2, holdout 36문제 x 3회) 재측정 값. 나머지 행은 원 측정."]
     return "\n".join(out)
 
 
@@ -63,13 +65,30 @@ def contrib_table() -> str:
     head = f"| 켠 것 | 정답 누락 | 무관 혼입 | 어구 포함 | 질의당 비용 | {lat_head} |\n|---|---|---|---|---|---|"
     lines = [f"| {'**' + p['label'] + '**' if p['a'] == 'base' and p['b'] == 'final' else p['label']} | "
              + " | ".join(c(p[k], k) for k in ("miss", "wrong", "must", "cost", "latency")) + " |" for p in st]
-    return head + "\n" + "\n".join(lines)
+    tail = ("\n\n지연 열: 동일 부하·동시 실행 조건(7구성 동시, workers 2, holdout 36문제 x 3회) 재측정 값. 나머지 열은 원 측정."
+            if LATCTL else "")
+    return head + "\n" + "\n".join(lines) + tail
+
+
+def old_latency_table() -> str:
+    """처음 측정한 지연 (부하 조건이 달라 직접 비교 불가). 지우지 않고 부록에 남긴다."""
+    H = {n: json.loads((R / f"{n}_latest.json").read_text())["summary"]["by_split"]["holdout"]["mean"] for n in ORDER}
+    st = json.loads((R / "stats_holdout.json").read_text())["pairs"]
+    out = ["| | " + " | ".join(LABEL[n] for n in ORDER) + " |", "|---|" + "---|" * len(ORDER),
+           "| p95 지연 (처음 측정) | " + " | ".join(f"{H[n]['latency_p95_ms'] / 1000:.1f}초" for n in ORDER) + " |",
+           "", "| 켠 것 | 질의당 지연 차이 (처음 측정) |", "|---|---|"]
+    for q in st:
+        r = q["latency"]
+        out.append(f"| {q['label']} | {r['diff']:+.1f}초 [{r['lo']:+.1f}, {r['hi']:+.1f}]{' ★' if r['significant'] else ''} |")
+    out += ["", "부하 조건이 달라 직접 비교 불가: base·rag·judge·rag_judge·rag_judge_v2 는 7프로세스 동시, "
+            "rag_judge_cost·final 은 캐시 버그 수정 뒤 2프로세스로 쟀다. 본문 표는 동일 부하 재측정 값을 쓴다."]
+    return "\n".join(out)
 
 
 def main():
     p = ROOT / "README.md"
     s = p.read_text()
-    for name, fn in (("holdout", holdout_table), ("contrib", contrib_table)):
+    for name, fn in (("holdout", holdout_table), ("contrib", contrib_table), ("latency_old", old_latency_table)):
         s, n = re.subn(rf"(<!-- AUTO:{name} -->).*?(<!-- /AUTO:{name} -->)",
                        lambda m: m.group(1) + "\n" + fn() + "\n" + m.group(2), s, flags=re.S)
         assert n == 1, f"README 에 AUTO:{name} 구간이 없음"
