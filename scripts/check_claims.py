@@ -44,9 +44,12 @@ def allowed() -> set[str]:
     """
     a = set(map(norm, CONST))
     a |= set(tokens((ROOT / "CLAIMS.md").read_text()))
-    readme = (ROOT / "README.md").read_text()
-    for blk in re.findall(r"<!-- AUTO:\w+ -->(.*?)<!-- /AUTO:\w+ -->", readme, flags=re.S):
-        a |= set(tokens(blk))
+    # The generated tables moved from README.md to docs/DETAILS.md (2026-11-20 README split).
+    for doc in ("README.md", "docs/DETAILS.md"):
+        if not (ROOT / doc).exists():
+            continue
+        for blk in re.findall(r"<!-- AUTO:\w+ -->(.*?)<!-- /AUTO:\w+ -->", (ROOT / doc).read_text(), flags=re.S):
+            a |= set(tokens(blk))
     for f in sorted(R.glob("latctl_summary_*.md"))[-1:]:
         a |= set(tokens(f.read_text()))
     # 구성별 표 값 (덱 표, 그림에 쓰임)
@@ -103,7 +106,7 @@ def main(argv=None):
             "docs/submission_sheet_draft.md": (ROOT / "docs/submission_sheet_draft.md").read_text(),
             "docs/research/00_요약_실태현황.md": (ROOT / "docs/research/00_요약_실태현황.md").read_text(),
             "deck (pptx 2종)": deck_text()}
-    for extra in ("docs/sheet_entry.txt",):
+    for extra in ("docs/DETAILS.md", "docs/sheet_entry.txt"):
         if (ROOT / extra).exists():
             docs[extra] = (ROOT / extra).read_text()
     bad = []

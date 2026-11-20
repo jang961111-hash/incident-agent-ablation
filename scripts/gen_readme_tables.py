@@ -111,7 +111,7 @@ def old_latency_table() -> str:
 
 def main():
     """README.md 의 AUTO 구간 4개를 표 생성 함수 결과로 바꿔 쓴다. 구간이 정확히 1개씩 없으면 assert 로 멈춘다."""
-    p = ROOT / "README.md"
+    p = ROOT / "docs" / "DETAILS.md"   # tables moved here with the 2026-11-20 README split
     s = p.read_text()
     for name, fn in (("holdout", holdout_table), ("contrib", contrib_table), ("latency_old", old_latency_table), ("tamper", tamper_table)):
         s, n = re.subn(rf"(<!-- AUTO:{name} -->).*?(<!-- /AUTO:{name} -->)",
